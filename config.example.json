@@ -1,0 +1,38 @@
+{
+  "model_dir": "models",
+  "runtime_dir": "runtime",
+  "listen": ":8765",
+  "gomaxprocs": 3,
+  "debug": false,
+  "audio": {
+    "device_index": -1,
+    "silence_ms": 500,
+    "min_speech_ms": 300,
+    "max_speech_seconds": 10
+  },
+  "asr": {
+    "model_id": "",
+    "num_threads": 2
+  },
+  "deepseek": {
+    "api_key": "请在这里填写 DeepSeek API Key",
+    "endpoint": "https://api.deepseek.com/chat/completions",
+    "model": "deepseek-chat",
+    "timeout_ms": 5000,
+    "retries": 2
+  },
+  "subtitle": {
+    "mode": "bilingual",
+    "hide_after_ms": 12000,
+    "english_font_size": 56,
+    "chinese_font_size": 30,
+    "position_x_percent": 50,
+    "position_y_percent": 88,
+    "max_width_percent": 90,
+    "english_color": "#ffffff",
+    "chinese_color": "#f0f0f0",
+    "stroke_color": "#000000",
+    "background": "rgba(0,0,0,0.48)",
+    "font_family": "Segoe UI, Microsoft YaHei, sans-serif"
+  }
+}

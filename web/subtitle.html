@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>实时翻译字幕</title><style>
+:root{--en-size:56px;--zh-size:30px;--x:50%;--y:88%;--max-width:90%;--en-color:#fff;--zh-color:#eee;--stroke:#000;--bg:rgba(0,0,0,.48);--font:"Segoe UI","Microsoft YaHei",sans-serif}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent}
+#subtitle{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%) translateY(8px);width:max-content;max-width:var(--max-width);box-sizing:border-box;padding:12px 24px;border-radius:12px;text-align:center;background:var(--bg);font-family:var(--font);opacity:0;transition:opacity .22s ease,transform .22s ease;overflow-wrap:anywhere}
+#subtitle.show{opacity:1;transform:translate(-50%,-50%) translateY(0)}
+#english{color:var(--en-color);font-size:var(--en-size);font-weight:750;line-height:1.18;-webkit-text-stroke:2px var(--stroke);paint-order:stroke fill;text-shadow:0 2px 5px var(--stroke)}
+#chinese{margin-bottom:5px;color:var(--zh-color);font-size:var(--zh-size);font-weight:650;line-height:1.2;-webkit-text-stroke:1px var(--stroke);paint-order:stroke fill;text-shadow:0 1px 3px var(--stroke)}
+#status{display:none;position:fixed;right:8px;top:8px;padding:5px 9px;border-radius:5px;color:#ddd;background:#222c;font:12px sans-serif}
+body.debug #status{display:block}body.editor{background-color:#27313c;background-image:linear-gradient(45deg,#313d49 25%,transparent 25%),linear-gradient(-45deg,#313d49 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#313d49 75%),linear-gradient(-45deg,transparent 75%,#313d49 75%);background-size:32px 32px;background-position:0 0,0 16px,16px -16px,-16px 0}
+#panel{display:none;position:fixed;z-index:10;left:16px;top:16px;width:330px;max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box;padding:16px;border-radius:12px;color:#eef;background:#101820ee;box-shadow:0 8px 32px #0008;font:13px/1.35 "Segoe UI",sans-serif}
+body.editor #panel{display:block}#panel h1{font-size:17px;margin:0 0 12px}#panel label{display:grid;grid-template-columns:115px 1fr;align-items:center;gap:8px;margin:8px 0}#panel input,#panel select,#panel button{box-sizing:border-box;width:100%;padding:6px;border:1px solid #506070;border-radius:5px;color:#fff;background:#253341}#panel input[type=range]{padding:0}#panel .buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}#url{margin-top:10px;width:100%;height:66px;resize:none;box-sizing:border-box;color:#bff;background:#071018;border:1px solid #405060;border-radius:5px;padding:7px;font:11px monospace}
+</style></head><body>
+<div id="subtitle" role="status" aria-live="polite"><div id="chinese"></div><div id="english"></div></div><div id="status"></div>
+<section id="panel"><h1>字幕实时预览编辑器</h1>
+<label>显示模式<select data-key="mode"><option value="bilingual">中英双语</option><option value="english">纯英文</option></select></label>
+<label>保留时间(ms)<input data-key="hideAfterMS" type="number" min="0" max="300000" step="500"><small>0=持续显示</small></label>
+<label>英文字号<input data-key="englishFontSize" type="range" min="16" max="140"></label>
+<label>中文字号<input data-key="chineseFontSize" type="range" min="12" max="100"></label>
+<label>水平位置 %<input data-key="positionX" type="range" min="0" max="100"></label>
+<label>垂直位置 %<input data-key="positionY" type="range" min="0" max="100"></label>
+<label>最大宽度 %<input data-key="maxWidth" type="range" min="20" max="100"></label>
+<label>英文颜色<input data-key="englishColor" type="color"></label><label>中文颜色<input data-key="chineseColor" type="color"></label><label>描边颜色<input data-key="strokeColor" type="color"></label>
+<label>背景 CSS<input data-key="background" type="text"></label><label>字体<input data-key="fontFamily" type="text"></label>
+<div class="buttons"><button id="simulate">模拟字幕</button><button id="copy">复制 OBS URL</button></div><textarea id="url" readonly></textarea></section>
+<script>(()=>{'use strict';
+const params=new URLSearchParams(location.search),sub=document.querySelector('#subtitle'),zh=document.querySelector('#chinese'),en=document.querySelector('#english'),status=document.querySelector('#status'),root=document.documentElement.style,isEditor=location.pathname==='/editor';if(isEditor)document.body.classList.add('editor');if(params.get('debug')==='1')document.body.classList.add('debug');
+const defaults={mode:'bilingual',hideAfterMS:12000,englishFontSize:56,chineseFontSize:30,positionX:50,positionY:88,maxWidth:90,englishColor:'#ffffff',chineseColor:'#f0f0f0',strokeColor:'#000000',background:'rgba(0,0,0,0.48)',fontFamily:'Segoe UI, Microsoft YaHei, sans-serif'};let cfg={...defaults},baseCfg={...defaults},hideTimer,socket,reconnectTimer,stopped=false;
+const map={mode:'mode',hide:'hideAfterMS',enSize:'englishFontSize',zhSize:'chineseFontSize',x:'positionX',y:'positionY',width:'maxWidth',enColor:'englishColor',zhColor:'chineseColor',stroke:'strokeColor',bg:'background',font:'fontFamily'};
+function fromQuery(){for(const [q,k] of Object.entries(map)){if(!params.has(q))continue;const raw=params.get(q);cfg[k]=['hideAfterMS','englishFontSize','chineseFontSize','positionX','positionY','maxWidth'].includes(k)?Number(raw):raw}}
+function apply(){root.setProperty('--en-size',`${cfg.englishFontSize}px`);root.setProperty('--zh-size',`${cfg.chineseFontSize}px`);root.setProperty('--x',`${cfg.positionX}%`);root.setProperty('--y',`${cfg.positionY}%`);root.setProperty('--max-width',`${cfg.maxWidth}%`);root.setProperty('--en-color',cfg.englishColor);root.setProperty('--zh-color',cfg.chineseColor);root.setProperty('--stroke',cfg.strokeColor);root.setProperty('--bg',cfg.background);root.setProperty('--font',cfg.fontFamily);zh.style.display=cfg.mode==='bilingual'?'block':'none';updateURL()}
+function show(source,text){if(!text?.trim())return;zh.textContent=source||'';en.textContent=text.trim();sub.classList.add('show');clearTimeout(hideTimer);if(Number(cfg.hideAfterMS)>0)hideTimer=setTimeout(()=>sub.classList.remove('show'),Number(cfg.hideAfterMS))}
+function setStatus(t){status.textContent=t;console.info('[subtitle]',t)}
+function wsURL(){return params.get('ws')||`${location.protocol==='https:'?'wss':'ws'}://${location.host}/ws`}
+function connect(){setStatus('正在连接');try{socket=new WebSocket(wsURL())}catch(e){setStatus(e.message);return retry()}socket.onopen=()=>setStatus('已连接');socket.onmessage=e=>{try{const m=JSON.parse(e.data);if(!m.type||m.type==='subtitle')show(m.source,m.text)}catch(x){console.warn(x)}};socket.onerror=()=>setStatus('连接错误');socket.onclose=retry}
+function retry(){if(stopped||reconnectTimer)return;setStatus('已断开，2 秒后重连');reconnectTimer=setTimeout(()=>{reconnectTimer=null;connect()},2000)}
+function updateURL(){const box=document.querySelector('#url');if(!box)return;const q=new URLSearchParams();for(const [key,k] of Object.entries(map)){if(String(cfg[k])!==String(baseCfg[k]))q.set(key,cfg[k])}box.value=`${location.origin}/subtitle${q.size?'?'+q:''}`}
+function setupEditor(){document.querySelectorAll('[data-key]').forEach(input=>{const k=input.dataset.key;input.value=cfg[k];input.addEventListener('input',()=>{cfg[k]=input.type==='range'||input.type==='number'?Number(input.value):input.value;apply();show('这是中文预览，字号较小','This is an English preview with a larger font.')})});document.querySelector('#simulate').onclick=()=>show('这是中文预览，字号较小','This is an English preview with a larger font.');document.querySelector('#copy').onclick=async()=>{await navigator.clipboard.writeText(document.querySelector('#url').value);setStatus('OBS URL 已复制')};show('这是中文预览，字号较小','This is an English preview with a larger font.')}
+fetch('/config',{cache:'no-store'}).then(r=>r.ok?r.json():defaults).catch(()=>defaults).then(server=>{baseCfg={...defaults,...server};cfg={...baseCfg};fromQuery();apply();if(isEditor)setupEditor();connect()});addEventListener('beforeunload',()=>{stopped=true;clearTimeout(hideTimer);clearTimeout(reconnectTimer);socket?.close()});
+})();</script></body></html>

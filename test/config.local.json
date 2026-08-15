@@ -1,0 +1,9 @@
+{
+  "model_dir": "../models",
+  "runtime_dir": "../runtime",
+  "listen": ":9876",
+  "gomaxprocs": 3,
+  "audio": {"device_index": 0, "silence_ms": 500, "min_speech_ms": 300, "max_speech_seconds": 10},
+  "asr": {"model_id": "paraformer-zh", "num_threads": 2},
+  "deepseek": {"api_key": "test-only", "endpoint": "http://127.0.0.1:1/chat/completions", "model": "deepseek-chat", "timeout_ms": 500, "retries": 0}
+}
