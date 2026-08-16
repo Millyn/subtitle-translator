@@ -254,39 +254,40 @@ func (s *Service) args(wav string) ([]string, error) {
 		if e != nil {
 			return nil, e
 		}
-		return append([]string{"--tokens=" + tokens, "--sense-voice-model=" + m, "--sense-voice-language=zh", "--sense-voice-use-itn=1"}, append(common, wav)...), nil
-	case "whisper":
-		enc, e := globOne(s.Dir, "*-encoder.int8.onnx", "*-encoder.onnx")
+		return append([]string{"--tokens=" + tokens, "--sense-voice-model=" + m, "--sense-voice-language=auto", "--sense-voice-use-itn=1"}, append(common, wav)...), nil
+	case "fire-red-asr-ctc", "fireredasr2-ctc":
+		tokens, e := require("tokens.txt")
 		if e != nil {
 			return nil, e
 		}
-		prefix := strings.TrimSuffix(filepath.Base(enc), "-encoder.int8.onnx")
-		prefix = strings.TrimSuffix(prefix, "-encoder.onnx")
-		dec, e := require(prefix+"-decoder.int8.onnx", prefix+"-decoder.onnx")
+		m, e := require("model.int8.onnx", "model.onnx")
 		if e != nil {
 			return nil, e
 		}
-		tokens, e := require(prefix+"-tokens.txt", "tokens.txt")
+		return append([]string{"--tokens=" + tokens, "--fire-red-asr-ctc=" + m}, append(common, wav)...), nil
+	case "funasr-nano":
+		encoder, e := require("encoder_adaptor.int8.onnx")
 		if e != nil {
 			return nil, e
 		}
-		return append([]string{"--tokens=" + tokens, "--whisper-encoder=" + enc, "--whisper-decoder=" + dec, "--whisper-language=zh", "--whisper-task=transcribe"}, append(common, wav)...), nil
+		embedding, e := require("embedding.int8.onnx")
+		if e != nil {
+			return nil, e
+		}
+		llm, e := require("llm.int8.onnx")
+		if e != nil {
+			return nil, e
+		}
+		tokenizer := filepath.Join(s.Dir, "Qwen3-0.6B")
+		for _, name := range []string{"merges.txt", "tokenizer.json", "vocab.json"} {
+			if _, e = require(filepath.Join("Qwen3-0.6B", name)); e != nil {
+				return nil, e
+			}
+		}
+		return append([]string{"--funasr-nano-encoder-adaptor=" + encoder, "--funasr-nano-embedding=" + embedding, "--funasr-nano-llm=" + llm, "--funasr-nano-tokenizer=" + tokenizer, "--funasr-nano-itn=1"}, append(common, wav)...), nil
 	default:
 		return nil, fmt.Errorf("不支持模型类型 %q", s.Kind)
 	}
-}
-
-func globOne(dir string, patterns ...string) (string, error) {
-	for _, pattern := range patterns {
-		matches, _ := filepath.Glob(filepath.Join(dir, pattern))
-		if len(matches) == 1 {
-			return matches[0], nil
-		}
-		if len(matches) > 1 {
-			return "", fmt.Errorf("模型目录中 %s 匹配多个文件", pattern)
-		}
-	}
-	return "", fmt.Errorf("模型目录缺少 %s", strings.Join(patterns, " 或 "))
 }
 
 var timingLine = regexp.MustCompile(`(?i)^(elapsed|real time|wave duration|rtf|filename|creating|started|done)[: =]`)

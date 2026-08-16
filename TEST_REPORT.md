@@ -5,36 +5,65 @@
 ## 自动化验证
 
 - `go test -race ./...`：全部通过，未发现数据竞争。
-- `go test -coverprofile=coverage.out ./internal/...`：加入 WebRTC VAD 后，内部包语句总覆盖率 **74.0%**。
-- 核心包覆盖率：config 100.0%、pipeline 96.8%、ws 86.1%、asr 79.9%、translate 75.4%、model 72.1%、device 71.7%、audio 59.6%。
-- audio 未覆盖部分主要是必须依赖真实 Windows 音频设备的启动、停止和设备驱动错误分支；platform 是 Windows 进程优先级系统调用。它们不适合由伪造的离线音频替代。
-- 下载测试覆盖 URL 的 HEAD/GET 探测、Range 续传、进度回调、长度不完整拒绝、SHA-256 校验、模型文件清单、原子解压与路径穿越防护。
-- 流水线测试覆盖正常广播、空识别、ASR/翻译错误、空翻译、关闭输入、配置缺失和 worker panic 隔离。
-- WebSocket 测试覆盖多客户端、并发广播、断开清理、无客户端广播与上下文取消关闭。
-- HTTP 字幕页、编辑器、配置接口及中英双语消息已经加入自动化测试；浏览器实测编辑器能够切换纯英文、设置持续显示、调整字号和位置，并生成对应 OBS URL。
+- 内部包总语句覆盖率：75.4%。
+- 主要包：ASR 81.1%、翻译 82.5%、运行时配置 83.8%、流水线 94.8%、术语 76.5%、WebSocket/HTTP 75.6%、模型 72.5%、设备 71.7%、音频 59.6%。
+- 音频未覆盖部分主要是必须依赖真实 Windows 驱动的打开、停止和错误分支，没有使用离线音频冒充硬件验收。
 
-## 轻量性能基准
+自动化测试覆盖：
 
-以下结果是本机短时微基准，并非一小时直播负载测试：
+- Whisper 从 Catalog 和运行分支移除。
+- SenseVoice 自动语言、FireRedASR2 CTC、FunASR Nano 参数和必需文件校验。
+- 下载 URL 探测、Range 续传、长度拒绝、SHA-256、原子解压和路径穿越防护。
+- DeepSeek 结构化 JSON、保守纠错、关闭纠错、Prompt 注入隔离、非 JSON、缺少英文、重试和 Token Usage。
+- 纠正中文缺失时回退原始中文，且不采信 AI 返回的伪造原始文本。
+- 最近上下文、丰富字幕广播、翻译失败降级、DEBUG 事件和统计。
+- iRacing、Minecraft、Project Zomboid 术语加载、匹配、替换、删除、持久化和恢复内置版本。
+- 控制 API 校验、本机访问限制、Profile 切换不串用术语、普通 OBS 页面保持局域网可访问。
+- 多客户端 WebSocket、并发写、断线清理和安全关闭。
+
+## 模型下载链接验证
+
+新增模型的官方链接已经实际联网请求，不是只检查字符串：
+
+| 模型 | 最终结果 | 压缩包字节数 | Range |
+|---|---|---:|---|
+| FireRedASR2 CTC zh_en INT8 | GitHub 302 → `release-assets.githubusercontent.com` 200 | 520,516,278 | 支持 |
+| FunASR Nano INT8 | GitHub 302 → `release-assets.githubusercontent.com` 200 | 841,730,611 | 支持 |
+
+现有 Paraformer、SenseVoice 链接在上一版本已逐一验证，仍使用 sherpa-onnx 官方 `asr-models` Release。当前本地 sherpa-onnx v1.13.4 的离线 CLI 和 WebSocket Server 帮助信息均已确认支持四个正式模型，不需要更换运行库。
+
+## 真实麦克风与服务验收
+
+最终 v1.2.0 使用本机真实 `Microphone (NVIDIA Broadcast)` 启动：
+
+- Paraformer 常驻服务加载约 1.32 秒。
+- 连续测试期间收到 4,334 次以上真实音频回调，丢帧 0。
+- 一轮完整 DEBUG 验收捕获 10 个真实断句，识别 10 个，字幕段丢弃 0。
+- 实际语音段约 1.05～5.69 秒；Paraformer 单段识别约 20～78ms。
+- 真实识别结果、断句原因、模型、耗时和模拟 API 连接错误均实时进入 `/debug`。
+- 麦克风测试配置故意指向不可用的本地 DeepSeek 地址，验证 AI 失败时错误可观察，且流水线仍广播原始中文降级字幕。
+- Ctrl+C 正常关闭并输出最终统计。
+
+另使用项目现有配置向真实 DeepSeek 发送一条无私人内容的合成验收句。服务端成功返回 `corrected_chinese/english/was_corrected/matched_terms` 四个结构化字段，并将“这个三是不错的”结合上下文修复为“这个确实是不错的”，同时生成英文。密钥没有出现在命令输出、日志、控制 API 或网页中；常规自动化测试仍全部使用本地模拟服务。
+
+## 浏览器与访问控制验收
+
+- `/control` 实测切换 `auto → iracing` 无需重启，立即加载 55 条 iRacing 术语。
+- 上下文 `2 → 3`、中文来源 `corrected → compare` 和自定义 Prompt 均即时保存；浏览器刷新后仍保持。
+- `/debug` WebSocket 实际接收麦克风产生的 ASR 事件，显示原文、模型、时长、断句原因、耗时和错误。
+- DEBUG 表格在 1280×720 浏览器中完成视觉检查，长日志可滚动且列宽稳定。
+- `127.0.0.1/control` 返回 200；通过本机局域网地址访问 `/control` 返回 403；同一局域网地址访问 `/subtitle` 返回 200。
+
+## 轻量性能基准（上一版基线）
 
 | 路径 | 结果 | 内存分配 |
 |---|---:|---:|
-| 30 ms Adaptive VAD | 780 ns/op | 0 B/op，0 allocs/op |
-| 麦克风采集回调 | 114 ns/op | 0 B/op，0 allocs/op |
-| 单段流水线 | 5.72 µs/op | 873 B/op，16 allocs/op |
-| 无客户端 WebSocket 广播 | 314 ns/op | 96 B/op，2 allocs/op |
+| 30ms Adaptive VAD | 780ns/op | 0 B/op，0 allocs/op |
+| 麦克风采集回调 | 114ns/op | 0 B/op，0 allocs/op |
+| 无客户端 WebSocket 广播 | 314ns/op | 96 B/op，2 allocs/op |
 
-采集回调满足“不阻塞、零分配”的设计约束。基准只衡量程序自身调度，不包含 ASR 推理与 DeepSeek 网络时间。
+采集回调继续满足不阻塞和零分配约束。网络翻译耗时取决于 DeepSeek、网络和 Prompt 大小，不包含在微基准中。
 
-## 已完成的真实环境验证
+## 长时间直播验收边界
 
-- 已枚举本机真实 Windows 麦克风输入端点，不使用离线音频冒充设备验证。
-- NVIDIA Broadcast 麦克风短时采集约 3 秒：99 次回调、47,520 个样本、回调丢帧 0。
-- NVIDIA Broadcast 麦克风改用 WebRTC VAD 后再次采集约 3 秒：98 次回调、47,040 个样本、回调丢帧 0。
-- Paraformer INT8 模型和 sherpa-onnx v1.13.4 常驻服务已完成真实中文样本集成验证；5.611 秒样本的常驻推理约 130ms。测试在模型或运行库不存在时会明确跳过。
-- 完整服务（真实麦克风、常驻 ASR、字幕 WebSocket）短时运行时，Go 主进程约 13.9MB、ASR 进程约 148.2MB，合计约 162.1MB；10 秒空闲观察期累计 CPU 时间约 0.2 秒、无丢帧并能由 Ctrl+C 正常关闭。
-- DeepSeek 自动化测试使用本地模拟 HTTP 服务，不读取或暴露用户真实密钥。
-
-## 最终硬件验收边界
-
-CPU ≤10%、内存 ≤300 MB、端到端延迟 ≤3 秒及连续运行一小时必须在实际直播游戏负载、目标麦克风、网络和所选模型下测量。当前自动化测试、竞态检查、短时真机采集及微基准均通过，但不能代替这一小时现场验收。推荐起始配置为 Paraformer INT8、ASR 2 线程、`gomaxprocs=3`。
+CPU、内存、端到端延迟和连续运行一小时仍需在实际游戏负载、目标麦克风、真实 DeepSeek 网络以及最终选择的模型下测量。新版提供 `--asr-benchmark=15s`，可以用同一批真实麦克风语音比较所有已安装模型的文本、耗时和 RTF。

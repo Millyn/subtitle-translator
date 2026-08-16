@@ -21,18 +21,19 @@ type Meta struct {
 	ID, Name, Kind, Language, URL, Recommended string
 	Description                                string
 	SizeMB                                     int
+	ArchiveBytes                               int64  // Exact release asset size when verified.
 	SHA256                                     string // Optional; checked when supplied.
 	RequiredFiles                              []string
 }
 
-// Catalog contains only archives published by the sherpa-onnx project. Whisper's
-// official documentation explicitly supports replacing tiny with base or small.
+// Catalog contains only archives published by the sherpa-onnx project. It is
+// the single source of truth for models shown by the application; removing an
+// entry never deletes a previously downloaded directory.
 var Catalog = []Meta{
-	{ID: "paraformer-zh", Name: "Paraformer 中文小型 INT8", Kind: "paraformer", Language: "zh/en", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-paraformer-zh-small-2024-03-09.tar.bz2", Recommended: "推荐-中文", Description: "普通话、英语及部分中文方言，低资源占用", SizeMB: 84, RequiredFiles: []string{"model.int8.onnx", "tokens.txt"}},
-	{ID: "sensevoice-int8", Name: "SenseVoice Small INT8", Kind: "sensevoice", Language: "zh/en/ja/ko/yue", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2", Recommended: "推荐-多语言", Description: "中英日韩粤语，支持标点和逆文本规范化", SizeMB: 240, RequiredFiles: []string{"model.int8.onnx", "tokens.txt"}},
-	{ID: "whisper-tiny", Name: "Whisper Tiny INT8", Kind: "whisper", Language: "multilingual", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.tar.bz2", Recommended: "低资源占用", Description: "多语言，速度最快", SizeMB: 101, RequiredFiles: []string{"tiny-encoder.int8.onnx", "tiny-decoder.int8.onnx", "tiny-tokens.txt"}},
-	{ID: "whisper-base", Name: "Whisper Base INT8", Kind: "whisper", Language: "multilingual", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-base.tar.bz2", Recommended: "均衡", Description: "多语言，准确率和资源占用均衡", SizeMB: 145, RequiredFiles: []string{"base-encoder.int8.onnx", "base-decoder.int8.onnx", "base-tokens.txt"}},
-	{ID: "whisper-small", Name: "Whisper Small INT8", Kind: "whisper", Language: "multilingual", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-small.tar.bz2", Recommended: "多语言可选", Description: "更高准确率，CPU 和内存占用较高", SizeMB: 490, RequiredFiles: []string{"small-encoder.int8.onnx", "small-decoder.int8.onnx", "small-tokens.txt"}},
+	{ID: "paraformer-zh", Name: "Paraformer 中文小型 INT8", Kind: "paraformer", Language: "zh/en", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-paraformer-zh-small-2024-03-09.tar.bz2", Recommended: "推荐-低资源中文", Description: "普通话、英语及部分中文方言；速度快、资源占用低", SizeMB: 84, RequiredFiles: []string{"model.int8.onnx", "tokens.txt"}},
+	{ID: "sensevoice-int8", Name: "SenseVoice Small INT8", Kind: "sensevoice", Language: "auto (zh/en/ja/ko/yue)", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2", Recommended: "推荐-多语言", Description: "自动识别中英日韩粤语，启用标点和逆文本规范化", SizeMB: 240, RequiredFiles: []string{"model.int8.onnx", "tokens.txt"}},
+	{ID: "fire-red-asr2-ctc-int8", Name: "FireRedASR2 CTC zh_en INT8", Kind: "fire-red-asr-ctc", Language: "zh/en + 20多种中文方言", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-fire-red-asr2-ctc-zh_en-int8-2026-02-25.tar.bz2", Recommended: "推荐-中文方言", Description: "CTC 中文/英语模型，覆盖粤语、四川话、上海话、闽南话等方言；CPU 推理快但模型较大", SizeMB: 497, ArchiveBytes: 520516278, RequiredFiles: []string{"model.int8.onnx", "tokens.txt"}},
+	{ID: "funasr-nano-int8", Name: "FunASR Nano INT8", Kind: "funasr-nano", Language: "zh/en/ja + 中文方言", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-funasr-nano-int8-2025-12-30.tar.bz2", Recommended: "高准确率-高资源", Description: "LLM 辅助多语言识别，支持 ITN；模型约 803 MiB，内存与计算需求明显高于 Paraformer", SizeMB: 803, ArchiveBytes: 841730611, RequiredFiles: []string{"encoder_adaptor.int8.onnx", "embedding.int8.onnx", "llm.int8.onnx", "Qwen3-0.6B/merges.txt", "Qwen3-0.6B/tokenizer.json", "Qwen3-0.6B/vocab.json"}},
 }
 
 type ModelInfo struct{ Name, Path, Type, Language string }

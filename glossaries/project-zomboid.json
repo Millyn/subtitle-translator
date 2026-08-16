@@ -1,0 +1,4036 @@
+{
+  "name": "project_zomboid",
+  "display_name": "Project Zomboid",
+  "entries": [
+    {
+      "source": "僵尸毁灭工程",
+      "target": "Project Zomboid",
+      "category": "title",
+      "protected": true
+    },
+    {
+      "source": "诺克斯县",
+      "target": "Knox Country",
+      "aliases": [
+        "诺克斯地区"
+      ],
+      "category": "world",
+      "protected": true
+    },
+    {
+      "source": "罗斯伍德",
+      "target": "Rosewood",
+      "category": "location",
+      "protected": true
+    },
+    {
+      "source": "里弗赛德",
+      "target": "Riverside",
+      "category": "location",
+      "protected": true
+    },
+    {
+      "source": "马尔德劳",
+      "target": "Muldraugh",
+      "category": "location",
+      "protected": true
+    },
+    {
+      "source": "西点镇",
+      "target": "West Point",
+      "category": "location",
+      "protected": true
+    },
+    {
+      "source": "路易斯维尔",
+      "target": "Louisville",
+      "category": "location",
+      "protected": true
+    },
+    {
+      "source": "安全屋",
+      "target": "safehouse",
+      "category": "base"
+    },
+    {
+      "source": "直升机事件",
+      "target": "Helicopter Event",
+      "category": "event",
+      "protected": true
+    },
+    {
+      "source": "咬伤",
+      "target": "bite",
+      "category": "injury"
+    },
+    {
+      "source": "撕裂伤",
+      "target": "laceration",
+      "category": "injury"
+    },
+    {
+      "source": "划伤",
+      "target": "scratch",
+      "category": "injury"
+    },
+    {
+      "source": "深伤口",
+      "target": "deep wound",
+      "category": "injury"
+    },
+    {
+      "source": "感染",
+      "target": "infection",
+      "category": "medical"
+    },
+    {
+      "source": "恐慌",
+      "target": "panic",
+      "category": "moodle"
+    },
+    {
+      "source": "压力",
+      "target": "stress",
+      "category": "moodle"
+    },
+    {
+      "source": "负重过高",
+      "target": "heavy load",
+      "category": "moodle"
+    },
+    {
+      "source": "木工",
+      "target": "Carpentry",
+      "category": "skill",
+      "protected": true
+    },
+    {
+      "source": "电工",
+      "target": "Electrical",
+      "category": "skill",
+      "protected": true
+    },
+    {
+      "source": "金工",
+      "target": "Metalworking",
+      "category": "skill",
+      "protected": true
+    },
+    {
+      "source": "觅食",
+      "target": "Foraging",
+      "category": "skill",
+      "protected": true
+    },
+    {
+      "source": "钝器维护",
+      "target": "Maintenance",
+      "category": "skill",
+      "protected": true
+    },
+    {
+      "source": "撬棍",
+      "target": "crowbar",
+      "category": "weapon"
+    },
+    {
+      "source": "消防斧",
+      "target": "fire axe",
+      "category": "weapon"
+    },
+    {
+      "source": "发电机",
+      "target": "generator",
+      "category": "utility"
+    },
+    {
+      "source": "大锤",
+      "target": "sledgehammer",
+      "category": "tool"
+    },
+    {
+      "source": "罐头刀",
+      "target": "can opener",
+      "category": "tool"
+    },
+    {
+      "source": "诺克斯事件",
+      "target": "Knox Event",
+      "category": "world",
+      "protected": true
+    },
+    {
+      "source": "情绪状态",
+      "target": "Moodle",
+      "aliases": [
+        "状态图标"
+      ],
+      "category": "ui",
+      "protected": true
+    },
+    {
+      "source": "四十一版本",
+      "target": "Build 41",
+      "aliases": [
+        "B41"
+      ],
+      "category": "version",
+      "protected": true
+    },
+    {
+      "source": "四十二版本",
+      "target": "Build 42",
+      "aliases": [
+        "B42"
+      ],
+      "category": "version",
+      "protected": true
+    },
+    {
+      "source": "末日模式",
+      "target": "Apocalypse mode",
+      "category": "game-mode",
+      "protected": true
+    },
+    {
+      "source": "幸存者模式",
+      "target": "Survivor mode",
+      "category": "game-mode"
+    },
+    {
+      "source": "建造者模式",
+      "target": "Builder mode",
+      "category": "game-mode"
+    },
+    {
+      "source": "沙盒模式",
+      "target": "Custom Sandbox",
+      "category": "game-mode",
+      "protected": true
+    },
+    {
+      "source": "恶心",
+      "target": "nauseous",
+      "category": "moodle"
+    },
+    {
+      "source": "反胃",
+      "target": "queasy",
+      "category": "moodle"
+    },
+    {
+      "source": "生病",
+      "target": "sick",
+      "category": "moodle"
+    },
+    {
+      "source": "僵尸化",
+      "target": "zombified",
+      "category": "moodle"
+    },
+    {
+      "source": "无聊",
+      "target": "boredom",
+      "category": "moodle"
+    },
+    {
+      "source": "不开心",
+      "target": "unhappiness",
+      "category": "moodle"
+    },
+    {
+      "source": "精疲力尽",
+      "target": "exhausted",
+      "category": "moodle"
+    },
+    {
+      "source": "疲劳",
+      "target": "fatigue",
+      "category": "moodle"
+    },
+    {
+      "source": "口渴",
+      "target": "thirst",
+      "category": "moodle"
+    },
+    {
+      "source": "饥饿",
+      "target": "hunger",
+      "category": "moodle"
+    },
+    {
+      "source": "裁缝",
+      "target": "Tailoring",
+      "category": "skill",
+      "protected": true
+    },
+    {
+      "source": "机械学",
+      "target": "Mechanics",
+      "category": "skill",
+      "protected": true
+    },
+    {
+      "source": "烹饪",
+      "target": "Cooking",
+      "category": "skill"
+    },
+    {
+      "source": "急救",
+      "target": "First Aid",
+      "category": "skill"
+    },
+    {
+      "source": "瞄准",
+      "target": "Aiming",
+      "category": "skill"
+    },
+    {
+      "source": "装填",
+      "target": "Reloading",
+      "category": "skill"
+    },
+    {
+      "source": "短钝器",
+      "target": "Short Blunt",
+      "category": "weapon-skill",
+      "protected": true
+    },
+    {
+      "source": "长钝器",
+      "target": "Long Blunt",
+      "category": "weapon-skill",
+      "protected": true
+    },
+    {
+      "source": "灵活",
+      "target": "Nimble",
+      "category": "skill"
+    },
+    {
+      "source": "潜行",
+      "target": "Lightfooted",
+      "category": "skill"
+    },
+    {
+      "source": "短接启动",
+      "target": "hotwire",
+      "aliases": [
+        "撬车启动"
+      ],
+      "category": "vehicle"
+    },
+    {
+      "source": "短跑僵尸",
+      "target": "sprinter",
+      "aliases": [
+        "跑尸"
+      ],
+      "category": "zombie"
+    },
+    {
+      "source": "慢行僵尸",
+      "target": "shambler",
+      "aliases": [
+        "慢尸"
+      ],
+      "category": "zombie"
+    },
+    {
+      "source": "多重打击",
+      "target": "Multi Hit",
+      "category": "sandbox",
+      "protected": true
+    },
+    {
+      "source": "战利品重生",
+      "target": "loot respawn",
+      "category": "sandbox"
+    },
+    {
+      "source": "食谱",
+      "target": "recipe",
+      "category": "crafting"
+    },
+    {
+      "source": "钓鱼",
+      "target": "Fishing",
+      "category": "skill"
+    },
+    {
+      "source": "诱捕",
+      "target": "Trapping",
+      "category": "skill"
+    },
+    {
+      "source": "农业",
+      "target": "Farming",
+      "category": "skill"
+    },
+    {
+      "source": "基本医疗",
+      "target": "Basic First Aid",
+      "category": "medical"
+    },
+    {
+      "source": "高级医疗",
+      "target": "Advanced First Aid",
+      "category": "medical"
+    },
+    {
+      "source": "草药",
+      "target": "Herbalism",
+      "category": "skill"
+    },
+    {
+      "source": "木工锯",
+      "target": "hand saw",
+      "category": "tool"
+    },
+    {
+      "source": "锤子",
+      "target": "hammer",
+      "category": "tool"
+    },
+    {
+      "source": "螺丝刀",
+      "target": "screwdriver",
+      "category": "tool"
+    },
+    {
+      "source": "扳手",
+      "target": "wrench",
+      "category": "tool"
+    },
+    {
+      "source": "钳子",
+      "target": "pliers",
+      "category": "tool"
+    },
+    {
+      "source": "焊枪",
+      "target": "welding torch",
+      "category": "tool"
+    },
+    {
+      "source": "喷灯",
+      "target": "blowtorch",
+      "category": "tool"
+    },
+    {
+      "source": "手电筒",
+      "target": "flashlight",
+      "category": "tool"
+    },
+    {
+      "source": "打火机",
+      "target": "lighter",
+      "category": "tool"
+    },
+    {
+      "source": "火柴",
+      "target": "matches",
+      "category": "tool"
+    },
+    {
+      "source": "锅",
+      "target": "saucepan",
+      "category": "kitchen"
+    },
+    {
+      "source": "平底锅",
+      "target": "frying pan",
+      "category": "kitchen"
+    },
+    {
+      "source": "烤盘",
+      "target": "baking tray",
+      "category": "kitchen"
+    },
+    {
+      "source": "水壶",
+      "target": "kettle",
+      "category": "kitchen"
+    },
+    {
+      "source": "碗",
+      "target": "bowl",
+      "category": "kitchen"
+    },
+    {
+      "source": "玻璃杯",
+      "target": "glass",
+      "category": "kitchen"
+    },
+    {
+      "source": "勺子",
+      "target": "spoon",
+      "category": "kitchen"
+    },
+    {
+      "source": "叉子",
+      "target": "fork",
+      "category": "kitchen"
+    },
+    {
+      "source": "刀",
+      "target": "kitchen knife",
+      "category": "weapon"
+    },
+    {
+      "source": "砍刀",
+      "target": "machete",
+      "category": "weapon"
+    },
+    {
+      "source": "武士刀",
+      "target": "katana",
+      "category": "weapon"
+    },
+    {
+      "source": "矛",
+      "target": "spear",
+      "category": "weapon"
+    },
+    {
+      "source": "棒球棍",
+      "target": "baseball bat",
+      "category": "weapon"
+    },
+    {
+      "source": "警棍",
+      "target": "baton",
+      "category": "weapon"
+    },
+    {
+      "source": "锤子（武器）",
+      "target": "hammer (weapon)",
+      "category": "weapon"
+    },
+    {
+      "source": "扳手（武器）",
+      "target": "wrench (weapon)",
+      "category": "weapon"
+    },
+    {
+      "source": "猎枪",
+      "target": "shotgun",
+      "category": "weapon"
+    },
+    {
+      "source": "步枪",
+      "target": "rifle",
+      "category": "weapon"
+    },
+    {
+      "source": "手枪",
+      "target": "handgun",
+      "category": "weapon"
+    },
+    {
+      "source": "左轮手枪",
+      "target": "revolver",
+      "category": "weapon"
+    },
+    {
+      "source": "突击步枪",
+      "target": "assault rifle",
+      "category": "weapon"
+    },
+    {
+      "source": "弹药箱",
+      "target": "ammo box",
+      "category": "ammo"
+    },
+    {
+      "source": "霰弹",
+      "target": "shotgun shells",
+      "category": "ammo"
+    },
+    {
+      "source": "步枪子弹",
+      "target": "rifle rounds",
+      "category": "ammo"
+    },
+    {
+      "source": "手枪子弹",
+      "target": "handgun rounds",
+      "category": "ammo"
+    },
+    {
+      "source": "弹匣",
+      "target": "magazine",
+      "category": "ammo"
+    },
+    {
+      "source": "消音器",
+      "target": "silencer",
+      "category": "attachment"
+    },
+    {
+      "source": "瞄准镜",
+      "target": "scope",
+      "category": "attachment"
+    },
+    {
+      "source": "握把",
+      "target": "grip",
+      "category": "attachment"
+    },
+    {
+      "source": "枪托",
+      "target": "stock",
+      "category": "attachment"
+    },
+    {
+      "source": "刀具磨刀石",
+      "target": "whetstone",
+      "category": "tool"
+    },
+    {
+      "source": "维修工具箱",
+      "target": "toolbox",
+      "category": "tool"
+    },
+    {
+      "source": "汽车千斤顶",
+      "target": "jack",
+      "category": "tool"
+    },
+    {
+      "source": "轮胎修补包",
+      "target": "tire repair kit",
+      "category": "tool"
+    },
+    {
+      "source": "电池充电器",
+      "target": "battery charger",
+      "category": "tool"
+    },
+    {
+      "source": "燃料罐",
+      "target": "gas can",
+      "category": "utility"
+    },
+    {
+      "source": "水桶",
+      "target": "bucket",
+      "category": "utility"
+    },
+    {
+      "source": "喷壶",
+      "target": "watering can",
+      "category": "farming"
+    },
+    {
+      "source": "肥料",
+      "target": "fertilizer",
+      "category": "farming"
+    },
+    {
+      "source": "除草剂",
+      "target": "weed killer",
+      "category": "farming"
+    },
+    {
+      "source": "杀虫剂",
+      "target": "insecticide",
+      "category": "farming"
+    },
+    {
+      "source": "种子",
+      "target": "seeds",
+      "category": "farming"
+    },
+    {
+      "source": "土豆",
+      "target": "potato",
+      "category": "food"
+    },
+    {
+      "source": "胡萝卜",
+      "target": "carrot",
+      "category": "food"
+    },
+    {
+      "source": "西红柿",
+      "target": "tomato",
+      "category": "food"
+    },
+    {
+      "source": "卷心菜",
+      "target": "cabbage",
+      "category": "food"
+    },
+    {
+      "source": "洋葱",
+      "target": "onion",
+      "category": "food"
+    },
+    {
+      "source": "草莓",
+      "target": "strawberry",
+      "category": "food"
+    },
+    {
+      "source": "西瓜",
+      "target": "watermelon",
+      "category": "food"
+    },
+    {
+      "source": "南瓜",
+      "target": "pumpkin",
+      "category": "food"
+    },
+    {
+      "source": "萝卜",
+      "target": "radish",
+      "category": "food"
+    },
+    {
+      "source": "甜椒",
+      "target": "bell pepper",
+      "category": "food"
+    },
+    {
+      "source": "苹果",
+      "target": "apple",
+      "category": "food"
+    },
+    {
+      "source": "橙子",
+      "target": "orange",
+      "category": "food"
+    },
+    {
+      "source": "香蕉",
+      "target": "banana",
+      "category": "food"
+    },
+    {
+      "source": "葡萄",
+      "target": "grape",
+      "category": "food"
+    },
+    {
+      "source": "面包",
+      "target": "bread",
+      "category": "food"
+    },
+    {
+      "source": "饼干",
+      "target": "cookie",
+      "category": "food"
+    },
+    {
+      "source": "巧克力",
+      "target": "chocolate",
+      "category": "food"
+    },
+    {
+      "source": "糖果",
+      "target": "candy",
+      "category": "food"
+    },
+    {
+      "source": "罐头豆子",
+      "target": "canned beans",
+      "category": "food"
+    },
+    {
+      "source": "罐头汤",
+      "target": "canned soup",
+      "category": "food"
+    },
+    {
+      "source": "罐头玉米",
+      "target": "canned corn",
+      "category": "food"
+    },
+    {
+      "source": "罐头豌豆",
+      "target": "canned peas",
+      "category": "food"
+    },
+    {
+      "source": "罐头金枪鱼",
+      "target": "canned tuna",
+      "category": "food"
+    },
+    {
+      "source": "罐头沙丁鱼",
+      "target": "canned sardines",
+      "category": "food"
+    },
+    {
+      "source": "意大利面",
+      "target": "pasta",
+      "category": "food"
+    },
+    {
+      "source": "米饭",
+      "target": "rice",
+      "category": "food"
+    },
+    {
+      "source": "面粉",
+      "target": "flour",
+      "category": "food"
+    },
+    {
+      "source": "糖",
+      "target": "sugar",
+      "category": "food"
+    },
+    {
+      "source": "盐",
+      "target": "salt",
+      "category": "food"
+    },
+    {
+      "source": "胡椒",
+      "target": "pepper",
+      "category": "food"
+    },
+    {
+      "source": "油",
+      "target": "oil",
+      "category": "food"
+    },
+    {
+      "source": "黄油",
+      "target": "butter",
+      "category": "food"
+    },
+    {
+      "source": "奶酪",
+      "target": "cheese",
+      "category": "food"
+    },
+    {
+      "source": "鸡蛋",
+      "target": "egg",
+      "category": "food"
+    },
+    {
+      "source": "牛奶",
+      "target": "milk",
+      "category": "food"
+    },
+    {
+      "source": "水",
+      "target": "water",
+      "category": "drink"
+    },
+    {
+      "source": "苏打水",
+      "target": "soda",
+      "category": "drink"
+    },
+    {
+      "source": "橙汁",
+      "target": "orange juice",
+      "category": "drink"
+    },
+    {
+      "source": "咖啡",
+      "target": "coffee",
+      "category": "drink"
+    },
+    {
+      "source": "茶",
+      "target": "tea",
+      "category": "drink"
+    },
+    {
+      "source": "威士忌",
+      "target": "whiskey",
+      "category": "drink"
+    },
+    {
+      "source": "红酒",
+      "target": "wine",
+      "category": "drink"
+    },
+    {
+      "source": "啤酒",
+      "target": "beer",
+      "category": "drink"
+    },
+    {
+      "source": "绷带",
+      "target": "bandage",
+      "category": "medical"
+    },
+    {
+      "source": "酒精棉片",
+      "target": "alcohol wipe",
+      "category": "medical"
+    },
+    {
+      "source": "消毒剂",
+      "target": "disinfectant",
+      "category": "medical"
+    },
+    {
+      "source": "止痛药",
+      "target": "painkillers",
+      "category": "medical"
+    },
+    {
+      "source": "抗生素",
+      "target": "antibiotics",
+      "category": "medical"
+    },
+    {
+      "source": "安眠药",
+      "target": "sleeping pills",
+      "category": "medical"
+    },
+    {
+      "source": "维生素",
+      "target": "vitamins",
+      "category": "medical"
+    },
+    {
+      "source": "草药茶",
+      "target": "herbal tea",
+      "category": "medical"
+    },
+    {
+      "source": "夹板",
+      "target": "splint",
+      "category": "medical"
+    },
+    {
+      "source": "缝合针",
+      "target": "suture needle",
+      "category": "medical"
+    },
+    {
+      "source": "绷带（布条）",
+      "target": "rag bandage",
+      "category": "medical"
+    },
+    {
+      "source": "口罩",
+      "target": "mask",
+      "category": "clothing"
+    },
+    {
+      "source": "手套",
+      "target": "gloves",
+      "category": "clothing"
+    },
+    {
+      "source": "靴子",
+      "target": "boots",
+      "category": "clothing"
+    },
+    {
+      "source": "运动鞋",
+      "target": "sneakers",
+      "category": "clothing"
+    },
+    {
+      "source": "夹克",
+      "target": "jacket",
+      "category": "clothing"
+    },
+    {
+      "source": "背心",
+      "target": "vest",
+      "category": "clothing"
+    },
+    {
+      "source": "短袖",
+      "target": "T-shirt",
+      "category": "clothing"
+    },
+    {
+      "source": "长袖",
+      "target": "long sleeve shirt",
+      "category": "clothing"
+    },
+    {
+      "source": "裤子",
+      "target": "pants",
+      "category": "clothing"
+    },
+    {
+      "source": "短裤",
+      "target": "shorts",
+      "category": "clothing"
+    },
+    {
+      "source": "裙子",
+      "target": "skirt",
+      "category": "clothing"
+    },
+    {
+      "source": "帽子",
+      "target": "hat",
+      "category": "clothing"
+    },
+    {
+      "source": "头盔",
+      "target": "helmet",
+      "category": "clothing"
+    },
+    {
+      "source": "眼镜",
+      "target": "glasses",
+      "category": "clothing"
+    },
+    {
+      "source": "手表",
+      "target": "watch",
+      "category": "clothing"
+    },
+    {
+      "source": "珠宝",
+      "target": "jewelry",
+      "category": "clothing"
+    },
+    {
+      "source": "背包",
+      "target": "backpack",
+      "category": "bag"
+    },
+    {
+      "source": "旅行包",
+      "target": "duffel bag",
+      "category": "bag"
+    },
+    {
+      "source": "手提包",
+      "target": "handbag",
+      "category": "bag"
+    },
+    {
+      "source": "塑料袋",
+      "target": "plastic bag",
+      "category": "bag"
+    },
+    {
+      "source": "垃圾袋",
+      "target": "trash bag",
+      "category": "bag"
+    },
+    {
+      "source": "木箱",
+      "target": "wood crate",
+      "category": "container"
+    },
+    {
+      "source": "金属箱",
+      "target": "metal crate",
+      "category": "container"
+    },
+    {
+      "source": "书架",
+      "target": "bookshelf",
+      "category": "furniture"
+    },
+    {
+      "source": "衣柜",
+      "target": "wardrobe",
+      "category": "furniture"
+    },
+    {
+      "source": "桌子",
+      "target": "table",
+      "category": "furniture"
+    },
+    {
+      "source": "椅子",
+      "target": "chair",
+      "category": "furniture"
+    },
+    {
+      "source": "床",
+      "target": "bed",
+      "category": "furniture"
+    },
+    {
+      "source": "栅栏",
+      "target": "fence",
+      "category": "construction"
+    },
+    {
+      "source": "墙壁",
+      "target": "wall",
+      "category": "construction"
+    },
+    {
+      "source": "门",
+      "target": "door",
+      "category": "construction"
+    },
+    {
+      "source": "窗口",
+      "target": "window",
+      "category": "construction"
+    },
+    {
+      "source": "屋顶",
+      "target": "roof",
+      "category": "construction"
+    },
+    {
+      "source": "楼梯",
+      "target": "stairs",
+      "category": "construction"
+    },
+    {
+      "source": "地板",
+      "target": "floor",
+      "category": "construction"
+    },
+    {
+      "source": "木制门框",
+      "target": "wooden door frame",
+      "category": "construction"
+    },
+    {
+      "source": "金属门框",
+      "target": "metal door frame",
+      "category": "construction"
+    },
+    {
+      "source": "钉子",
+      "target": "nails",
+      "category": "material"
+    },
+    {
+      "source": "螺丝",
+      "target": "screws",
+      "category": "material"
+    },
+    {
+      "source": "螺栓",
+      "target": "bolts",
+      "category": "material"
+    },
+    {
+      "source": "胶水",
+      "target": "glue",
+      "category": "material"
+    },
+    {
+      "source": "胶带",
+      "target": "tape",
+      "category": "material"
+    },
+    {
+      "source": "电线",
+      "target": "wire",
+      "category": "material"
+    },
+    {
+      "source": "管道",
+      "target": "pipe",
+      "category": "material"
+    },
+    {
+      "source": "木板",
+      "target": "wood plank",
+      "category": "material"
+    },
+    {
+      "source": "木梁",
+      "target": "wood beam",
+      "category": "material"
+    },
+    {
+      "source": "金属板",
+      "target": "metal sheet",
+      "category": "material"
+    },
+    {
+      "source": "金属条",
+      "target": "metal bar",
+      "category": "material"
+    },
+    {
+      "source": "钢管",
+      "target": "steel pipe",
+      "category": "material"
+    },
+    {
+      "source": "铜管",
+      "target": "copper pipe",
+      "category": "material"
+    },
+    {
+      "source": "塑料管",
+      "target": "plastic pipe",
+      "category": "material"
+    },
+    {
+      "source": "玻璃板",
+      "target": "glass pane",
+      "category": "material"
+    },
+    {
+      "source": "混凝土",
+      "target": "concrete",
+      "category": "material"
+    },
+    {
+      "source": "砖块",
+      "target": "brick",
+      "category": "material"
+    },
+    {
+      "source": "石块",
+      "target": "stone",
+      "category": "material"
+    },
+    {
+      "source": "沙子",
+      "target": "sand",
+      "category": "material"
+    },
+    {
+      "source": "砾石",
+      "target": "gravel",
+      "category": "material"
+    },
+    {
+      "source": "灰浆",
+      "target": "mortar",
+      "category": "material"
+    },
+    {
+      "source": "油漆",
+      "target": "paint",
+      "category": "material"
+    },
+    {
+      "source": "漆刷",
+      "target": "paintbrush",
+      "category": "tool"
+    },
+    {
+      "source": "燃料",
+      "target": "fuel",
+      "category": "resource"
+    },
+    {
+      "source": "汽油",
+      "target": "gasoline",
+      "category": "fuel"
+    },
+    {
+      "source": "柴油",
+      "target": "diesel",
+      "category": "fuel"
+    },
+    {
+      "source": "丙烷",
+      "target": "propane",
+      "category": "fuel"
+    },
+    {
+      "source": "木炭",
+      "target": "charcoal",
+      "category": "fuel"
+    },
+    {
+      "source": "木头",
+      "target": "wood",
+      "category": "fuel"
+    },
+    {
+      "source": "报纸",
+      "target": "newspaper",
+      "category": "fuel"
+    },
+    {
+      "source": "书",
+      "target": "book",
+      "category": "item"
+    },
+    {
+      "source": "杂志",
+      "target": "magazine",
+      "category": "item"
+    },
+    {
+      "source": "地图",
+      "target": "map",
+      "category": "item"
+    },
+    {
+      "source": "笔",
+      "target": "pen",
+      "category": "item"
+    },
+    {
+      "source": "铅笔",
+      "target": "pencil",
+      "category": "item"
+    },
+    {
+      "source": "收音机",
+      "target": "radio",
+      "category": "electronics"
+    },
+    {
+      "source": "电视",
+      "target": "TV",
+      "category": "electronics"
+    },
+    {
+      "source": "电脑",
+      "target": "computer",
+      "category": "electronics"
+    },
+    {
+      "source": "电话",
+      "target": "phone",
+      "category": "electronics"
+    },
+    {
+      "source": "电灯",
+      "target": "light bulb",
+      "category": "electronics"
+    },
+    {
+      "source": "保险丝",
+      "target": "fuse",
+      "category": "electronics"
+    },
+    {
+      "source": "继电器",
+      "target": "relay",
+      "category": "electronics"
+    },
+    {
+      "source": "电容器",
+      "target": "capacitor",
+      "category": "electronics"
+    },
+    {
+      "source": "变压器",
+      "target": "transformer",
+      "category": "electronics"
+    },
+    {
+      "source": "电机",
+      "target": "motor",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "电池",
+      "target": "battery",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "轮胎",
+      "target": "tire",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "车轮",
+      "target": "wheel",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "引擎",
+      "target": "engine",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "散热器",
+      "target": "radiator",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "油箱",
+      "target": "fuel tank",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "刹车片",
+      "target": "brake pads",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "离合器",
+      "target": "clutch",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "变速器",
+      "target": "transmission",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "差速器",
+      "target": "differential",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "排气管",
+      "target": "exhaust pipe",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "保险杠",
+      "target": "bumper",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "挡泥板",
+      "target": "fender",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "引擎盖",
+      "target": "hood",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "尾门",
+      "target": "tailgate",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "车灯",
+      "target": "headlight",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "尾灯",
+      "target": "taillight",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "雨刮器",
+      "target": "wiper",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "车辆钥匙",
+      "target": "car key",
+      "category": "item"
+    },
+    {
+      "source": "卡车",
+      "target": "truck",
+      "category": "vehicle"
+    },
+    {
+      "source": "轿车",
+      "target": "sedan",
+      "category": "vehicle"
+    },
+    {
+      "source": "面包车",
+      "target": "van",
+      "category": "vehicle"
+    },
+    {
+      "source": "皮卡",
+      "target": "pickup",
+      "category": "vehicle"
+    },
+    {
+      "source": "运动车",
+      "target": "sports car",
+      "category": "vehicle"
+    },
+    {
+      "source": "重型车",
+      "target": "heavy vehicle",
+      "category": "vehicle"
+    },
+    {
+      "source": "摩托车",
+      "target": "motorcycle",
+      "category": "vehicle"
+    },
+    {
+      "source": "自行车",
+      "target": "bicycle",
+      "category": "vehicle"
+    },
+    {
+      "source": "拖车",
+      "target": "trailer",
+      "category": "vehicle"
+    },
+    {
+      "source": "僵尸",
+      "target": "zombie",
+      "category": "zombie"
+    },
+    {
+      "source": "特感僵尸",
+      "target": "special zombie",
+      "category": "zombie"
+    },
+    {
+      "source": "奔跑僵尸",
+      "target": "runner zombie",
+      "category": "zombie"
+    },
+    {
+      "source": "爬行僵尸",
+      "target": "crawler zombie",
+      "category": "zombie"
+    },
+    {
+      "source": "血",
+      "target": "blood",
+      "category": "medical"
+    },
+    {
+      "source": "感染风险",
+      "target": "infection risk",
+      "category": "medical"
+    },
+    {
+      "source": "伤口感染",
+      "target": "wound infection",
+      "category": "medical"
+    },
+    {
+      "source": "发烧",
+      "target": "fever",
+      "category": "medical"
+    },
+    {
+      "source": "低温",
+      "target": "hypothermia",
+      "category": "medical"
+    },
+    {
+      "source": "中暑",
+      "target": "hyperthermia",
+      "category": "medical"
+    },
+    {
+      "source": "淋病",
+      "target": "gonorrhea",
+      "category": "medical"
+    },
+    {
+      "source": "痢疾",
+      "target": "dysentery",
+      "category": "medical"
+    },
+    {
+      "source": "便秘",
+      "target": "constipation",
+      "category": "medical"
+    },
+    {
+      "source": "呕吐",
+      "target": "vomiting",
+      "category": "medical"
+    },
+    {
+      "source": "咳嗽",
+      "target": "cough",
+      "category": "medical"
+    },
+    {
+      "source": "打喷嚏",
+      "target": "sneeze",
+      "category": "medical"
+    },
+    {
+      "source": "眼痛",
+      "target": "eye pain",
+      "category": "medical"
+    },
+    {
+      "source": "头痛",
+      "target": "headache",
+      "category": "medical"
+    },
+    {
+      "source": "背痛",
+      "target": "back pain",
+      "category": "medical"
+    },
+    {
+      "source": "腿抽筋",
+      "target": "leg cramp",
+      "category": "medical"
+    },
+    {
+      "source": "营养",
+      "target": "nutrition",
+      "category": "mechanic"
+    },
+    {
+      "source": "卡路里",
+      "target": "calories",
+      "category": "mechanic"
+    },
+    {
+      "source": "蛋白质",
+      "target": "protein",
+      "category": "mechanic"
+    },
+    {
+      "source": "脂肪",
+      "target": "fat",
+      "category": "mechanic"
+    },
+    {
+      "source": "碳水化合物",
+      "target": "carbohydrates",
+      "category": "mechanic"
+    },
+    {
+      "source": "不饱和脂肪",
+      "target": "unsaturated fat",
+      "category": "mechanic"
+    },
+    {
+      "source": "饱和脂肪",
+      "target": "saturated fat",
+      "category": "mechanic"
+    },
+    {
+      "source": "糖分",
+      "target": "sugar",
+      "category": "mechanic"
+    },
+    {
+      "source": "纤维",
+      "target": "fiber",
+      "category": "mechanic"
+    },
+    {
+      "source": "钠",
+      "target": "sodium",
+      "category": "mechanic"
+    },
+    {
+      "source": "钾",
+      "target": "potassium",
+      "category": "mechanic"
+    },
+    {
+      "source": "钙",
+      "target": "calcium",
+      "category": "mechanic"
+    },
+    {
+      "source": "铁",
+      "target": "iron",
+      "category": "mechanic"
+    },
+    {
+      "source": "维生素A",
+      "target": "vitamin A",
+      "category": "mechanic"
+    },
+    {
+      "source": "维生素B",
+      "target": "vitamin B",
+      "category": "mechanic"
+    },
+    {
+      "source": "维生素C",
+      "target": "vitamin C",
+      "category": "mechanic"
+    },
+    {
+      "source": "维生素D",
+      "target": "vitamin D",
+      "category": "mechanic"
+    },
+    {
+      "source": "维生素E",
+      "target": "vitamin E",
+      "category": "mechanic"
+    },
+    {
+      "source": "维生素K",
+      "target": "vitamin K",
+      "category": "mechanic"
+    },
+    {
+      "source": "抗抑郁药",
+      "target": "antidepressants",
+      "category": "medical"
+    },
+    {
+      "source": "抗焦虑药",
+      "target": "anti-anxiety",
+      "category": "medical"
+    },
+    {
+      "source": "镇静剂",
+      "target": "tranquilizers",
+      "category": "medical"
+    },
+    {
+      "source": "兴奋剂",
+      "target": "stimulants",
+      "category": "medical"
+    },
+    {
+      "source": "致幻剂",
+      "target": "hallucinogens",
+      "category": "medical"
+    },
+    {
+      "source": "大麻",
+      "target": "marijuana",
+      "category": "medical"
+    },
+    {
+      "source": "烟草",
+      "target": "tobacco",
+      "category": "item"
+    },
+    {
+      "source": "电子烟",
+      "target": "vape",
+      "category": "item"
+    },
+    {
+      "source": "扑克牌",
+      "target": "playing cards",
+      "category": "item"
+    },
+    {
+      "source": "骰子",
+      "target": "dice",
+      "category": "item"
+    },
+    {
+      "source": "钓鱼竿",
+      "target": "fishing rod",
+      "category": "tool"
+    },
+    {
+      "source": "鱼饵",
+      "target": "bait",
+      "category": "fishing"
+    },
+    {
+      "source": "鱼线",
+      "target": "fishing line",
+      "category": "fishing"
+    },
+    {
+      "source": "鱼钩",
+      "target": "fish hook",
+      "category": "fishing"
+    },
+    {
+      "source": "渔网",
+      "target": "fishing net",
+      "category": "fishing"
+    },
+    {
+      "source": "陷阱",
+      "target": "trap",
+      "category": "trapping"
+    },
+    {
+      "source": "捕鼠器",
+      "target": "mouse trap",
+      "category": "trapping"
+    },
+    {
+      "source": "捕兔陷阱",
+      "target": "rabbit snare",
+      "category": "trapping"
+    },
+    {
+      "source": "捕鸟陷阱",
+      "target": "bird trap",
+      "category": "trapping"
+    },
+    {
+      "source": "笼子陷阱",
+      "target": "cage trap",
+      "category": "trapping"
+    },
+    {
+      "source": "木制陷阱",
+      "target": "wood trap",
+      "category": "trapping"
+    },
+    {
+      "source": "金属陷阱",
+      "target": "metal trap",
+      "category": "trapping"
+    },
+    {
+      "source": "诱饵",
+      "target": "bait",
+      "category": "trapping"
+    },
+    {
+      "source": "蔬菜",
+      "target": "vegetable",
+      "category": "food"
+    },
+    {
+      "source": "水果",
+      "target": "fruit",
+      "category": "food"
+    },
+    {
+      "source": "肉类",
+      "target": "meat",
+      "category": "food"
+    },
+    {
+      "source": "鱼",
+      "target": "fish",
+      "category": "food"
+    },
+    {
+      "source": "野生动物",
+      "target": "wild animal",
+      "category": "food"
+    },
+    {
+      "source": "鸟类",
+      "target": "bird",
+      "category": "food"
+    },
+    {
+      "source": "小动物",
+      "target": "small animal",
+      "category": "food"
+    },
+    {
+      "source": "罐装食品",
+      "target": "canned food",
+      "category": "food"
+    },
+    {
+      "source": "冻干食品",
+      "target": "freeze-dried food",
+      "category": "food"
+    },
+    {
+      "source": "脱水食品",
+      "target": "dehydrated food",
+      "category": "food"
+    },
+    {
+      "source": "速食",
+      "target": "instant food",
+      "category": "food"
+    },
+    {
+      "source": "能量棒",
+      "target": "energy bar",
+      "category": "food"
+    },
+    {
+      "source": "蛋白粉",
+      "target": "protein powder",
+      "category": "food"
+    },
+    {
+      "source": "恢复血清",
+      "target": "antizombie serum",
+      "category": "medical"
+    },
+    {
+      "source": "疫苗",
+      "target": "vaccine",
+      "category": "medical"
+    },
+    {
+      "source": "抗生素药膏",
+      "target": "antibiotic ointment",
+      "category": "medical"
+    },
+    {
+      "source": "医用绷带",
+      "target": "medical bandage",
+      "category": "medical"
+    },
+    {
+      "source": "缝线",
+      "target": "suture",
+      "category": "medical"
+    },
+    {
+      "source": "钉书针",
+      "target": "staple",
+      "category": "medical"
+    },
+    {
+      "source": "胶布",
+      "target": "medical tape",
+      "category": "medical"
+    },
+    {
+      "source": "石膏",
+      "target": "cast",
+      "category": "medical"
+    },
+    {
+      "source": "拐杖",
+      "target": "crutch",
+      "category": "medical"
+    },
+    {
+      "source": "轮椅",
+      "target": "wheelchair",
+      "category": "medical"
+    },
+    {
+      "source": "烟囱",
+      "target": "chimney",
+      "category": "construction"
+    },
+    {
+      "source": "壁炉",
+      "target": "fireplace",
+      "category": "construction"
+    },
+    {
+      "source": "炉子",
+      "target": "stove",
+      "category": "furniture"
+    },
+    {
+      "source": "冰箱",
+      "target": "refrigerator",
+      "category": "furniture"
+    },
+    {
+      "source": "冰柜",
+      "target": "freezer",
+      "category": "furniture"
+    },
+    {
+      "source": "微波炉",
+      "target": "microwave",
+      "category": "furniture"
+    },
+    {
+      "source": "烤箱",
+      "target": "oven",
+      "category": "furniture"
+    },
+    {
+      "source": "洗碗机",
+      "target": "dishwasher",
+      "category": "furniture"
+    },
+    {
+      "source": "洗衣机",
+      "target": "washing machine",
+      "category": "furniture"
+    },
+    {
+      "source": "烘干机",
+      "target": "dryer",
+      "category": "furniture"
+    },
+    {
+      "source": "吸尘器",
+      "target": "vacuum",
+      "category": "furniture"
+    },
+    {
+      "source": "扫帚",
+      "target": "broom",
+      "category": "tool"
+    },
+    {
+      "source": "拖把",
+      "target": "mop",
+      "category": "tool"
+    },
+    {
+      "source": "刷子",
+      "target": "brush",
+      "category": "tool"
+    },
+    {
+      "source": "海绵",
+      "target": "sponge",
+      "category": "tool"
+    },
+    {
+      "source": "肥皂",
+      "target": "soap",
+      "category": "item"
+    },
+    {
+      "source": "洗发水",
+      "target": "shampoo",
+      "category": "item"
+    },
+    {
+      "source": "沐浴露",
+      "target": "body wash",
+      "category": "item"
+    },
+    {
+      "source": "牙膏",
+      "target": "toothpaste",
+      "category": "item"
+    },
+    {
+      "source": "牙刷",
+      "target": "toothbrush",
+      "category": "item"
+    },
+    {
+      "source": "剃刀",
+      "target": "razor",
+      "category": "item"
+    },
+    {
+      "source": "剃须膏",
+      "target": "shaving cream",
+      "category": "item"
+    },
+    {
+      "source": "除臭剂",
+      "target": "deodorant",
+      "category": "item"
+    },
+    {
+      "source": "香皂",
+      "target": "soap bar",
+      "category": "item"
+    },
+    {
+      "source": "卫生纸",
+      "target": "toilet paper",
+      "category": "item"
+    },
+    {
+      "source": "纸巾",
+      "target": "paper towel",
+      "category": "item"
+    },
+    {
+      "source": "垃圾袋",
+      "target": "trash bag",
+      "category": "item"
+    },
+    {
+      "source": "雨衣",
+      "target": "raincoat",
+      "category": "clothing"
+    },
+    {
+      "source": "遮阳帽",
+      "target": "sun hat",
+      "category": "clothing"
+    },
+    {
+      "source": "围巾",
+      "target": "scarf",
+      "category": "clothing"
+    },
+    {
+      "source": "腰带",
+      "target": "belt",
+      "category": "clothing"
+    },
+    {
+      "source": "领带",
+      "target": "tie",
+      "category": "clothing"
+    },
+    {
+      "source": "西装外套",
+      "target": "suit jacket",
+      "category": "clothing"
+    },
+    {
+      "source": "牛仔裤",
+      "target": "jeans",
+      "category": "clothing"
+    },
+    {
+      "source": "工装裤",
+      "target": "overalls",
+      "category": "clothing"
+    },
+    {
+      "source": "军装",
+      "target": "military uniform",
+      "category": "clothing"
+    },
+    {
+      "source": "警服",
+      "target": "police uniform",
+      "category": "clothing"
+    },
+    {
+      "source": "消防服",
+      "target": "firefighter uniform",
+      "category": "clothing"
+    },
+    {
+      "source": "救护员服",
+      "target": "paramedic uniform",
+      "category": "clothing"
+    },
+    {
+      "source": "厨师服",
+      "target": "chef uniform",
+      "category": "clothing"
+    },
+    {
+      "source": "医院服",
+      "target": "hospital gown",
+      "category": "clothing"
+    },
+    {
+      "source": "睡衣",
+      "target": "pajamas",
+      "category": "clothing"
+    },
+    {
+      "source": "内衣",
+      "target": "underwear",
+      "category": "clothing"
+    },
+    {
+      "source": "袜子",
+      "target": "socks",
+      "category": "clothing"
+    },
+    {
+      "source": "安全眼镜",
+      "target": "safety goggles",
+      "category": "clothing"
+    },
+    {
+      "source": "耳塞",
+      "target": "earplugs",
+      "category": "clothing"
+    },
+    {
+      "source": "护膝",
+      "target": "knee pads",
+      "category": "clothing"
+    },
+    {
+      "source": "护肘",
+      "target": "elbow pads",
+      "category": "clothing"
+    },
+    {
+      "source": "防弹背心",
+      "target": "bulletproof vest",
+      "category": "clothing"
+    },
+    {
+      "source": "防暴盾",
+      "target": "riot shield",
+      "category": "weapon"
+    },
+    {
+      "source": "电锯",
+      "target": "chainsaw",
+      "category": "tool"
+    },
+    {
+      "source": "链锯",
+      "target": "chainsaw",
+      "category": "tool"
+    },
+    {
+      "source": "磨刀机",
+      "target": "grinder",
+      "category": "tool"
+    },
+    {
+      "source": "车床",
+      "target": "lathe",
+      "category": "tool"
+    },
+    {
+      "source": "钻床",
+      "target": "drill press",
+      "category": "tool"
+    },
+    {
+      "source": "锯床",
+      "target": "saw",
+      "category": "tool"
+    },
+    {
+      "source": "刨床",
+      "target": "planer",
+      "category": "tool"
+    },
+    {
+      "source": "锉刀",
+      "target": "file",
+      "category": "tool"
+    },
+    {
+      "source": "砂纸",
+      "target": "sandpaper",
+      "category": "tool"
+    },
+    {
+      "source": "油漆刷",
+      "target": "paintbrush",
+      "category": "tool"
+    },
+    {
+      "source": "滚筒刷",
+      "target": "paint roller",
+      "category": "tool"
+    },
+    {
+      "source": "铲子",
+      "target": "shovel",
+      "category": "tool"
+    },
+    {
+      "source": "镐",
+      "target": "pickaxe",
+      "category": "tool"
+    },
+    {
+      "source": "稿",
+      "target": "pick",
+      "category": "tool"
+    },
+    {
+      "source": "耙子",
+      "target": "rake",
+      "category": "tool"
+    },
+    {
+      "source": "锄头",
+      "target": "hoe",
+      "category": "tool"
+    },
+    {
+      "source": "镰刀",
+      "target": "scythe",
+      "category": "weapon"
+    },
+    {
+      "source": "草耙",
+      "target": "pitchfork",
+      "category": "weapon"
+    },
+    {
+      "source": "鱼叉",
+      "target": "harpoon",
+      "category": "weapon"
+    },
+    {
+      "source": "链鞭",
+      "target": "chain whip",
+      "category": "weapon"
+    },
+    {
+      "source": "钢索",
+      "target": "cable",
+      "category": "material"
+    },
+    {
+      "source": "绳索",
+      "target": "rope",
+      "category": "material"
+    },
+    {
+      "source": "链条",
+      "target": "chain",
+      "category": "material"
+    },
+    {
+      "source": "铁丝网",
+      "target": "barbed wire",
+      "category": "material"
+    },
+    {
+      "source": "栅栏柱",
+      "target": "fence post",
+      "category": "construction"
+    },
+    {
+      "source": "混凝土地基",
+      "target": "concrete foundation",
+      "category": "construction"
+    },
+    {
+      "source": "木制墙",
+      "target": "wooden wall",
+      "category": "construction"
+    },
+    {
+      "source": "石墙",
+      "target": "stone wall",
+      "category": "construction"
+    },
+    {
+      "source": "铁门",
+      "target": "iron door",
+      "category": "construction"
+    },
+    {
+      "source": "金属格栅",
+      "target": "metal grating",
+      "category": "construction"
+    },
+    {
+      "source": "梯子",
+      "target": "ladder",
+      "category": "construction"
+    },
+    {
+      "source": "脚手架",
+      "target": "scaffolding",
+      "category": "construction"
+    },
+    {
+      "source": "水泥",
+      "target": "cement",
+      "category": "material"
+    },
+    {
+      "source": "灰泥",
+      "target": "plaster",
+      "category": "material"
+    },
+    {
+      "source": "防水布",
+      "target": "tarpaulin",
+      "category": "material"
+    },
+    {
+      "source": "帆布",
+      "target": "canvas",
+      "category": "material"
+    },
+    {
+      "source": "皮革",
+      "target": "leather",
+      "category": "material"
+    },
+    {
+      "source": "人造革",
+      "target": "faux leather",
+      "category": "material"
+    },
+    {
+      "source": "橡胶",
+      "target": "rubber",
+      "category": "material"
+    },
+    {
+      "source": "硅胶",
+      "target": "silicone",
+      "category": "material"
+    },
+    {
+      "source": "塑料",
+      "target": "plastic",
+      "category": "material"
+    },
+    {
+      "source": "树脂",
+      "target": "resin",
+      "category": "material"
+    },
+    {
+      "source": "环氧树脂",
+      "target": "epoxy",
+      "category": "material"
+    },
+    {
+      "source": "聚氨酯",
+      "target": "polyurethane",
+      "category": "material"
+    },
+    {
+      "source": "碳纤维",
+      "target": "carbon fiber",
+      "category": "material"
+    },
+    {
+      "source": "玻璃纤维",
+      "target": "fiberglass",
+      "category": "material"
+    },
+    {
+      "source": "泡沫",
+      "target": "foam",
+      "category": "material"
+    },
+    {
+      "source": "海绵",
+      "target": "sponge",
+      "category": "material"
+    },
+    {
+      "source": "丝线",
+      "target": "thread",
+      "category": "material"
+    },
+    {
+      "source": "针",
+      "target": "needle",
+      "category": "tool"
+    },
+    {
+      "source": "缝纫机",
+      "target": "sewing machine",
+      "category": "tool"
+    },
+    {
+      "source": "剪刀",
+      "target": "scissors",
+      "category": "tool"
+    },
+    {
+      "source": "小刀",
+      "target": "knife",
+      "category": "tool"
+    },
+    {
+      "source": "开信刀",
+      "target": "letter opener",
+      "category": "tool"
+    },
+    {
+      "source": "螺丝刀组",
+      "target": "screwdriver set",
+      "category": "tool"
+    },
+    {
+      "source": "扳手套装",
+      "target": "wrench set",
+      "category": "tool"
+    },
+    {
+      "source": "插座",
+      "target": "socket",
+      "category": "tool"
+    },
+    {
+      "source": "线钳",
+      "target": "wire cutters",
+      "category": "tool"
+    },
+    {
+      "source": "剥线钳",
+      "target": "stripper",
+      "category": "tool"
+    },
+    {
+      "source": "电缆",
+      "target": "cable",
+      "category": "electronics"
+    },
+    {
+      "source": "电路板",
+      "target": "circuit board",
+      "category": "electronics"
+    },
+    {
+      "source": "微芯片",
+      "target": "microchip",
+      "category": "electronics"
+    },
+    {
+      "source": "晶体管",
+      "target": "transistor",
+      "category": "electronics"
+    },
+    {
+      "source": "二极管",
+      "target": "diode",
+      "category": "electronics"
+    },
+    {
+      "source": "电阻",
+      "target": "resistor",
+      "category": "electronics"
+    },
+    {
+      "source": "电容",
+      "target": "capacitor",
+      "category": "electronics"
+    },
+    {
+      "source": "电感",
+      "target": "inductor",
+      "category": "electronics"
+    },
+    {
+      "source": "扬声器",
+      "target": "speaker",
+      "category": "electronics"
+    },
+    {
+      "source": "麦克风",
+      "target": "microphone",
+      "category": "electronics"
+    },
+    {
+      "source": "耳机",
+      "target": "headphones",
+      "category": "electronics"
+    },
+    {
+      "source": "显示屏",
+      "target": "screen",
+      "category": "electronics"
+    },
+    {
+      "source": "键盘",
+      "target": "keyboard",
+      "category": "electronics"
+    },
+    {
+      "source": "鼠标",
+      "target": "mouse",
+      "category": "electronics"
+    },
+    {
+      "source": "打印机",
+      "target": "printer",
+      "category": "electronics"
+    },
+    {
+      "source": "扫描仪",
+      "target": "scanner",
+      "category": "electronics"
+    },
+    {
+      "source": "传真机",
+      "target": "fax machine",
+      "category": "electronics"
+    },
+    {
+      "source": "电话答录机",
+      "target": "answering machine",
+      "category": "electronics"
+    },
+    {
+      "source": "音乐播放器",
+      "target": "music player",
+      "category": "electronics"
+    },
+    {
+      "source": "录音机",
+      "target": "tape recorder",
+      "category": "electronics"
+    },
+    {
+      "source": "录像机",
+      "target": "VCR",
+      "category": "electronics"
+    },
+    {
+      "source": "DVD播放机",
+      "target": "DVD player",
+      "category": "electronics"
+    },
+    {
+      "source": "投影仪",
+      "target": "projector",
+      "category": "electronics"
+    },
+    {
+      "source": "电视机",
+      "target": "television",
+      "category": "electronics"
+    },
+    {
+      "source": "对讲机",
+      "target": "walkie-talkie",
+      "category": "electronics"
+    },
+    {
+      "source": "卫星电话",
+      "target": "satellite phone",
+      "category": "electronics"
+    },
+    {
+      "source": "太阳能板",
+      "target": "solar panel",
+      "category": "electronics"
+    },
+    {
+      "source": "风力发电机",
+      "target": "wind turbine",
+      "category": "electronics"
+    },
+    {
+      "source": "水轮发电机",
+      "target": "water wheel",
+      "category": "electronics"
+    },
+    {
+      "source": "柴油发电机",
+      "target": "diesel generator",
+      "category": "electronics"
+    },
+    {
+      "source": "汽油发电机",
+      "target": "gas generator",
+      "category": "electronics"
+    },
+    {
+      "source": "电池组",
+      "target": "battery pack",
+      "category": "electronics"
+    },
+    {
+      "source": "燃料电池",
+      "target": "fuel cell",
+      "category": "electronics"
+    },
+    {
+      "source": "充电器",
+      "target": "charger",
+      "category": "electronics"
+    },
+    {
+      "source": "逆变器",
+      "target": "inverter",
+      "category": "electronics"
+    },
+    {
+      "source": "保险丝盒",
+      "target": "fuse box",
+      "category": "electronics"
+    },
+    {
+      "source": "接线盒",
+      "target": "junction box",
+      "category": "electronics"
+    },
+    {
+      "source": "定时器",
+      "target": "timer",
+      "category": "electronics"
+    },
+    {
+      "source": "传感器",
+      "target": "sensor",
+      "category": "electronics"
+    },
+    {
+      "source": "恒温器",
+      "target": "thermostat",
+      "category": "electronics"
+    },
+    {
+      "source": "管道保温",
+      "target": "pipe insulation",
+      "category": "construction"
+    },
+    {
+      "source": "排水系统",
+      "target": "drainage",
+      "category": "construction"
+    },
+    {
+      "source": "水槽",
+      "target": "sink",
+      "category": "furniture"
+    },
+    {
+      "source": "浴缸",
+      "target": "bathtub",
+      "category": "furniture"
+    },
+    {
+      "source": "淋浴",
+      "target": "shower",
+      "category": "furniture"
+    },
+    {
+      "source": "马桶",
+      "target": "toilet",
+      "category": "furniture"
+    },
+    {
+      "source": "洗衣盆",
+      "target": "wash basin",
+      "category": "furniture"
+    },
+    {
+      "source": "晾衣架",
+      "target": "clothesline",
+      "category": "furniture"
+    },
+    {
+      "source": "衣架",
+      "target": "coat hanger",
+      "category": "furniture"
+    },
+    {
+      "source": "窗帘",
+      "target": "curtain",
+      "category": "furniture"
+    },
+    {
+      "source": "百叶窗",
+      "target": "blind",
+      "category": "furniture"
+    },
+    {
+      "source": "地毯",
+      "target": "carpet",
+      "category": "furniture"
+    },
+    {
+      "source": "垫子",
+      "target": "mat",
+      "category": "furniture"
+    },
+    {
+      "source": "镜子",
+      "target": "mirror",
+      "category": "furniture"
+    },
+    {
+      "source": "时钟",
+      "target": "clock",
+      "category": "furniture"
+    },
+    {
+      "source": "日历",
+      "target": "calendar",
+      "category": "furniture"
+    },
+    {
+      "source": "壁钟",
+      "target": "wall clock",
+      "category": "furniture"
+    },
+    {
+      "source": "闹钟",
+      "target": "alarm clock",
+      "category": "furniture"
+    },
+    {
+      "source": "手表",
+      "target": "wristwatch",
+      "category": "furniture"
+    },
+    {
+      "source": "温度计",
+      "target": "thermometer",
+      "category": "tool"
+    },
+    {
+      "source": "湿度计",
+      "target": "hygrometer",
+      "category": "tool"
+    },
+    {
+      "source": "气压计",
+      "target": "barometer",
+      "category": "tool"
+    },
+    {
+      "source": "指南针",
+      "target": "compass",
+      "category": "tool"
+    },
+    {
+      "source": "计步器",
+      "target": "pedometer",
+      "category": "tool"
+    },
+    {
+      "source": "测距仪",
+      "target": "rangefinder",
+      "category": "tool"
+    },
+    {
+      "source": "金属探测器",
+      "target": "metal detector",
+      "category": "tool"
+    },
+    {
+      "source": "GPS设备",
+      "target": "GPS device",
+      "category": "electronics"
+    },
+    {
+      "source": "夜视仪",
+      "target": "night vision",
+      "category": "electronics"
+    },
+    {
+      "source": "热成像仪",
+      "target": "thermal imager",
+      "category": "electronics"
+    },
+    {
+      "source": "辐射探测器",
+      "target": "radiation detector",
+      "category": "electronics"
+    },
+    {
+      "source": "盖革计数器",
+      "target": "Geiger counter",
+      "category": "electronics"
+    },
+    {
+      "source": "杀菌剂",
+      "target": "fungicide",
+      "category": "farming"
+    },
+    {
+      "source": "除草剂",
+      "target": "herbicide",
+      "category": "farming"
+    },
+    {
+      "source": "堆肥",
+      "target": "compost",
+      "category": "farming"
+    },
+    {
+      "source": "土壤",
+      "target": "soil",
+      "category": "farming"
+    },
+    {
+      "source": "花盆",
+      "target": "flower pot",
+      "category": "farming"
+    },
+    {
+      "source": "温室",
+      "target": "greenhouse",
+      "category": "construction"
+    },
+    {
+      "source": "喷洒",
+      "target": "sprayer",
+      "category": "tool"
+    },
+    {
+      "source": "灌溉系统",
+      "target": "irrigation",
+      "category": "construction"
+    },
+    {
+      "source": "水塔",
+      "target": "water tower",
+      "category": "construction"
+    },
+    {
+      "source": "雨水收集器",
+      "target": "rain collector",
+      "category": "construction"
+    },
+    {
+      "source": "储水箱",
+      "target": "water tank",
+      "category": "container"
+    },
+    {
+      "source": "汽油桶",
+      "target": "gasoline drum",
+      "category": "container"
+    },
+    {
+      "source": "丙烷瓶",
+      "target": "propane bottle",
+      "category": "container"
+    },
+    {
+      "source": "氧气罐",
+      "target": "oxygen tank",
+      "category": "medical"
+    },
+    {
+      "source": "灭火器",
+      "target": "fire extinguisher",
+      "category": "tool"
+    },
+    {
+      "source": "烟雾报警器",
+      "target": "smoke alarm",
+      "category": "electronics"
+    },
+    {
+      "source": "安全摄像头",
+      "target": "security camera",
+      "category": "electronics"
+    },
+    {
+      "source": "运动传感器",
+      "target": "motion sensor",
+      "category": "electronics"
+    },
+    {
+      "source": "警报器",
+      "target": "siren",
+      "category": "electronics"
+    },
+    {
+      "source": "围栏",
+      "target": "fence",
+      "category": "construction"
+    },
+    {
+      "source": "地雷",
+      "target": "landmine",
+      "category": "weapon"
+    },
+    {
+      "source": "绊线",
+      "target": "tripwire",
+      "category": "weapon"
+    },
+    {
+      "source": "爆炸物",
+      "target": "explosive",
+      "category": "weapon"
+    },
+    {
+      "source": "C4",
+      "target": "C4",
+      "category": "weapon"
+    },
+    {
+      "source": "手榴弹",
+      "target": "grenade",
+      "category": "weapon"
+    },
+    {
+      "source": "烟雾弹",
+      "target": "smoke grenade",
+      "category": "weapon"
+    },
+    {
+      "source": "闪光弹",
+      "target": "flashbang",
+      "category": "weapon"
+    },
+    {
+      "source": "燃烧瓶",
+      "target": "Molotov cocktail",
+      "category": "weapon"
+    },
+    {
+      "source": "汽油弹",
+      "target": "gasoline bomb",
+      "category": "weapon"
+    },
+    {
+      "source": "土制炸药",
+      "target": "improvised explosive",
+      "category": "weapon"
+    },
+    {
+      "source": "弩",
+      "target": "crossbow",
+      "category": "weapon"
+    },
+    {
+      "source": "弓",
+      "target": "bow",
+      "category": "weapon"
+    },
+    {
+      "source": "箭",
+      "target": "arrow",
+      "category": "ammo"
+    },
+    {
+      "source": "弩箭",
+      "target": "bolt",
+      "category": "ammo"
+    },
+    {
+      "source": "弹弓",
+      "target": "slingshot",
+      "category": "weapon"
+    },
+    {
+      "source": "投石索",
+      "target": "sling",
+      "category": "weapon"
+    },
+    {
+      "source": "飞刀",
+      "target": "throwing knife",
+      "category": "weapon"
+    },
+    {
+      "source": "飞斧",
+      "target": "throwing axe",
+      "category": "weapon"
+    },
+    {
+      "source": "吹管",
+      "target": "blowgun",
+      "category": "weapon"
+    },
+    {
+      "source": "毒针",
+      "target": "poison dart",
+      "category": "ammo"
+    },
+    {
+      "source": "橄榄球",
+      "target": "football",
+      "category": "sports"
+    },
+    {
+      "source": "篮球",
+      "target": "basketball",
+      "category": "sports"
+    },
+    {
+      "source": "棒球",
+      "target": "baseball",
+      "category": "sports"
+    },
+    {
+      "source": "高尔夫球杆",
+      "target": "golf club",
+      "category": "sports"
+    },
+    {
+      "source": "网球拍",
+      "target": "tennis racket",
+      "category": "sports"
+    },
+    {
+      "source": "滑板",
+      "target": "skateboard",
+      "category": "sports"
+    },
+    {
+      "source": "冲浪板",
+      "target": "surfboard",
+      "category": "sports"
+    },
+    {
+      "source": "雪橇",
+      "target": "sled",
+      "category": "sports"
+    },
+    {
+      "source": "滑雪板",
+      "target": "snowboard",
+      "category": "sports"
+    },
+    {
+      "source": "滑雪杖",
+      "target": "ski pole",
+      "category": "sports"
+    },
+    {
+      "source": "鱼竿",
+      "target": "fishing rod",
+      "category": "sports"
+    },
+    {
+      "source": "渔网",
+      "target": "fishing net",
+      "category": "sports"
+    },
+    {
+      "source": "露营装备",
+      "target": "camping gear",
+      "category": "item"
+    },
+    {
+      "source": "帐篷",
+      "target": "tent",
+      "category": "item"
+    },
+    {
+      "source": "睡袋",
+      "target": "sleeping bag",
+      "category": "item"
+    },
+    {
+      "source": "羽绒被",
+      "target": "duvet",
+      "category": "item"
+    },
+    {
+      "source": "枕头",
+      "target": "pillow",
+      "category": "item"
+    },
+    {
+      "source": "毛毯",
+      "target": "blanket",
+      "category": "item"
+    },
+    {
+      "source": "雨伞",
+      "target": "umbrella",
+      "category": "item"
+    },
+    {
+      "source": "遮阳伞",
+      "target": "parasol",
+      "category": "item"
+    },
+    {
+      "source": "望远镜",
+      "target": "telescope",
+      "category": "item"
+    },
+    {
+      "source": "显微镜",
+      "target": "microscope",
+      "category": "item"
+    },
+    {
+      "source": "放大镜",
+      "target": "magnifying glass",
+      "category": "item"
+    },
+    {
+      "source": "化学套件",
+      "target": "chemistry kit",
+      "category": "item"
+    },
+    {
+      "source": "实验器皿",
+      "target": "lab glassware",
+      "category": "item"
+    },
+    {
+      "source": "研磨器",
+      "target": "grinder",
+      "category": "tool"
+    },
+    {
+      "source": "压榨机",
+      "target": "press",
+      "category": "tool"
+    },
+    {
+      "source": "离心机",
+      "target": "centrifuge",
+      "category": "tool"
+    },
+    {
+      "source": "蒸馏器",
+      "target": "distiller",
+      "category": "tool"
+    },
+    {
+      "source": "发酵罐",
+      "target": "fermenter",
+      "category": "tool"
+    },
+    {
+      "source": "混料机",
+      "target": "mixer",
+      "category": "tool"
+    },
+    {
+      "source": "切割机",
+      "target": "cutter",
+      "category": "tool"
+    },
+    {
+      "source": "弯曲机",
+      "target": "bender",
+      "category": "tool"
+    },
+    {
+      "source": "焊接机",
+      "target": "welder",
+      "category": "tool"
+    },
+    {
+      "source": "铆接机",
+      "target": "riveter",
+      "category": "tool"
+    },
+    {
+      "source": "喷漆枪",
+      "target": "spray gun",
+      "category": "tool"
+    },
+    {
+      "source": "砂带机",
+      "target": "belt sander",
+      "category": "tool"
+    },
+    {
+      "source": "磨盘",
+      "target": "grinding disc",
+      "category": "tool"
+    },
+    {
+      "source": "锯片",
+      "target": "saw blade",
+      "category": "tool"
+    },
+    {
+      "source": "钻头",
+      "target": "drill bit",
+      "category": "tool"
+    },
+    {
+      "source": "雕刻刀",
+      "target": "carving knife",
+      "category": "tool"
+    },
+    {
+      "source": "凿子",
+      "target": "chisel",
+      "category": "tool"
+    },
+    {
+      "source": "刨子",
+      "target": "plane",
+      "category": "tool"
+    },
+    {
+      "source": "框架",
+      "target": "frame",
+      "category": "construction"
+    },
+    {
+      "source": "基础",
+      "target": "foundation",
+      "category": "construction"
+    },
+    {
+      "source": "支柱",
+      "target": "pillar",
+      "category": "construction"
+    },
+    {
+      "source": "横梁",
+      "target": "beam",
+      "category": "construction"
+    },
+    {
+      "source": "屋顶板",
+      "target": "roof panel",
+      "category": "construction"
+    },
+    {
+      "source": "墙板",
+      "target": "wall panel",
+      "category": "construction"
+    },
+    {
+      "source": "地板砖",
+      "target": "floor tile",
+      "category": "construction"
+    },
+    {
+      "source": "木地板",
+      "target": "wood floor",
+      "category": "construction"
+    },
+    {
+      "source": "瓷砖",
+      "target": "tile",
+      "category": "construction"
+    },
+    {
+      "source": "大理石",
+      "target": "marble",
+      "category": "material"
+    },
+    {
+      "source": "花岗岩",
+      "target": "granite",
+      "category": "material"
+    },
+    {
+      "source": "石灰石",
+      "target": "limestone",
+      "category": "material"
+    },
+    {
+      "source": "砂岩",
+      "target": "sandstone",
+      "category": "material"
+    },
+    {
+      "source": "板岩",
+      "target": "slate",
+      "category": "material"
+    },
+    {
+      "source": "石英",
+      "target": "quartz",
+      "category": "material"
+    },
+    {
+      "source": "陶土",
+      "target": "terracotta",
+      "category": "material"
+    },
+    {
+      "source": "砖石",
+      "target": "masonry",
+      "category": "material"
+    },
+    {
+      "source": "石膏",
+      "target": "gypsum",
+      "category": "material"
+    },
+    {
+      "source": "沥青",
+      "target": "asphalt",
+      "category": "material"
+    },
+    {
+      "source": "柏油",
+      "target": "tar",
+      "category": "material"
+    },
+    {
+      "source": "蜡",
+      "target": "wax",
+      "category": "material"
+    },
+    {
+      "source": "蜂蜡",
+      "target": "beeswax",
+      "category": "material"
+    },
+    {
+      "source": "漆",
+      "target": "varnish",
+      "category": "material"
+    },
+    {
+      "source": "密封剂",
+      "target": "sealant",
+      "category": "material"
+    },
+    {
+      "source": "润滑油",
+      "target": "lubricant",
+      "category": "material"
+    },
+    {
+      "source": "冷却液",
+      "target": "coolant",
+      "category": "material"
+    },
+    {
+      "source": "洗涤剂",
+      "target": "detergent",
+      "category": "material"
+    },
+    {
+      "source": "消毒水",
+      "target": "bleach",
+      "category": "material"
+    },
+    {
+      "source": "酒精",
+      "target": "alcohol",
+      "category": "material"
+    },
+    {
+      "source": "丙酮",
+      "target": "acetone",
+      "category": "material"
+    },
+    {
+      "source": "汽油稀释剂",
+      "target": "paint thinner",
+      "category": "material"
+    },
+    {
+      "source": "松节油",
+      "target": "turpentine",
+      "category": "material"
+    },
+    {
+      "source": "亚麻籽油",
+      "target": "linseed oil",
+      "category": "material"
+    },
+    {
+      "source": "桐油",
+      "target": "tung oil",
+      "category": "material"
+    },
+    {
+      "source": "聚氨酯涂层",
+      "target": "polyurethane coating",
+      "category": "material"
+    },
+    {
+      "source": "丙烯酸涂料",
+      "target": "acrylic paint",
+      "category": "material"
+    },
+    {
+      "source": "乳胶漆",
+      "target": "latex paint",
+      "category": "material"
+    },
+    {
+      "source": "油性漆",
+      "target": "oil paint",
+      "category": "material"
+    },
+    {
+      "source": "水粉",
+      "target": "gouache",
+      "category": "material"
+    },
+    {
+      "source": "水彩",
+      "target": "watercolor",
+      "category": "material"
+    },
+    {
+      "source": "粉彩",
+      "target": "pastel",
+      "category": "material"
+    },
+    {
+      "source": "记号笔",
+      "target": "marker",
+      "category": "tool"
+    },
+    {
+      "source": "粉笔",
+      "target": "chalk",
+      "category": "tool"
+    },
+    {
+      "source": "蜡笔",
+      "target": "crayon",
+      "category": "tool"
+    },
+    {
+      "source": "喷墨打印机",
+      "target": "inkjet printer",
+      "category": "electronics"
+    },
+    {
+      "source": "激光打印机",
+      "target": "laser printer",
+      "category": "electronics"
+    },
+    {
+      "source": "3D打印机",
+      "target": "3D printer",
+      "category": "electronics"
+    },
+    {
+      "source": "绘图板",
+      "target": "drawing tablet",
+      "category": "electronics"
+    },
+    {
+      "source": "数码相机",
+      "target": "digital camera",
+      "category": "electronics"
+    },
+    {
+      "source": "摄像机",
+      "target": "camcorder",
+      "category": "electronics"
+    },
+    {
+      "source": "无人机",
+      "target": "drone",
+      "category": "electronics"
+    },
+    {
+      "source": "遥控器",
+      "target": "remote control",
+      "category": "electronics"
+    },
+    {
+      "source": "游戏机",
+      "target": "game console",
+      "category": "electronics"
+    },
+    {
+      "source": "街机",
+      "target": "arcade machine",
+      "category": "electronics"
+    },
+    {
+      "source": "计算机",
+      "target": "computer",
+      "category": "electronics"
+    },
+    {
+      "source": "服务器",
+      "target": "server",
+      "category": "electronics"
+    },
+    {
+      "source": "路由器",
+      "target": "router",
+      "category": "electronics"
+    },
+    {
+      "source": "调制解调器",
+      "target": "modem",
+      "category": "electronics"
+    },
+    {
+      "source": "交换机",
+      "target": "switch",
+      "category": "electronics"
+    },
+    {
+      "source": "集线器",
+      "target": "hub",
+      "category": "electronics"
+    },
+    {
+      "source": "中继器",
+      "target": "repeater",
+      "category": "electronics"
+    },
+    {
+      "source": "防火墙",
+      "target": "firewall",
+      "category": "electronics"
+    },
+    {
+      "source": "加密狗",
+      "target": "dongle",
+      "category": "electronics"
+    },
+    {
+      "source": "USB线",
+      "target": "USB cable",
+      "category": "electronics"
+    },
+    {
+      "source": "HDMI线",
+      "target": "HDMI cable",
+      "category": "electronics"
+    },
+    {
+      "source": "VGA线",
+      "target": "VGA cable",
+      "category": "electronics"
+    },
+    {
+      "source": "网线",
+      "target": "Ethernet cable",
+      "category": "electronics"
+    },
+    {
+      "source": "光纤",
+      "target": "fiber optic",
+      "category": "electronics"
+    },
+    {
+      "source": "蓝牙适配器",
+      "target": "Bluetooth adapter",
+      "category": "electronics"
+    },
+    {
+      "source": "WiFi适配器",
+      "target": "WiFi adapter",
+      "category": "electronics"
+    },
+    {
+      "source": "智能灯泡",
+      "target": "smart bulb",
+      "category": "electronics"
+    },
+    {
+      "source": "智能插头",
+      "target": "smart plug",
+      "category": "electronics"
+    },
+    {
+      "source": "智能锁",
+      "target": "smart lock",
+      "category": "electronics"
+    },
+    {
+      "source": "智能门铃",
+      "target": "smart doorbell",
+      "category": "electronics"
+    },
+    {
+      "source": "智能恒温器",
+      "target": "smart thermostat",
+      "category": "electronics"
+    },
+    {
+      "source": "语音助手",
+      "target": "voice assistant",
+      "category": "electronics"
+    },
+    {
+      "source": "机械臂",
+      "target": "robot arm",
+      "category": "electronics"
+    },
+    {
+      "source": "机器人",
+      "target": "robot",
+      "category": "electronics"
+    },
+    {
+      "source": "自动割草机",
+      "target": "robot mower",
+      "category": "electronics"
+    },
+    {
+      "source": "自动吸尘器",
+      "target": "robot vacuum",
+      "category": "electronics"
+    },
+    {
+      "source": "车辆",
+      "target": "vehicle",
+      "category": "vehicle"
+    },
+    {
+      "source": "轿车",
+      "target": "car",
+      "category": "vehicle"
+    },
+    {
+      "source": "货车",
+      "target": "truck",
+      "category": "vehicle"
+    },
+    {
+      "source": "SUV",
+      "target": "SUV",
+      "category": "vehicle"
+    },
+    {
+      "source": "皮卡",
+      "target": "pickup truck",
+      "category": "vehicle"
+    },
+    {
+      "source": "小型车",
+      "target": "compact car",
+      "category": "vehicle"
+    },
+    {
+      "source": "豪华车",
+      "target": "luxury car",
+      "category": "vehicle"
+    },
+    {
+      "source": "跑车",
+      "target": "sports car",
+      "category": "vehicle"
+    },
+    {
+      "source": "肌肉车",
+      "target": "muscle car",
+      "category": "vehicle"
+    },
+    {
+      "source": "警车",
+      "target": "police car",
+      "category": "vehicle"
+    },
+    {
+      "source": "救护车",
+      "target": "ambulance",
+      "category": "vehicle"
+    },
+    {
+      "source": "消防车",
+      "target": "fire truck",
+      "category": "vehicle"
+    },
+    {
+      "source": "军车",
+      "target": "military vehicle",
+      "category": "vehicle"
+    },
+    {
+      "source": "装甲车",
+      "target": "armored vehicle",
+      "category": "vehicle"
+    },
+    {
+      "source": "房车",
+      "target": "RV",
+      "category": "vehicle"
+    },
+    {
+      "source": "露营车",
+      "target": "campervan",
+      "category": "vehicle"
+    },
+    {
+      "source": "滑板车",
+      "target": "scooter",
+      "category": "vehicle"
+    },
+    {
+      "source": "电动滑板车",
+      "target": "e-scooter",
+      "category": "vehicle"
+    },
+    {
+      "source": "拖拉机",
+      "target": "tractor",
+      "category": "vehicle"
+    },
+    {
+      "source": "推土机",
+      "target": "bulldozer",
+      "category": "vehicle"
+    },
+    {
+      "source": "挖掘机",
+      "target": "excavator",
+      "category": "vehicle"
+    },
+    {
+      "source": "叉车",
+      "target": "forklift",
+      "category": "vehicle"
+    },
+    {
+      "source": "吊车",
+      "target": "crane",
+      "category": "vehicle"
+    },
+    {
+      "source": "汽车零件",
+      "target": "car part",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "传动轴",
+      "target": "driveshaft",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "悬挂",
+      "target": "suspension",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "刹车",
+      "target": "brake",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "刹车盘",
+      "target": "brake disc",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "刹车片",
+      "target": "brake pad",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "轮毂",
+      "target": "wheel rim",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "转向机",
+      "target": "steering gear",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "方向盘",
+      "target": "steering wheel",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "仪表盘",
+      "target": "dashboard",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "速度表",
+      "target": "speedometer",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "转速表",
+      "target": "tachometer",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "油量表",
+      "target": "fuel gauge",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "水温表",
+      "target": "temp gauge",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "里程表",
+      "target": "odometer",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "后视镜",
+      "target": "rearview mirror",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "挡风玻璃",
+      "target": "windshield",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "后窗",
+      "target": "rear window",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "侧窗",
+      "target": "side window",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "前大灯",
+      "target": "headlight",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "转向灯",
+      "target": "turn signal",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "雾灯",
+      "target": "fog light",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "喇叭",
+      "target": "horn",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "散热器格栅",
+      "target": "grille",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "后备箱",
+      "target": "trunk",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "油箱盖",
+      "target": "fuel cap",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "排气管",
+      "target": "exhaust",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "消音器",
+      "target": "muffler",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "催化转化器",
+      "target": "catalytic converter",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "车轮轴承",
+      "target": "wheel bearing",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "万向节",
+      "target": "universal joint",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "车架",
+      "target": "chassis",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "车身",
+      "target": "body",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "车门",
+      "target": "door",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "车窗",
+      "target": "window",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "天窗",
+      "target": "sunroof",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "座椅",
+      "target": "seat",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "安全带",
+      "target": "seatbelt",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "安全气囊",
+      "target": "airbag",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "ABS",
+      "target": "ABS",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "ESP",
+      "target": "ESP",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "牵引力控制",
+      "target": "traction control",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "定速巡航",
+      "target": "cruise control",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "GPS导航",
+      "target": "GPS navigation",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "收音机",
+      "target": "car radio",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "CD播放器",
+      "target": "CD player",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "蓝牙",
+      "target": "Bluetooth",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "倒车雷达",
+      "target": "parking sensor",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "倒车摄像头",
+      "target": "backup camera",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "行车记录仪",
+      "target": "dashcam",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "汽车配件",
+      "target": "car accessory",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "雪链",
+      "target": "snow chain",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "防冻液",
+      "target": "antifreeze",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "机油",
+      "target": "engine oil",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "制动液",
+      "target": "brake fluid",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "动力转向液",
+      "target": "power steering fluid",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "变速箱油",
+      "target": "transmission fluid",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "冷却液",
+      "target": "coolant",
+      "category": "vehicle-part"
+    },
+    {
+      "source": "洗车液",
+      "target": "car wash",
+      "category": "item"
+    },
+    {
+      "source": "打蜡",
+      "target": "car wax",
+      "category": "item"
+    },
+    {
+      "source": "抛光剂",
+      "target": "polish",
+      "category": "item"
+    },
+    {
+      "source": "去污剂",
+      "target": "stain remover",
+      "category": "item"
+    },
+    {
+      "source": "车衣",
+      "target": "car cover",
+      "category": "item"
+    }
+  ]
+}

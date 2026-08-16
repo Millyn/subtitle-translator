@@ -45,6 +45,9 @@ func DownloadWithOptions(ctx context.Context, m Meta, dir string, opt DownloadOp
 	if err != nil {
 		return fmt.Errorf("下载链接无效: %w", err)
 	}
+	if m.ArchiveBytes > 0 && info.Size > 0 && info.Size != m.ArchiveBytes {
+		return fmt.Errorf("官方模型压缩包大小异常: 得到 %d，预期 %d 字节", info.Size, m.ArchiveBytes)
+	}
 	part := filepath.Join(dir, m.ID+".tar.bz2.part")
 	for attempt := 0; ; attempt++ {
 		err = downloadAttempt(ctx, opt.Client, m.URL, part, info, opt.Progress)

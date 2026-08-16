@@ -8,6 +8,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"subtitle-translator/internal/translate"
 )
 
 type fakeASR struct{}
@@ -27,6 +29,26 @@ type richOutput struct{ source, translation string }
 func (r *richOutput) Broadcast(string) {}
 func (r *richOutput) BroadcastSubtitle(source, translation string) {
 	r.source, r.translation = source, translation
+}
+
+type detailedOutput struct{ raw, corrected, english string }
+
+func (d *detailedOutput) Broadcast(string) {}
+func (d *detailedOutput) BroadcastSubtitleDetail(raw, corrected, english string) {
+	d.raw, d.corrected, d.english = raw, corrected, english
+}
+
+type fakeRichTranslator struct{ fail bool }
+
+func (f *fakeRichTranslator) Translate(context.Context, string) (string, error) { return "legacy", nil }
+func (f *fakeRichTranslator) TranslateRich(context.Context, translate.RichRequest) (translate.RichResult, error) {
+	if f.fail {
+		return translate.RichResult{}, errors.New("api failed")
+	}
+	return translate.RichResult{CorrectedChinese: "这个确实不错", English: "This is good.", WasCorrected: true, MatchedTerms: []string{"术语"}, Attempts: 1}, nil
+}
+func (f *fakeRichTranslator) LastUsage() translate.Usage {
+	return translate.Usage{PromptTokens: 20, CacheHitTokens: 10, OutputTokens: 5, TotalTokens: 25}
 }
 
 type funcASR func([]byte) (string, error)
@@ -136,5 +158,51 @@ func TestBilingualBroadcastAndDebug(t *testing.T) {
 	s := p.Stats()
 	if s.LastASRMS < 0 || s.LastTranslateMS < 0 || s.LastLatencyMS < 0 {
 		t.Fatalf("%+v", s)
+	}
+}
+
+func TestRichCorrectionContextAndDebug(t *testing.T) {
+	in := make(chan []byte, 2)
+	in <- make([]byte, 32000)
+	in <- make([]byte, 32000)
+	close(in)
+	out := &detailedOutput{}
+	var events []DebugEvent
+	p := &Integrator{
+		ASR: fakeASR{}, Translator: &fakeRichTranslator{}, Output: out, MaxSegmentSecond: 10,
+		BuildRichRequest: func(source string, history []string) translate.RichRequest {
+			return translate.RichRequest{Source: source, RecentContext: history, ActiveProfile: "iracing"}
+		},
+		DebugSink: func(e DebugEvent) { events = append(events, e) },
+	}
+	if err := p.Run(context.Background(), in); err != nil {
+		t.Fatal(err)
+	}
+	if out.corrected != "这个确实不错" || out.english != "This is good." || len(events) != 2 || len(events[1].Context) != 1 {
+		t.Fatalf("output=%+v events=%+v", out, events)
+	}
+	s := p.Stats()
+	if s.Corrected != 2 || s.PromptTokens != 40 || s.CacheHitTokens != 20 || s.OutputTokens != 10 {
+		t.Fatalf("stats=%+v", s)
+	}
+}
+
+func TestRichFailureStillBroadcastsRawChinese(t *testing.T) {
+	in := make(chan []byte, 1)
+	in <- make([]byte, 32000)
+	close(in)
+	out := &detailedOutput{}
+	var event DebugEvent
+	p := &Integrator{ASR: fakeASR{}, Translator: &fakeRichTranslator{fail: true}, Output: out,
+		BuildRichRequest: func(source string, history []string) translate.RichRequest {
+			return translate.RichRequest{Source: source}
+		},
+		DebugSink: func(e DebugEvent) { event = e },
+	}
+	if err := p.Run(context.Background(), in); err != nil {
+		t.Fatal(err)
+	}
+	if out.raw == "" || out.corrected != out.raw || out.english != "" || event.Error == "" {
+		t.Fatalf("output=%+v event=%+v", out, event)
 	}
 }

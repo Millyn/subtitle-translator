@@ -32,6 +32,10 @@ func TestSubtitleDefaultsAndValidation(t *testing.T) {
 	if c.Validate(false) == nil {
 		t.Fatal("expected invalid mode")
 	}
+	c = Defaults()
+	if c.Audio.PreRollMS != 250 || c.Audio.SilenceMS != 700 || c.Translation.ActiveProfile != "auto" || c.Translation.ContextSentences != 2 || c.Subtitle.ChineseSource != "corrected" {
+		t.Fatalf("new defaults: %+v", c)
+	}
 }
 
 func TestLoadDefaultsMissingAndNormalization(t *testing.T) {
@@ -76,5 +80,15 @@ func TestLoadAndValidateErrors(t *testing.T) {
 	c.ASR.NumThreads = 5
 	if err := c.Validate(true); err == nil || !strings.Contains(err.Error(), "4") {
 		t.Fatalf("thread validation: %v", err)
+	}
+	c = Defaults()
+	c.Translation.ActiveProfile = "other"
+	if err := c.Validate(false); err == nil {
+		t.Fatal("invalid profile should fail")
+	}
+	c = Defaults()
+	c.Subtitle.ChineseSource = "unknown"
+	if err := c.Validate(false); err == nil {
+		t.Fatal("invalid chinese source should fail")
 	}
 }

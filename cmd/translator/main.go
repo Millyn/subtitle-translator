@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -20,6 +21,8 @@ import (
 	"subtitle-translator/internal/audio"
 	"subtitle-translator/internal/config"
 	"subtitle-translator/internal/device"
+	"subtitle-translator/internal/glossary"
+	"subtitle-translator/internal/liveconfig"
 	"subtitle-translator/internal/model"
 	"subtitle-translator/internal/pipeline"
 	"subtitle-translator/internal/platform"
@@ -44,6 +47,7 @@ func run() error {
 	deviceOverride := flag.Int("device", -2, "麦克风编号（覆盖配置）")
 	modelOverride := flag.String("model", "", "模型 ID（覆盖配置）")
 	micTest := flag.Duration("mic-test", 0, "打开真实麦克风并采集指定时长，例如 3s")
+	asrBenchmark := flag.Duration("asr-benchmark", 0, "使用真实麦克风录制一次并对比所有已安装 ASR 模型，例如 15s")
 	debugOverride := flag.Bool("debug", false, "启用详细调试日志（覆盖配置）")
 	flag.Parse()
 
@@ -53,6 +57,14 @@ func run() error {
 	}
 	if *debugOverride {
 		cfg.Debug = true
+	}
+	if cfg.Debug && cfg.DebugUI.LogFile != "" {
+		f, openErr := os.OpenFile(cfg.DebugUI.LogFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+		if openErr != nil {
+			return fmt.Errorf("open debug log: %w", openErr)
+		}
+		defer f.Close()
+		log.SetOutput(io.MultiWriter(os.Stderr, f))
 	}
 	runtime.GOMAXPROCS(cfg.GOMAXPROCS)
 	debug.SetGCPercent(200)
@@ -89,6 +101,15 @@ func run() error {
 	}
 	if *micTest > 0 {
 		return testMicrophone(audioContext, selectedDevice, *micTest)
+	}
+	if *asrBenchmark > 0 {
+		ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		defer cancel()
+		executable, runtimeErr := ensureRuntime(ctx, cfg.RuntimeDir)
+		if runtimeErr != nil {
+			return runtimeErr
+		}
+		return benchmarkASR(ctx, audioContext, selectedDevice, *asrBenchmark, executable, cfg)
 	}
 	selectedModel, err := chooseModel(modelID, cfg.ModelDir)
 	if err != nil {
@@ -128,8 +149,18 @@ func run() error {
 		log.Printf("[DEBUG] ASR 常驻服务加载完成：耗时=%v，模型=%s，线程=%d", time.Since(asrStarted), selectedModel.ID, cfg.ASR.NumThreads)
 	}
 	translator := translate.NewWithConfig(translate.Config{APIKey: cfg.DeepSeek.APIKey, Endpoint: cfg.DeepSeek.Endpoint, Model: cfg.DeepSeek.Model, Timeout: cfg.TranslationTimeout(), Retries: cfg.DeepSeek.Retries})
-	pageCfg := wsserver.PageConfig{Mode: cfg.Subtitle.Mode, HideAfterMS: cfg.Subtitle.HideAfterMS, EnglishFontSize: cfg.Subtitle.EnglishFontSize, ChineseFontSize: cfg.Subtitle.ChineseFontSize, PositionX: cfg.Subtitle.PositionX, PositionY: cfg.Subtitle.PositionY, MaxWidth: cfg.Subtitle.MaxWidth, EnglishColor: cfg.Subtitle.EnglishColor, ChineseColor: cfg.Subtitle.ChineseColor, StrokeColor: cfg.Subtitle.StrokeColor, Background: cfg.Subtitle.Background, FontFamily: cfg.Subtitle.FontFamily}
+	glossaryStore, err := glossary.LoadDir(cfg.Translation.GlossaryDir)
+	if err != nil {
+		return fmt.Errorf("load game glossaries: %w", err)
+	}
+	live, err := liveconfig.New(cfg.Translation.SettingsFile, liveconfig.Settings{ActiveProfile: cfg.Translation.ActiveProfile, CorrectionMode: cfg.Translation.CorrectionMode, ChineseSource: cfg.Subtitle.ChineseSource, ContextSentences: cfg.Translation.ContextSentences, CustomPrompt: cfg.Translation.CustomPrompt}, glossaryStore)
+	if err != nil {
+		return err
+	}
+	pageCfg := wsserver.PageConfig{Mode: cfg.Subtitle.Mode, HideAfterMS: cfg.Subtitle.HideAfterMS, EnglishFontSize: cfg.Subtitle.EnglishFontSize, ChineseFontSize: cfg.Subtitle.ChineseFontSize, PositionX: cfg.Subtitle.PositionX, PositionY: cfg.Subtitle.PositionY, MaxWidth: cfg.Subtitle.MaxWidth, EnglishColor: cfg.Subtitle.EnglishColor, ChineseColor: cfg.Subtitle.ChineseColor, StrokeColor: cfg.Subtitle.StrokeColor, Background: cfg.Subtitle.Background, FontFamily: cfg.Subtitle.FontFamily, ChineseSource: cfg.Subtitle.ChineseSource}
 	server := wsserver.NewWithPage(cfg.Listen, webpage.SubtitleHTML, pageCfg)
+	server.SetControlCallbacks(controlCallbacks(live, server))
+	server.SetChineseSource(live.Current().ChineseSource)
 	serverErrors := make(chan error, 1)
 	go func() { serverErrors <- server.Start() }()
 
@@ -137,19 +168,40 @@ func run() error {
 	audioCfg.SilenceSamples = audio.SampleRate * cfg.Audio.SilenceMS / 1000
 	audioCfg.MinVoiceSamples = audio.SampleRate * cfg.Audio.MinSpeechMS / 1000
 	audioCfg.MaxSegmentSamples = audio.SampleRate * cfg.Audio.MaxSpeechSecond
+	audioCfg.PreRollSamples = audio.SampleRate * cfg.Audio.PreRollMS / 1000
 	collector := audio.NewWithConfig(audioContext, selectedDevice.ID, audioCfg)
 	if err := collector.Start(ctx); err != nil {
 		return err
 	}
 	defer collector.Stop()
 
-	flow := &pipeline.Integrator{ASR: recognizer, Translator: translator, Output: server, Logger: log.Default(), Debug: cfg.Debug}
+	flow := &pipeline.Integrator{ASR: recognizer, Translator: translator, Output: server, Logger: log.Default(), Debug: cfg.Debug, ASRModel: selectedModel.ID, MaxSegmentSecond: cfg.Audio.MaxSpeechSecond}
+	flow.BuildRichRequest = func(source string, history []string) translate.RichRequest {
+		snapshot := live.Snapshot(source)
+		contextCount := snapshot.ContextSentences
+		if contextCount > len(history) {
+			contextCount = len(history)
+		}
+		recent := append([]string(nil), history[len(history)-contextCount:]...)
+		terms := make([]translate.GlossaryTerm, 0, len(snapshot.Terms))
+		for _, term := range snapshot.Terms {
+			terms = append(terms, translate.GlossaryTerm{Source: term.Source, Target: term.Target, Aliases: append([]string(nil), term.Aliases...), Category: term.Category, Protected: term.Protected})
+		}
+		return translate.RichRequest{Source: source, RecentContext: recent, ActiveProfile: snapshot.ActiveProfile, CorrectionMode: snapshot.CorrectionMode, BackgroundPrompt: snapshot.CustomPrompt, Glossary: terms}
+	}
+	if cfg.Debug {
+		flow.DebugSink = func(event pipeline.DebugEvent) {
+			_ = server.BroadcastDebug(wsserver.DebugEvent{SegmentID: event.SegmentID, DurationMS: event.DurationMS, SegmentReason: event.SegmentReason, ASRModel: event.ASRModel, Raw: event.Raw, Corrected: event.Corrected, English: event.English, Diff: event.Diff, Profile: event.Profile, Terms: event.MatchedTerms, Context: event.Context, Latencies: map[string]float64{"asr": float64(event.ASRMS), "translate": float64(event.TranslateMS), "total": float64(event.TotalMS)}, Tokens: event.TotalTokens, TokenUsage: map[string]int{"prompt": event.PromptTokens, "cache_hit": event.CacheHitTokens, "cache_miss": event.CacheMissTokens, "output": event.OutputTokens, "total": event.TotalTokens}, CacheHit: event.CacheHitTokens > 0, Retries: max(event.Attempts-1, 0), Error: event.Error, TS: float64(event.Timestamp.UnixMilli()) / 1000})
+		}
+	}
 	flowDone := make(chan error, 1)
 	go func() { flowDone <- flow.Run(ctx, collector.Segments()) }()
 	fmt.Printf("实时字幕已启动（%s）\n麦克风：%s\n模型：%s\n", version, selectedDevice.Name, selectedModel.Name)
 	for _, base := range serviceURLs(cfg.Listen) {
 		fmt.Printf("OBS 字幕 URL：%s/subtitle\n字幕预览编辑器：%s/editor\n", base, base)
 	}
+	localBase := serviceURLs(cfg.Listen)[0]
+	fmt.Printf("翻译与术语控制（仅本机）：%s/control\n实时 DEBUG 面板（仅本机）：%s/debug\n", localBase, localBase)
 	if cfg.Debug {
 		go debugMonitor(ctx, collector, flow, server)
 	}
@@ -227,6 +279,64 @@ func testMicrophone(audioContext *malgo.AllocatedContext, selected device.Info, 
 	return nil
 }
 
+func benchmarkASR(parent context.Context, audioContext *malgo.AllocatedContext, selected device.Info, duration time.Duration, executable string, cfg config.Config) error {
+	ctx, cancel := context.WithTimeout(parent, duration)
+	defer cancel()
+	audioCfg := audio.DefaultConfig()
+	audioCfg.SilenceSamples = audio.SampleRate * cfg.Audio.SilenceMS / 1000
+	audioCfg.MinVoiceSamples = audio.SampleRate * cfg.Audio.MinSpeechMS / 1000
+	audioCfg.MaxSegmentSamples = audio.SampleRate * cfg.Audio.MaxSpeechSecond
+	audioCfg.PreRollSamples = audio.SampleRate * cfg.Audio.PreRollMS / 1000
+	collector := audio.NewWithConfig(audioContext, selected.ID, audioCfg)
+	if err := collector.Start(ctx); err != nil {
+		return err
+	}
+	fmt.Printf("正在使用真实麦克风录制 ASR 对比样本（%s）：%s\n", duration, selected.Name)
+	var segments [][]byte
+	for segment := range collector.Segments() {
+		segments = append(segments, append([]byte(nil), segment...))
+	}
+	collector.Stop()
+	if len(segments) == 0 {
+		return errors.New("没有检测到有效语音；请靠近麦克风重新运行 ASR 对比")
+	}
+	var tested int
+	for _, candidate := range model.Catalog {
+		if !model.Installed(candidate, cfg.ModelDir) {
+			continue
+		}
+		recognizer, err := asr.NewWithThreads(executable, filepath.Join(cfg.ModelDir, candidate.ID), candidate.Kind, cfg.ASR.NumThreads)
+		if err != nil {
+			fmt.Printf("\n[%s] 加载失败：%v\n", candidate.Name, err)
+			continue
+		}
+		started := time.Now()
+		var audioSeconds float64
+		fmt.Printf("\n[%s]\n", candidate.Name)
+		for i, segment := range segments {
+			audioSeconds += float64(len(segment)) / 32000
+			text, transcribeErr := recognizer.Transcribe(segment)
+			if transcribeErr != nil {
+				fmt.Printf("  %d. 识别失败：%v\n", i+1, transcribeErr)
+				continue
+			}
+			fmt.Printf("  %d. %s\n", i+1, text)
+		}
+		elapsed := time.Since(started)
+		_ = recognizer.Close()
+		rtf := 0.0
+		if audioSeconds > 0 {
+			rtf = elapsed.Seconds() / audioSeconds
+		}
+		fmt.Printf("  音频 %.2fs；识别耗时 %v；实时倍率 RTF=%.3f\n", audioSeconds, elapsed, rtf)
+		tested++
+	}
+	if tested == 0 {
+		return errors.New("尚未安装任何可用于对比的 ASR 模型")
+	}
+	return nil
+}
+
 func chooseDevice(devices []device.Info, configured int) (device.Info, error) {
 	if configured >= 0 {
 		for _, d := range devices {
@@ -248,6 +358,45 @@ func chooseModel(id, dir string) (model.Meta, error) {
 	fmt.Println("\n可用 ASR 模型：")
 	return model.Select(os.Stdin, os.Stdout, dir)
 }
+
+func controlCallbacks(live *liveconfig.Manager, server *wsserver.Server) wsserver.ControlCallbacks {
+	toControl := func(settings liveconfig.Settings) wsserver.ControlState {
+		entries := live.Terms(settings.ActiveProfile)
+		terms := make([]wsserver.Term, 0, len(entries))
+		for _, entry := range entries {
+			terms = append(terms, wsserver.Term{Source: entry.Source, Target: entry.Target})
+		}
+		return wsserver.ControlState{Profile: settings.ActiveProfile, CustomPrompt: settings.CustomPrompt, CorrectionMode: settings.CorrectionMode, ChineseSource: settings.ChineseSource, ContextSize: settings.ContextSentences, Terms: terms, UpdatedAt: float64(time.Now().UnixMilli()) / 1000}
+	}
+	return wsserver.ControlCallbacks{
+		Get: func(context.Context) (wsserver.ControlState, error) {
+			return toControl(live.Current()), nil
+		},
+		Apply: func(_ context.Context, state wsserver.ControlState) (wsserver.ControlState, error) {
+			if state.ResetTerms {
+				updated, err := live.ResetProfile(state.Profile)
+				if err != nil {
+					return wsserver.ControlState{}, err
+				}
+				return toControl(updated), nil
+			}
+			var entries []glossary.Entry
+			if state.Terms != nil {
+				entries = make([]glossary.Entry, 0, len(state.Terms))
+				for _, term := range state.Terms {
+					entries = append(entries, glossary.Entry{Source: term.Source, Target: term.Target, Category: state.Profile, Protected: true})
+				}
+			}
+			updated, err := live.Apply(liveconfig.Settings{ActiveProfile: state.Profile, CorrectionMode: state.CorrectionMode, ChineseSource: state.ChineseSource, ContextSentences: state.ContextSize, CustomPrompt: state.CustomPrompt}, entries)
+			if err != nil {
+				return wsserver.ControlState{}, err
+			}
+			server.SetChineseSource(updated.ChineseSource)
+			return toControl(updated), nil
+		},
+	}
+}
+
 func download(ctx context.Context, m model.Meta, dir string) error {
 	return model.DownloadWithOptions(ctx, m, dir, model.DownloadOptions{Retries: 2, Progress: func(p model.Progress) {
 		if p.Total > 0 {

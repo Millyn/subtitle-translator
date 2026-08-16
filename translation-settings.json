@@ -1,0 +1,7 @@
+{
+  "active_profile": "auto",
+  "correction_mode": "conservative",
+  "chinese_source": "corrected",
+  "context_sentences": 2,
+  "custom_prompt": "This is a Twitch gaming livestream. Use natural, concise English familiar to gaming communities. The streamer often discusses sim racing, especially iRacing, but do not force unrelated content into a racing context. The active game profile and glossary take priority."
+}

@@ -11,15 +11,17 @@ import (
 )
 
 type Config struct {
-	ModelDir   string         `json:"model_dir"`
-	RuntimeDir string         `json:"runtime_dir"`
-	Listen     string         `json:"listen"`
-	GOMAXPROCS int            `json:"gomaxprocs"`
-	Debug      bool           `json:"debug"`
-	Audio      AudioConfig    `json:"audio"`
-	ASR        ASRConfig      `json:"asr"`
-	DeepSeek   DeepSeekConfig `json:"deepseek"`
-	Subtitle   SubtitleConfig `json:"subtitle"`
+	ModelDir    string            `json:"model_dir"`
+	RuntimeDir  string            `json:"runtime_dir"`
+	Listen      string            `json:"listen"`
+	GOMAXPROCS  int               `json:"gomaxprocs"`
+	Debug       bool              `json:"debug"`
+	DebugUI     DebugConfig       `json:"debug_options"`
+	Audio       AudioConfig       `json:"audio"`
+	ASR         ASRConfig         `json:"asr"`
+	DeepSeek    DeepSeekConfig    `json:"deepseek"`
+	Translation TranslationConfig `json:"translation"`
+	Subtitle    SubtitleConfig    `json:"subtitle"`
 }
 
 type AudioConfig struct {
@@ -27,6 +29,7 @@ type AudioConfig struct {
 	SilenceMS       int `json:"silence_ms"`
 	MinSpeechMS     int `json:"min_speech_ms"`
 	MaxSpeechSecond int `json:"max_speech_seconds"`
+	PreRollMS       int `json:"pre_roll_ms"`
 }
 
 type ASRConfig struct {
@@ -42,6 +45,23 @@ type DeepSeekConfig struct {
 	Retries   int    `json:"retries"`
 }
 
+// TranslationConfig contains non-secret, live-editable translation behavior.
+// Runtime changes are persisted separately from config.json so the API key is
+// never rewritten by the HTTP control page.
+type TranslationConfig struct {
+	ActiveProfile    string `json:"active_profile"`
+	CorrectionMode   string `json:"correction_mode"`
+	ContextSentences int    `json:"context_sentences"`
+	CustomPrompt     string `json:"custom_prompt"`
+	GlossaryDir      string `json:"glossary_dir"`
+	SettingsFile     string `json:"settings_file"`
+}
+
+type DebugConfig struct {
+	HistoryLimit int    `json:"history_limit"`
+	LogFile      string `json:"log_file"`
+}
+
 type SubtitleConfig struct {
 	Mode            string `json:"mode"`
 	HideAfterMS     int    `json:"hide_after_ms"`
@@ -55,15 +75,18 @@ type SubtitleConfig struct {
 	StrokeColor     string `json:"stroke_color"`
 	Background      string `json:"background"`
 	FontFamily      string `json:"font_family"`
+	ChineseSource   string `json:"chinese_source"`
 }
 
 func Defaults() Config {
 	return Config{
 		ModelDir: "models", RuntimeDir: "runtime", Listen: ":8765", GOMAXPROCS: 3,
-		Audio:    AudioConfig{DeviceIndex: -1, SilenceMS: 500, MinSpeechMS: 300, MaxSpeechSecond: 10},
-		ASR:      ASRConfig{ModelID: "", NumThreads: 2},
-		DeepSeek: DeepSeekConfig{Endpoint: "https://api.deepseek.com/chat/completions", Model: "deepseek-chat", TimeoutMS: 5000, Retries: 2},
-		Subtitle: SubtitleConfig{Mode: "bilingual", HideAfterMS: 12000, EnglishFontSize: 56, ChineseFontSize: 30, PositionX: 50, PositionY: 88, MaxWidth: 90, EnglishColor: "#ffffff", ChineseColor: "#f0f0f0", StrokeColor: "#000000", Background: "rgba(0,0,0,0.48)", FontFamily: "Segoe UI, Microsoft YaHei, sans-serif"},
+		Audio:       AudioConfig{DeviceIndex: -1, SilenceMS: 700, MinSpeechMS: 300, MaxSpeechSecond: 10, PreRollMS: 250},
+		ASR:         ASRConfig{ModelID: "", NumThreads: 2},
+		DeepSeek:    DeepSeekConfig{Endpoint: "https://api.deepseek.com/chat/completions", Model: "deepseek-chat", TimeoutMS: 5000, Retries: 2},
+		Translation: TranslationConfig{ActiveProfile: "auto", CorrectionMode: "conservative", ContextSentences: 2, CustomPrompt: "This is a Twitch gaming livestream. Use natural, concise English familiar to gaming communities. The streamer often discusses sim racing, especially iRacing, but do not force unrelated content into a racing context. The active game profile and glossary take priority.", GlossaryDir: "glossaries", SettingsFile: "translation-settings.json"},
+		DebugUI:     DebugConfig{HistoryLimit: 100},
+		Subtitle:    SubtitleConfig{Mode: "bilingual", HideAfterMS: 12000, EnglishFontSize: 56, ChineseFontSize: 30, PositionX: 50, PositionY: 88, MaxWidth: 90, EnglishColor: "#ffffff", ChineseColor: "#f0f0f0", StrokeColor: "#000000", Background: "rgba(0,0,0,0.48)", FontFamily: "Segoe UI, Microsoft YaHei, sans-serif", ChineseSource: "corrected"},
 	}
 }
 
@@ -96,6 +119,28 @@ func Load(path string) (Config, error) {
 	}
 	if c.DeepSeek.TimeoutMS < 1 {
 		c.DeepSeek.TimeoutMS = 5000
+	}
+	translationDefaults := Defaults().Translation
+	if c.Translation.ActiveProfile == "" {
+		c.Translation.ActiveProfile = translationDefaults.ActiveProfile
+	}
+	if c.Translation.CorrectionMode == "" {
+		c.Translation.CorrectionMode = translationDefaults.CorrectionMode
+	}
+	if c.Translation.ContextSentences < 0 || c.Translation.ContextSentences > 5 {
+		c.Translation.ContextSentences = translationDefaults.ContextSentences
+	}
+	if c.Translation.CustomPrompt == "" {
+		c.Translation.CustomPrompt = translationDefaults.CustomPrompt
+	}
+	if c.Translation.GlossaryDir == "" {
+		c.Translation.GlossaryDir = translationDefaults.GlossaryDir
+	}
+	if c.Translation.SettingsFile == "" {
+		c.Translation.SettingsFile = translationDefaults.SettingsFile
+	}
+	if c.DebugUI.HistoryLimit < 10 || c.DebugUI.HistoryLimit > 1000 {
+		c.DebugUI.HistoryLimit = Defaults().DebugUI.HistoryLimit
 	}
 	defaults := Defaults().Subtitle
 	if c.Subtitle.Mode == "" {
@@ -134,6 +179,9 @@ func Load(path string) (Config, error) {
 	if c.Subtitle.FontFamily == "" {
 		c.Subtitle.FontFamily = defaults.FontFamily
 	}
+	if c.Subtitle.ChineseSource == "" {
+		c.Subtitle.ChineseSource = defaults.ChineseSource
+	}
 	if c.DeepSeek.APIKey == "" {
 		c.DeepSeek.APIKey = os.Getenv("DEEPSEEK_API_KEY")
 	}
@@ -143,6 +191,15 @@ func Load(path string) (Config, error) {
 	}
 	if !filepath.IsAbs(c.RuntimeDir) {
 		c.RuntimeDir = filepath.Join(base, c.RuntimeDir)
+	}
+	if !filepath.IsAbs(c.Translation.GlossaryDir) {
+		c.Translation.GlossaryDir = filepath.Join(base, c.Translation.GlossaryDir)
+	}
+	if !filepath.IsAbs(c.Translation.SettingsFile) {
+		c.Translation.SettingsFile = filepath.Join(base, c.Translation.SettingsFile)
+	}
+	if c.DebugUI.LogFile != "" && !filepath.IsAbs(c.DebugUI.LogFile) {
+		c.DebugUI.LogFile = filepath.Join(base, c.DebugUI.LogFile)
 	}
 	return c, nil
 }
@@ -156,6 +213,16 @@ func (c Config) Validate(requireKey bool) error {
 	}
 	if c.Subtitle.Mode != "english" && c.Subtitle.Mode != "bilingual" {
 		return errors.New("subtitle.mode 只能是 english 或 bilingual")
+	}
+	validProfile := map[string]bool{"auto": true, "general": true, "iracing": true, "minecraft": true, "project_zomboid": true, "disabled": true}
+	if !validProfile[c.Translation.ActiveProfile] {
+		return fmt.Errorf("translation.active_profile is invalid: %s", c.Translation.ActiveProfile)
+	}
+	if c.Translation.CorrectionMode != "off" && c.Translation.CorrectionMode != "conservative" {
+		return fmt.Errorf("translation.correction_mode must be off or conservative")
+	}
+	if c.Subtitle.ChineseSource != "corrected" && c.Subtitle.ChineseSource != "raw" && c.Subtitle.ChineseSource != "compare" {
+		return fmt.Errorf("subtitle.chinese_source must be corrected, raw, or compare")
 	}
 	return nil
 }

@@ -4,7 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
+	"net"
 	"net/http"
+	"slices"
+	"strings"
 	"sync"
 	"time"
 
@@ -14,11 +19,61 @@ import (
 const writeTimeout = time.Second
 
 type Message struct {
-	Type   string  `json:"type,omitempty"`
-	Text   string  `json:"text"`
-	Source string  `json:"source,omitempty"`
-	TS     float64 `json:"ts"`
+	Type          string      `json:"type,omitempty"`
+	Text          string      `json:"text,omitempty"`
+	Source        string      `json:"source,omitempty"`
+	Raw           string      `json:"raw,omitempty"`
+	Corrected     string      `json:"corrected,omitempty"`
+	English       string      `json:"english,omitempty"`
+	Profile       string      `json:"profile,omitempty"`
+	ChineseSource string      `json:"chineseSource,omitempty"`
+	Debug         *DebugEvent `json:"debug,omitempty"`
+	TS            float64     `json:"ts"`
 }
+
+type DebugEvent struct {
+	SegmentID     uint64             `json:"segmentId,omitempty"`
+	DurationMS    int64              `json:"durationMs,omitempty"`
+	SegmentReason string             `json:"segmentReason,omitempty"`
+	ASRModel      string             `json:"asrModel,omitempty"`
+	Raw           string             `json:"raw,omitempty"`
+	Corrected     string             `json:"corrected,omitempty"`
+	English       string             `json:"english,omitempty"`
+	Diff          string             `json:"diff,omitempty"`
+	Profile       string             `json:"profile,omitempty"`
+	Terms         []string           `json:"terms,omitempty"`
+	Context       []string           `json:"context,omitempty"`
+	Latencies     map[string]float64 `json:"latencies,omitempty"`
+	Tokens        int                `json:"tokens,omitempty"`
+	TokenUsage    map[string]int     `json:"tokenUsage,omitempty"`
+	CacheHit      bool               `json:"cacheHit,omitempty"`
+	Retries       int                `json:"retries,omitempty"`
+	Error         string             `json:"error,omitempty"`
+	TS            float64            `json:"ts,omitempty"`
+}
+
+type Term struct {
+	Source string `json:"source"`
+	Target string `json:"target"`
+}
+
+type ControlState struct {
+	Profile        string  `json:"profile"`
+	CustomPrompt   string  `json:"customPrompt"`
+	CorrectionMode string  `json:"correctionMode"`
+	ChineseSource  string  `json:"chineseSource"`
+	ContextSize    int     `json:"contextSize"`
+	Terms          []Term  `json:"terms"`
+	ResetTerms     bool    `json:"resetTerms,omitempty"`
+	UpdatedAt      float64 `json:"updatedAt"`
+}
+
+type ControlCallbacks struct {
+	Get   func(context.Context) (ControlState, error)
+	Apply func(context.Context, ControlState) (ControlState, error)
+}
+
+type AccessPolicy func(*http.Request) bool
 
 type PageConfig struct {
 	Mode            string `json:"mode"`
@@ -33,19 +88,24 @@ type PageConfig struct {
 	StrokeColor     string `json:"strokeColor"`
 	Background      string `json:"background"`
 	FontFamily      string `json:"fontFamily"`
+	ChineseSource   string `json:"chineseSource"`
 }
 
 type client struct {
-	conn *websocket.Conn
-	mu   sync.Mutex
+	conn  *websocket.Conn
+	mu    sync.Mutex
+	debug bool
 }
 
 type Server struct {
-	mu      sync.RWMutex
-	clients map[*client]struct{}
-	srv     *http.Server
-	page    []byte
-	config  PageConfig
+	mu        sync.RWMutex
+	clients   map[*client]struct{}
+	srv       *http.Server
+	page      []byte
+	config    PageConfig
+	control   ControlState
+	callbacks ControlCallbacks
+	access    AccessPolicy
 }
 
 func New(addr string) *Server {
@@ -53,22 +113,36 @@ func New(addr string) *Server {
 }
 
 func NewWithPage(addr string, page []byte, cfg PageConfig) *Server {
-	s := &Server{clients: make(map[*client]struct{}), page: append([]byte(nil), page...), config: cfg}
+	s := &Server{
+		clients: make(map[*client]struct{}), page: append([]byte(nil), page...), config: cfg,
+		control: ControlState{Profile: "auto", CorrectionMode: "conservative", ChineseSource: "corrected", ContextSize: 2, Terms: []Term{}},
+		access:  LocalOnly,
+	}
 	s.srv = &http.Server{Addr: addr, Handler: s.Handler(), ReadHeaderTimeout: 5 * time.Second}
 	return s
 }
 
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/ws", s.handle)
+	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) { s.handle(w, r, false) })
+	mux.HandleFunc("/debug-ws", func(w http.ResponseWriter, r *http.Request) {
+		if !s.allowLocal(w, r) {
+			return
+		}
+		s.handle(w, r, true)
+	})
+	mux.HandleFunc("/api/control", s.handleControl)
 	mux.HandleFunc("/config", s.handleConfig)
 	mux.HandleFunc("/", s.handlePage)
 	return mux
 }
 
 func (s *Server) handlePage(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" && r.URL.Path != "/subtitle" && r.URL.Path != "/editor" {
+	if r.URL.Path != "/" && r.URL.Path != "/subtitle" && r.URL.Path != "/editor" && r.URL.Path != "/control" && r.URL.Path != "/debug" {
 		http.NotFound(w, r)
+		return
+	}
+	if (r.URL.Path == "/control" || r.URL.Path == "/debug") && !s.allowLocal(w, r) {
 		return
 	}
 	if len(s.page) == 0 {
@@ -83,7 +157,19 @@ func (s *Server) handlePage(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleConfig(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-store")
-	_ = json.NewEncoder(w).Encode(s.config)
+	s.mu.RLock()
+	cfg := s.config
+	s.mu.RUnlock()
+	_ = json.NewEncoder(w).Encode(cfg)
+}
+
+func (s *Server) SetChineseSource(source string) {
+	if !slices.Contains(chineseSources, source) {
+		return
+	}
+	s.mu.Lock()
+	s.config.ChineseSource = source
+	s.mu.Unlock()
 }
 
 var upgrader = websocket.Upgrader{
@@ -91,12 +177,12 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:      func(*http.Request) bool { return true }, // OBS browser sources may send a file:// origin.
 }
 
-func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handle(w http.ResponseWriter, r *http.Request, debug bool) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return
 	}
-	c := &client{conn: conn}
+	c := &client{conn: conn, debug: debug}
 	conn.SetReadLimit(1024)
 	s.mu.Lock()
 	s.clients[c] = struct{}{}
@@ -107,6 +193,157 @@ func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+}
+
+func LocalOnly(r *http.Request) bool {
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		host = r.RemoteAddr
+	}
+	ip := net.ParseIP(strings.Trim(host, "[]"))
+	return ip != nil && ip.IsLoopback()
+}
+
+func (s *Server) SetControlCallbacks(callbacks ControlCallbacks) {
+	s.mu.Lock()
+	s.callbacks = callbacks
+	s.mu.Unlock()
+}
+
+func (s *Server) SetLocalAccessPolicy(policy AccessPolicy) {
+	if policy == nil {
+		policy = LocalOnly
+	}
+	s.mu.Lock()
+	s.access = policy
+	s.mu.Unlock()
+}
+
+func (s *Server) allowLocal(w http.ResponseWriter, r *http.Request) bool {
+	s.mu.RLock()
+	policy := s.access
+	s.mu.RUnlock()
+	if policy == nil || policy(r) {
+		return true
+	}
+	http.Error(w, "local access only", http.StatusForbidden)
+	return false
+}
+
+var profiles = []string{"auto", "general", "iracing", "minecraft", "project_zomboid", "disabled"}
+var correctionModes = []string{"off", "conservative"}
+var chineseSources = []string{"corrected", "raw", "compare"}
+
+func (s *Server) handleControl(w http.ResponseWriter, r *http.Request) {
+	if !s.allowLocal(w, r) {
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	s.mu.RLock()
+	callbacks, state := s.callbacks, cloneControlState(s.control)
+	s.mu.RUnlock()
+	previous := cloneControlState(state)
+	switch r.Method {
+	case http.MethodGet:
+		if callbacks.Get != nil {
+			var err error
+			state, err = callbacks.Get(r.Context())
+			if err != nil {
+				writeAPIError(w, http.StatusInternalServerError, err)
+				return
+			}
+		}
+		_ = json.NewEncoder(w).Encode(state)
+	case http.MethodPut:
+		r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
+		decoder := json.NewDecoder(r.Body)
+		decoder.DisallowUnknownFields()
+		if err := decoder.Decode(&state); err != nil {
+			writeAPIError(w, http.StatusBadRequest, fmt.Errorf("invalid control state: %w", err))
+			return
+		}
+		if err := decoder.Decode(&struct{}{}); err != io.EOF {
+			writeAPIError(w, http.StatusBadRequest, errors.New("request must contain one JSON object"))
+			return
+		}
+		// Accept control payloads produced by v1.1, where correctionMode was
+		// the subtitle Chinese source rather than the AI correction policy.
+		if state.ChineseSource == "" {
+			if slices.Contains(chineseSources, state.CorrectionMode) {
+				state.ChineseSource = state.CorrectionMode
+				state.CorrectionMode = "conservative"
+			} else {
+				state.ChineseSource = "corrected"
+			}
+		}
+		if err := validateControlState(state); err != nil {
+			writeAPIError(w, http.StatusBadRequest, err)
+			return
+		}
+		state.UpdatedAt = float64(time.Now().UnixMilli()) / 1000
+		if callbacks.Apply != nil {
+			var err error
+			state, err = callbacks.Apply(r.Context(), cloneControlState(state))
+			if err != nil {
+				writeAPIError(w, http.StatusConflict, err)
+				return
+			}
+			if state.Terms == nil {
+				state.Terms = []Term{}
+			}
+		} else if state.Terms == nil {
+			if state.Profile == previous.Profile {
+				state.Terms = previous.Terms
+			} else {
+				state.Terms = []Term{}
+			}
+		}
+		s.mu.Lock()
+		s.control = cloneControlState(state)
+		s.mu.Unlock()
+		_ = json.NewEncoder(w).Encode(state)
+	default:
+		w.Header().Set("Allow", "GET, PUT")
+		writeAPIError(w, http.StatusMethodNotAllowed, errors.New("method not allowed"))
+	}
+}
+
+func validateControlState(state ControlState) error {
+	if !slices.Contains(profiles, state.Profile) {
+		return fmt.Errorf("unknown profile %q", state.Profile)
+	}
+	if !slices.Contains(correctionModes, state.CorrectionMode) {
+		return fmt.Errorf("unknown correction mode %q", state.CorrectionMode)
+	}
+	if !slices.Contains(chineseSources, state.ChineseSource) {
+		return fmt.Errorf("unknown Chinese source %q", state.ChineseSource)
+	}
+	if state.ContextSize < 0 || state.ContextSize > 5 {
+		return errors.New("contextSize must be between 0 and 5")
+	}
+	if len(state.CustomPrompt) > 8000 {
+		return errors.New("customPrompt is too long")
+	}
+	if len(state.Terms) > 5000 {
+		return errors.New("too many terms")
+	}
+	for _, term := range state.Terms {
+		if strings.TrimSpace(term.Source) == "" || len(term.Source) > 256 || len(term.Target) > 256 {
+			return errors.New("invalid term")
+		}
+	}
+	return nil
+}
+
+func cloneControlState(state ControlState) ControlState {
+	state.Terms = append([]Term(nil), state.Terms...)
+	return state
+}
+
+func writeAPIError(w http.ResponseWriter, status int, err error) {
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 }
 
 func (s *Server) remove(c *client) {
@@ -166,10 +403,32 @@ func (s *Server) Broadcast(text string) {
 }
 
 func (s *Server) BroadcastSubtitle(source, translation string) {
-	_ = s.BroadcastMessage(Message{Type: "subtitle", Text: translation, Source: source, TS: float64(time.Now().UnixMilli()) / 1000})
+	_ = s.BroadcastSubtitleDetail(source, source, translation)
+}
+
+func (s *Server) BroadcastSubtitleDetail(raw, corrected, english string) error {
+	s.mu.RLock()
+	chineseSource := s.config.ChineseSource
+	s.mu.RUnlock()
+	return s.BroadcastMessage(Message{
+		Type: "subtitle", Text: english, Source: corrected,
+		Raw: raw, Corrected: corrected, English: english, ChineseSource: chineseSource,
+		TS: float64(time.Now().UnixMilli()) / 1000,
+	})
+}
+
+func (s *Server) BroadcastDebug(event DebugEvent) error {
+	if event.TS == 0 {
+		event.TS = float64(time.Now().UnixMilli()) / 1000
+	}
+	return s.broadcast(Message{Type: "debug", Debug: &event, TS: event.TS}, true)
 }
 
 func (s *Server) BroadcastMessage(msg Message) error {
+	return s.broadcast(msg, false)
+}
+
+func (s *Server) broadcast(msg Message, debugOnly bool) error {
 	if msg.TS == 0 {
 		msg.TS = float64(time.Now().UnixMilli()) / 1000
 	}
@@ -180,7 +439,9 @@ func (s *Server) BroadcastMessage(msg Message) error {
 	s.mu.RLock()
 	clients := make([]*client, 0, len(s.clients))
 	for c := range s.clients {
-		clients = append(clients, c)
+		if !debugOnly || c.debug {
+			clients = append(clients, c)
+		}
 	}
 	s.mu.RUnlock()
 	for _, c := range clients {

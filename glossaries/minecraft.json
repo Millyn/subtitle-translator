@@ -1,0 +1,2560 @@
+{
+  "name": "minecraft",
+  "display_name": "Minecraft",
+  "entries": [
+    {
+      "source": "我的世界",
+      "target": "Minecraft",
+      "category": "title",
+      "protected": true
+    },
+    {
+      "source": "Java版",
+      "target": "Java Edition",
+      "category": "edition",
+      "protected": true
+    },
+    {
+      "source": "基岩版",
+      "target": "Bedrock Edition",
+      "category": "edition",
+      "protected": true
+    },
+    {
+      "source": "主世界",
+      "target": "Overworld",
+      "category": "dimension",
+      "protected": true
+    },
+    {
+      "source": "下界",
+      "target": "Nether",
+      "aliases": [
+        "地狱"
+      ],
+      "category": "dimension",
+      "protected": true
+    },
+    {
+      "source": "末地",
+      "target": "End",
+      "category": "dimension",
+      "protected": true
+    },
+    {
+      "source": "生存模式",
+      "target": "Survival mode",
+      "category": "game-mode"
+    },
+    {
+      "source": "创造模式",
+      "target": "Creative mode",
+      "category": "game-mode"
+    },
+    {
+      "source": "极限模式",
+      "target": "Hardcore mode",
+      "category": "game-mode"
+    },
+    {
+      "source": "冒险模式",
+      "target": "Adventure mode",
+      "category": "game-mode"
+    },
+    {
+      "source": "旁观模式",
+      "target": "Spectator mode",
+      "category": "game-mode"
+    },
+    {
+      "source": "工作台",
+      "target": "Crafting Table",
+      "category": "block"
+    },
+    {
+      "source": "熔炉",
+      "target": "Furnace",
+      "category": "block"
+    },
+    {
+      "source": "附魔台",
+      "target": "Enchanting Table",
+      "category": "block",
+      "protected": true
+    },
+    {
+      "source": "铁砧",
+      "target": "Anvil",
+      "category": "block"
+    },
+    {
+      "source": "末影箱",
+      "target": "Ender Chest",
+      "category": "block",
+      "protected": true
+    },
+    {
+      "source": "潜影盒",
+      "target": "Shulker Box",
+      "category": "block",
+      "protected": true
+    },
+    {
+      "source": "信标",
+      "target": "Beacon",
+      "category": "block"
+    },
+    {
+      "source": "重生锚",
+      "target": "Respawn Anchor",
+      "category": "block",
+      "protected": true
+    },
+    {
+      "source": "黑曜石",
+      "target": "Obsidian",
+      "category": "block"
+    },
+    {
+      "source": "远古残骸",
+      "target": "Ancient Debris",
+      "category": "block",
+      "protected": true
+    },
+    {
+      "source": "下界合金块",
+      "target": "Netherite Block",
+      "category": "block"
+    },
+    {
+      "source": "紫珀块",
+      "target": "Purpur Block",
+      "category": "block"
+    },
+    {
+      "source": "末地石",
+      "target": "End Stone",
+      "category": "block"
+    },
+    {
+      "source": "基岩",
+      "target": "Bedrock",
+      "aliases": [
+        "砍手岩"
+      ],
+      "category": "block",
+      "protected": true
+    },
+    {
+      "source": "钻石",
+      "target": "Diamond",
+      "category": "material"
+    },
+    {
+      "source": "绿宝石",
+      "target": "Emerald",
+      "category": "material"
+    },
+    {
+      "source": "下界合金",
+      "target": "Netherite",
+      "category": "material",
+      "protected": true
+    },
+    {
+      "source": "红石",
+      "target": "redstone",
+      "category": "mechanic",
+      "protected": true
+    },
+    {
+      "source": "鞘翅",
+      "target": "Elytra",
+      "category": "item",
+      "protected": true
+    },
+    {
+      "source": "末影珍珠",
+      "target": "Ender Pearl",
+      "category": "item",
+      "protected": true
+    },
+    {
+      "source": "末影之眼",
+      "target": "Eye of Ender",
+      "category": "item",
+      "protected": true
+    },
+    {
+      "source": "不死图腾",
+      "target": "Totem of Undying",
+      "category": "item",
+      "protected": true
+    },
+    {
+      "source": "下界合金剑",
+      "target": "Netherite Sword",
+      "category": "item"
+    },
+    {
+      "source": "精准采集",
+      "target": "Silk Touch",
+      "category": "enchantment",
+      "protected": true
+    },
+    {
+      "source": "时运",
+      "target": "Fortune",
+      "category": "enchantment"
+    },
+    {
+      "source": "经验修补",
+      "target": "Mending",
+      "category": "enchantment",
+      "protected": true
+    },
+    {
+      "source": "耐久",
+      "target": "Unbreaking",
+      "category": "enchantment"
+    },
+    {
+      "source": "锋利",
+      "target": "Sharpness",
+      "category": "enchantment"
+    },
+    {
+      "source": "击退",
+      "target": "Knockback",
+      "category": "enchantment"
+    },
+    {
+      "source": "火焰附加",
+      "target": "Fire Aspect",
+      "category": "enchantment"
+    },
+    {
+      "source": "抢夺",
+      "target": "Looting",
+      "category": "enchantment"
+    },
+    {
+      "source": "效率",
+      "target": "Efficiency",
+      "category": "enchantment"
+    },
+    {
+      "source": "速度药水",
+      "target": "Potion of Swiftness",
+      "category": "potion"
+    },
+    {
+      "source": "力量药水",
+      "target": "Potion of Strength",
+      "category": "potion"
+    },
+    {
+      "source": "治疗药水",
+      "target": "Potion of Healing",
+      "category": "potion"
+    },
+    {
+      "source": "再生药水",
+      "target": "Potion of Regeneration",
+      "category": "potion"
+    },
+    {
+      "source": "隐身药水",
+      "target": "Potion of Invisibility",
+      "category": "potion"
+    },
+    {
+      "source": "下界传送门",
+      "target": "Nether portal",
+      "category": "portal",
+      "protected": true
+    },
+    {
+      "source": "末地传送门",
+      "target": "End portal",
+      "category": "portal",
+      "protected": true
+    },
+    {
+      "source": "出生点",
+      "target": "spawn point",
+      "category": "mechanic"
+    },
+    {
+      "source": "生物",
+      "target": "mob",
+      "aliases": [
+        "怪物"
+      ],
+      "category": "mechanic"
+    },
+    {
+      "source": "敌对生物",
+      "target": "hostile mob",
+      "category": "mob"
+    },
+    {
+      "source": "中立生物",
+      "target": "neutral mob",
+      "category": "mob"
+    },
+    {
+      "source": "被动生物",
+      "target": "passive mob",
+      "category": "mob"
+    },
+    {
+      "source": "苦力怕",
+      "target": "Creeper",
+      "aliases": [
+        "爬行者"
+      ],
+      "category": "mob",
+      "protected": true
+    },
+    {
+      "source": "末影人",
+      "target": "Enderman",
+      "category": "mob",
+      "protected": true
+    },
+    {
+      "source": "僵尸",
+      "target": "Zombie",
+      "category": "mob"
+    },
+    {
+      "source": "骷髅",
+      "target": "Skeleton",
+      "category": "mob"
+    },
+    {
+      "source": "蜘蛛",
+      "target": "Spider",
+      "category": "mob"
+    },
+    {
+      "source": "洞穴蜘蛛",
+      "target": "Cave Spider",
+      "category": "mob"
+    },
+    {
+      "source": "蠹虫",
+      "target": "Silverfish",
+      "category": "mob"
+    },
+    {
+      "source": "史莱姆",
+      "target": "Slime",
+      "category": "mob"
+    },
+    {
+      "source": "岩浆怪",
+      "target": "Magma Cube",
+      "category": "mob"
+    },
+    {
+      "source": "恶魂",
+      "target": "Ghast",
+      "category": "mob",
+      "protected": true
+    },
+    {
+      "source": "烈焰人",
+      "target": "Blaze",
+      "category": "mob",
+      "protected": true
+    },
+    {
+      "source": "凋灵骷髅",
+      "target": "Wither Skeleton",
+      "category": "mob",
+      "protected": true
+    },
+    {
+      "source": "僵尸猪灵",
+      "target": "Zombified Piglin",
+      "category": "mob"
+    },
+    {
+      "source": "猪灵",
+      "target": "Piglin",
+      "category": "mob",
+      "protected": true
+    },
+    {
+      "source": "猪灵蛮兵",
+      "target": "Piglin Brute",
+      "category": "mob",
+      "protected": true
+    },
+    {
+      "source": "疣猪兽",
+      "target": "Hoglin",
+      "category": "mob"
+    },
+    {
+      "source": "僵尸疣猪兽",
+      "target": "Zoglin",
+      "category": "mob"
+    },
+    {
+      "source": "村民",
+      "target": "Villager",
+      "aliases": [
+        "飞翔使"
+      ],
+      "category": "mob"
+    },
+    {
+      "source": "傻子村民",
+      "target": "Nitwit",
+      "aliases": [
+        "绿袍尊者"
+      ],
+      "category": "mob"
+    },
+    {
+      "source": "流浪商人",
+      "target": "Wandering Trader",
+      "category": "mob"
+    },
+    {
+      "source": "铁傀儡",
+      "target": "Iron Golem",
+      "category": "mob"
+    },
+    {
+      "source": "雪傀儡",
+      "target": "Snow Golem",
+      "category": "mob"
+    },
+    {
+      "source": "女巫",
+      "target": "Witch",
+      "category": "mob"
+    },
+    {
+      "source": "幻翼",
+      "target": "Phantom",
+      "category": "mob"
+    },
+    {
+      "source": "潜影贝",
+      "target": "Shulker",
+      "category": "mob"
+    },
+    {
+      "source": "恼鬼",
+      "target": "Vex",
+      "category": "mob"
+    },
+    {
+      "source": "卫道士",
+      "target": "Vindicator",
+      "category": "mob"
+    },
+    {
+      "source": "掠夺者",
+      "target": "Pillager",
+      "category": "mob"
+    },
+    {
+      "source": "劫掠兽",
+      "target": "Ravager",
+      "category": "mob",
+      "protected": true
+    },
+    {
+      "source": "监守者",
+      "target": "Warden",
+      "aliases": [
+        "循声守卫"
+      ],
+      "category": "mob",
+      "protected": true
+    },
+    {
+      "source": "末影龙",
+      "target": "Ender Dragon",
+      "category": "boss",
+      "protected": true
+    },
+    {
+      "source": "凋灵",
+      "target": "Wither",
+      "category": "boss",
+      "protected": true
+    },
+    {
+      "source": "远古守卫者",
+      "target": "Elder Guardian",
+      "category": "boss"
+    },
+    {
+      "source": "尸壳",
+      "target": "Husk",
+      "category": "mob"
+    },
+    {
+      "source": "流浪者",
+      "target": "Stray",
+      "category": "mob"
+    },
+    {
+      "source": "溺尸",
+      "target": "Drowned",
+      "category": "mob"
+    },
+    {
+      "source": "守卫者",
+      "target": "Guardian",
+      "category": "mob"
+    },
+    {
+      "source": "兔子",
+      "target": "Rabbit",
+      "category": "mob"
+    },
+    {
+      "source": "狐狸",
+      "target": "Fox",
+      "category": "mob"
+    },
+    {
+      "source": "熊猫",
+      "target": "Panda",
+      "category": "mob"
+    },
+    {
+      "source": "北极熊",
+      "target": "Polar Bear",
+      "category": "mob"
+    },
+    {
+      "source": "海龟",
+      "target": "Turtle",
+      "category": "mob"
+    },
+    {
+      "source": "海豚",
+      "target": "Dolphin",
+      "category": "mob"
+    },
+    {
+      "source": "鱿鱼",
+      "target": "Squid",
+      "category": "mob"
+    },
+    {
+      "source": "发光鱿鱼",
+      "target": "Glow Squid",
+      "category": "mob"
+    },
+    {
+      "source": "美西螈",
+      "target": "Axolotl",
+      "category": "mob"
+    },
+    {
+      "source": "山羊",
+      "target": "Goat",
+      "category": "mob"
+    },
+    {
+      "source": "骆驼",
+      "target": "Camel",
+      "category": "mob"
+    },
+    {
+      "source": "嗅探兽",
+      "target": "Sniffer",
+      "category": "mob"
+    },
+    {
+      "source": "悦灵",
+      "target": "Allay",
+      "category": "mob"
+    },
+    {
+      "source": "蜜蜂",
+      "target": "Bee",
+      "category": "mob"
+    },
+    {
+      "source": "鹦鹉",
+      "target": "Parrot",
+      "category": "mob"
+    },
+    {
+      "source": "马",
+      "target": "Horse",
+      "category": "mob"
+    },
+    {
+      "source": "驴",
+      "target": "Donkey",
+      "category": "mob"
+    },
+    {
+      "source": "骡",
+      "target": "Mule",
+      "category": "mob"
+    },
+    {
+      "source": "骷髅马",
+      "target": "Skeleton Horse",
+      "category": "mob"
+    },
+    {
+      "source": "僵尸马",
+      "target": "Zombie Horse",
+      "category": "mob"
+    },
+    {
+      "source": "羊驼",
+      "target": "Llama",
+      "category": "mob"
+    },
+    {
+      "source": "商人羊驼",
+      "target": "Trader Llama",
+      "category": "mob"
+    },
+    {
+      "source": "豹猫",
+      "target": "Ocelot",
+      "category": "mob"
+    },
+    {
+      "source": "猫",
+      "target": "Cat",
+      "category": "mob"
+    },
+    {
+      "source": "狼",
+      "target": "Wolf",
+      "category": "mob"
+    },
+    {
+      "source": "鸡",
+      "target": "Chicken",
+      "category": "mob"
+    },
+    {
+      "source": "牛",
+      "target": "Cow",
+      "category": "mob"
+    },
+    {
+      "source": "哞菇",
+      "target": "Mooshroom",
+      "category": "mob"
+    },
+    {
+      "source": "猪",
+      "target": "Pig",
+      "category": "mob"
+    },
+    {
+      "source": "羊",
+      "target": "Sheep",
+      "category": "mob"
+    },
+    {
+      "source": "蝙蝠",
+      "target": "Bat",
+      "category": "mob"
+    },
+    {
+      "source": "鱈鱼",
+      "target": "Cod",
+      "category": "mob"
+    },
+    {
+      "source": "鲑鱼",
+      "target": "Salmon",
+      "category": "mob"
+    },
+    {
+      "source": "河豚",
+      "target": "Pufferfish",
+      "category": "mob"
+    },
+    {
+      "source": "青蛙",
+      "target": "Frog",
+      "category": "mob"
+    },
+    {
+      "source": "蝌蚪",
+      "target": "Tadpole",
+      "category": "mob"
+    },
+    {
+      "source": "旋风人",
+      "target": "Breeze",
+      "category": "mob"
+    },
+    {
+      "source": "犰狳",
+      "target": "Armadillo",
+      "category": "mob"
+    },
+    {
+      "source": "盔甲架",
+      "target": "Armor Stand",
+      "category": "item"
+    },
+    {
+      "source": "物品展示框",
+      "target": "Item Frame",
+      "category": "item"
+    },
+    {
+      "source": "荧光物品展示框",
+      "target": "Glow Item Frame",
+      "category": "item"
+    },
+    {
+      "source": "画",
+      "target": "Painting",
+      "category": "item"
+    },
+    {
+      "source": "旗帜",
+      "target": "Banner",
+      "category": "item"
+    },
+    {
+      "source": "盾牌",
+      "target": "Shield",
+      "category": "item"
+    },
+    {
+      "source": "烟花",
+      "target": "Firework",
+      "category": "item"
+    },
+    {
+      "source": "烟火之星",
+      "target": "Firework Star",
+      "category": "item"
+    },
+    {
+      "source": "书与笔",
+      "target": "Book and Quill",
+      "category": "item"
+    },
+    {
+      "source": "成书",
+      "target": "Written Book",
+      "category": "item"
+    },
+    {
+      "source": "知识之书",
+      "target": "Knowledge Book",
+      "category": "item"
+    },
+    {
+      "source": "下界合金锭",
+      "target": "Netherite Ingot",
+      "category": "item"
+    },
+    {
+      "source": "下界合金碎片",
+      "target": "Netherite Scrap",
+      "category": "item"
+    },
+    {
+      "source": "紫颂果",
+      "target": "Chorus Fruit",
+      "category": "item"
+    },
+    {
+      "source": "爆裂紫颂果",
+      "target": "Popped Chorus Fruit",
+      "category": "item"
+    },
+    {
+      "source": "附魔金苹果",
+      "target": "Enchanted Golden Apple",
+      "aliases": [
+        "God Apple"
+      ],
+      "category": "item"
+    },
+    {
+      "source": "金苹果",
+      "target": "Golden Apple",
+      "category": "item"
+    },
+    {
+      "source": "热带鱼",
+      "target": "Tropical Fish",
+      "category": "item"
+    },
+    {
+      "source": "谜之炖菜",
+      "target": "Suspicious Stew",
+      "category": "item"
+    },
+    {
+      "source": "甜浆果",
+      "target": "Sweet Berries",
+      "category": "item"
+    },
+    {
+      "source": "发光浆果",
+      "target": "Glow Berries",
+      "category": "item"
+    },
+    {
+      "source": "紫水晶",
+      "target": "Amethyst",
+      "category": "material"
+    },
+    {
+      "source": "紫水晶碎片",
+      "target": "Amethyst Shard",
+      "category": "item"
+    },
+    {
+      "source": "凝灰岩",
+      "target": "Tuff",
+      "category": "block"
+    },
+    {
+      "source": "深板岩",
+      "target": "Deepslate",
+      "category": "block"
+    },
+    {
+      "source": "铜",
+      "target": "Copper",
+      "category": "material"
+    },
+    {
+      "source": "铜锭",
+      "target": "Copper Ingot",
+      "category": "item"
+    },
+    {
+      "source": "粗铁",
+      "target": "Raw Iron",
+      "category": "item"
+    },
+    {
+      "source": "粗金",
+      "target": "Raw Gold",
+      "category": "item"
+    },
+    {
+      "source": "粗铜",
+      "target": "Raw Copper",
+      "category": "item"
+    },
+    {
+      "source": "刷怪蛋",
+      "target": "Spawn Egg",
+      "category": "item"
+    },
+    {
+      "source": "命名牌",
+      "target": "Name Tag",
+      "category": "item"
+    },
+    {
+      "source": "拴绳",
+      "target": "Lead",
+      "category": "item"
+    },
+    {
+      "source": "望远镜",
+      "target": "Spyglass",
+      "category": "item"
+    },
+    {
+      "source": "刷子",
+      "target": "Brush",
+      "category": "item"
+    },
+    {
+      "source": "陶片",
+      "target": "Pottery Sherd",
+      "category": "item"
+    },
+    {
+      "source": "锻造模板",
+      "target": "Smithing Template",
+      "category": "item"
+    },
+    {
+      "source": "不祥之瓶",
+      "target": "Ominous Bottle",
+      "category": "item"
+    },
+    {
+      "source": "不祥钥匙",
+      "target": "Ominous Trial Key",
+      "category": "item"
+    },
+    {
+      "source": "旋风弹",
+      "target": "Wind Charge",
+      "category": "item"
+    },
+    {
+      "source": "狼铠",
+      "target": "Wolf Armor",
+      "category": "item"
+    },
+    {
+      "source": "锤子",
+      "target": "Mace",
+      "category": "item"
+    },
+    {
+      "source": "沉重核心",
+      "target": "Heavy Core",
+      "category": "item"
+    },
+    {
+      "source": "刷怪塔",
+      "target": "mob farm",
+      "aliases": [
+        "刷怪笼"
+      ],
+      "category": "farm"
+    },
+    {
+      "source": "铁傀儡农场",
+      "target": "iron farm",
+      "aliases": [
+        "刷铁机"
+      ],
+      "category": "farm"
+    },
+    {
+      "source": "村民交易",
+      "target": "villager trading",
+      "category": "mechanic"
+    },
+    {
+      "source": "掠夺者前哨站",
+      "target": "Pillager Outpost",
+      "category": "structure",
+      "protected": true
+    },
+    {
+      "source": "废弃矿井",
+      "target": "Mineshaft",
+      "category": "structure"
+    },
+    {
+      "source": "要塞",
+      "target": "Stronghold",
+      "category": "structure"
+    },
+    {
+      "source": "末地城",
+      "target": "End City",
+      "category": "structure"
+    },
+    {
+      "source": "下界要塞",
+      "target": "Nether Fortress",
+      "category": "structure"
+    },
+    {
+      "source": "堡垒遗迹",
+      "target": "Bastion Remnant",
+      "category": "structure"
+    },
+    {
+      "source": "林地府邸",
+      "target": "Woodland Mansion",
+      "category": "structure"
+    },
+    {
+      "source": "海底神殿",
+      "target": "Ocean Monument",
+      "category": "structure"
+    },
+    {
+      "source": "沙漠神殿",
+      "target": "Desert Pyramid",
+      "category": "structure"
+    },
+    {
+      "source": "丛林神庙",
+      "target": "Jungle Pyramid",
+      "category": "structure"
+    },
+    {
+      "source": "沉船",
+      "target": "Shipwreck",
+      "category": "structure"
+    },
+    {
+      "source": "埋藏的宝藏",
+      "target": "Buried Treasure",
+      "category": "structure"
+    },
+    {
+      "source": "古城",
+      "target": "Ancient City",
+      "category": "structure"
+    },
+    {
+      "source": "试炼密室",
+      "target": "Trial Chambers",
+      "category": "structure",
+      "protected": true
+    },
+    {
+      "source": "试炼刷怪笼",
+      "target": "Trial Spawner",
+      "category": "block",
+      "protected": true
+    },
+    {
+      "source": "试炼钥匙",
+      "target": "Trial Key",
+      "category": "item",
+      "protected": true
+    },
+    {
+      "source": "管理员",
+      "target": "Admin",
+      "aliases": [
+        "OP",
+        "操作员"
+      ],
+      "category": "community"
+    },
+    {
+      "source": "挂机",
+      "target": "AFK",
+      "aliases": [
+        "Away From Keyboard"
+      ],
+      "category": "community"
+    },
+    {
+      "source": "挂机农场",
+      "target": "AFK Farm",
+      "category": "community"
+    },
+    {
+      "source": "速搭",
+      "target": "Block Clutch",
+      "category": "community"
+    },
+    {
+      "source": "搭桥",
+      "target": "Bridge",
+      "category": "community"
+    },
+    {
+      "source": "落地水",
+      "target": "MLG Water Bucket",
+      "aliases": [
+        "MLG Water"
+      ],
+      "category": "community"
+    },
+    {
+      "source": "落地船",
+      "target": "MLG Boat",
+      "category": "community"
+    },
+    {
+      "source": "支柱跳",
+      "target": "Pillar Jumping",
+      "aliases": [
+        "搭塔",
+        "Towering"
+      ],
+      "category": "community"
+    },
+    {
+      "source": "速通",
+      "target": "Speedrun",
+      "category": "community"
+    },
+    {
+      "source": "破坏",
+      "target": "Grief",
+      "category": "community"
+    },
+    {
+      "source": "熊孩子",
+      "target": "Griefer",
+      "category": "community"
+    },
+    {
+      "source": "袭击",
+      "target": "Raiding",
+      "category": "community"
+    },
+    {
+      "source": "绿萌",
+      "target": "Slimestone",
+      "category": "community"
+    },
+    {
+      "source": "对角四格跳",
+      "target": "Quad Jump",
+      "category": "community"
+    },
+    {
+      "source": "旋转跳",
+      "target": "Neo",
+      "category": "community"
+    },
+    {
+      "source": "打得不错",
+      "target": "GG",
+      "aliases": [
+        "Good Game"
+      ],
+      "category": "community"
+    },
+    {
+      "source": "简单",
+      "target": "EZ",
+      "category": "community"
+    },
+    {
+      "source": "腐肉",
+      "target": "Rotten Flesh",
+      "aliases": [
+        "辣条"
+      ],
+      "category": "item"
+    },
+    {
+      "source": "挖三填一",
+      "target": "Dig three fill one",
+      "category": "community"
+    },
+    {
+      "source": "打断腿",
+      "target": "Break legs",
+      "category": "community"
+    },
+    {
+      "source": "奸商",
+      "target": "Scam Merchant",
+      "category": "community"
+    },
+    {
+      "source": "Bugjump",
+      "target": "Bugjump",
+      "aliases": [
+        "Bugjang",
+        "Jugbump"
+      ],
+      "category": "community"
+    },
+    {
+      "source": "模组",
+      "target": "Mod",
+      "aliases": [
+        "MOD",
+        "模组"
+      ],
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "模组加载器",
+      "target": "Mod Loader",
+      "category": "mod"
+    },
+    {
+      "source": "Forge",
+      "target": "Forge",
+      "category": "mod-loader",
+      "protected": true
+    },
+    {
+      "source": "Fabric",
+      "target": "Fabric",
+      "category": "mod-loader",
+      "protected": true
+    },
+    {
+      "source": "NeoForge",
+      "target": "NeoForge",
+      "category": "mod-loader",
+      "protected": true
+    },
+    {
+      "source": "Quilt",
+      "target": "Quilt",
+      "category": "mod-loader"
+    },
+    {
+      "source": "OptiFine",
+      "target": "OptiFine",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "JEI",
+      "target": "Just Enough Items",
+      "aliases": [
+        "物品查看器"
+      ],
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "鼠标手势",
+      "target": "Mouse Tweaks",
+      "category": "mod"
+    },
+    {
+      "source": "苹果皮",
+      "target": "AppleSkin",
+      "category": "mod"
+    },
+    {
+      "source": "键位控制",
+      "target": "Controlling",
+      "category": "mod"
+    },
+    {
+      "source": "旅行地图",
+      "target": "JourneyMap",
+      "category": "mod"
+    },
+    {
+      "source": "帕秋莉手册",
+      "target": "Patchouli",
+      "category": "mod"
+    },
+    {
+      "source": "钠",
+      "target": "Sodium",
+      "category": "mod"
+    },
+    {
+      "source": "锂",
+      "target": "Lithium",
+      "category": "mod"
+    },
+    {
+      "source": "磷",
+      "target": "Phosphor",
+      "category": "mod"
+    },
+    {
+      "source": "暮色森林",
+      "target": "The Twilight Forest",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "虚无世界",
+      "target": "Nevermine",
+      "aliases": [
+        "Advent of Ascension"
+      ],
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "神秘时代",
+      "target": "Thaumcraft",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "工业时代2",
+      "target": "Industrial Craft 2",
+      "aliases": [
+        "IC2"
+      ],
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "匠魂",
+      "target": "Tinkers' Construct",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "机械动力",
+      "target": "Create",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "通用机械",
+      "target": "Mekanism",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "格雷科技",
+      "target": "GregTech",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "植物魔法",
+      "target": "Botania",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "新生魔艺",
+      "target": "Ars Nouveau",
+      "category": "mod"
+    },
+    {
+      "source": "更多生物群系",
+      "target": "Biomes O' Plenty",
+      "category": "mod"
+    },
+    {
+      "source": "拔刀剑",
+      "target": "SlashBlade",
+      "category": "mod"
+    },
+    {
+      "source": "星系",
+      "target": "Galacticraft",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "以太天堂",
+      "target": "The Aether",
+      "category": "mod"
+    },
+    {
+      "source": "糖果世界",
+      "target": "Candy World",
+      "category": "mod"
+    },
+    {
+      "source": "突变生物",
+      "target": "Mutant Creatures",
+      "category": "mod"
+    },
+    {
+      "source": "泰坦生物",
+      "target": "Titan Creatures",
+      "category": "mod"
+    },
+    {
+      "source": "凋零风暴",
+      "target": "Wither Storm",
+      "category": "mod"
+    },
+    {
+      "source": "艾利克斯的生物",
+      "target": "Alex's Mobs",
+      "category": "mod"
+    },
+    {
+      "source": "更多TNT",
+      "target": "Too Many TNT",
+      "category": "mod"
+    },
+    {
+      "source": "更多生物",
+      "target": "Mo' Creatures",
+      "category": "mod"
+    },
+    {
+      "source": "生于混沌",
+      "target": "Born in Chaos",
+      "category": "mod"
+    },
+    {
+      "source": "搬运",
+      "target": "Carry On",
+      "category": "mod"
+    },
+    {
+      "source": "高级背包",
+      "target": "Sophisticated Backpacks",
+      "category": "mod"
+    },
+    {
+      "source": "精制存储",
+      "target": "Refined Storage",
+      "category": "mod"
+    },
+    {
+      "source": "铁的法术与书卷",
+      "target": "Iron's Spells 'n Spellbooks",
+      "category": "mod"
+    },
+    {
+      "source": "水产养殖2",
+      "target": "Aquaculture 2",
+      "category": "mod"
+    },
+    {
+      "source": "墓碑",
+      "target": "GraveStone Mod",
+      "category": "mod"
+    },
+    {
+      "source": "路标",
+      "target": "Waystones",
+      "category": "mod"
+    },
+    {
+      "source": "自然指南针",
+      "target": "Nature's Compass",
+      "category": "mod"
+    },
+    {
+      "source": "存储抽屉",
+      "target": "Storage Drawers",
+      "category": "mod"
+    },
+    {
+      "source": "铁箱子",
+      "target": "Iron Chests",
+      "category": "mod"
+    },
+    {
+      "source": "末影接口",
+      "target": "Ender IO",
+      "category": "mod"
+    },
+    {
+      "source": "潘马斯农场",
+      "target": "Pam's HarvestCraft",
+      "category": "mod"
+    },
+    {
+      "source": "群峦传说",
+      "target": "TerraFirmaCraft",
+      "category": "mod"
+    },
+    {
+      "source": "沉浸工程",
+      "target": "Immersive Engineering",
+      "category": "mod"
+    },
+    {
+      "source": "热力膨胀",
+      "target": "Thermal Expansion",
+      "category": "mod"
+    },
+    {
+      "source": "应用能源2",
+      "target": "Applied Energistics 2",
+      "aliases": [
+        "AE2"
+      ],
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "建筑",
+      "target": "BuildCraft",
+      "category": "mod"
+    },
+    {
+      "source": "林业",
+      "target": "Forestry",
+      "category": "mod"
+    },
+    {
+      "source": "铁路",
+      "target": "Railcraft",
+      "category": "mod"
+    },
+    {
+      "source": "时装工坊",
+      "target": "Armor Workshop",
+      "category": "mod"
+    },
+    {
+      "source": "自定义NPC",
+      "target": "Custom NPCs",
+      "category": "mod"
+    },
+    {
+      "source": "维克的现代战争",
+      "target": "Vic's Point Blank",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "龙之进化",
+      "target": "Draconic Evolution",
+      "category": "mod"
+    },
+    {
+      "source": "额外植物学",
+      "target": "ExtraBotany",
+      "category": "mod"
+    },
+    {
+      "source": "血魔法",
+      "target": "Blood Magic",
+      "category": "mod"
+    },
+    {
+      "source": "巫术",
+      "target": "Witchery",
+      "category": "mod"
+    },
+    {
+      "source": "神秘农业",
+      "target": "Mystical Agriculture",
+      "category": "mod"
+    },
+    {
+      "source": "环境科技",
+      "target": "Environmental Tech",
+      "category": "mod"
+    },
+    {
+      "source": "懒人厨房",
+      "target": "Cooking for Blockheads",
+      "category": "mod"
+    },
+    {
+      "source": "凿子",
+      "target": "Chisel",
+      "category": "mod"
+    },
+    {
+      "source": "雕凿工艺",
+      "target": "Chisels & Bits",
+      "category": "mod"
+    },
+    {
+      "source": "小方块",
+      "target": "LittleTiles",
+      "category": "mod"
+    },
+    {
+      "source": "创世神",
+      "target": "WorldEdit",
+      "category": "mod",
+      "protected": true
+    },
+    {
+      "source": "连锁采矿",
+      "target": "VeinMiner",
+      "aliases": [
+        "矿脉矿工"
+      ],
+      "category": "mod"
+    },
+    {
+      "source": "一键挖矿",
+      "target": "Ore Excavation",
+      "category": "mod"
+    },
+    {
+      "source": "R键整理",
+      "target": "Inventory Tweaks",
+      "category": "mod"
+    },
+    {
+      "source": "小地图",
+      "target": "Xaero's Minimap",
+      "category": "mod"
+    },
+    {
+      "source": "体素地图",
+      "target": "VoxelMap",
+      "category": "mod"
+    },
+    {
+      "source": "光影",
+      "target": "Shaders",
+      "category": "mod"
+    },
+    {
+      "source": "材质包",
+      "target": "Resource Pack",
+      "aliases": [
+        "资源包"
+      ],
+      "category": "mod"
+    },
+    {
+      "source": "数据包",
+      "target": "Data Pack",
+      "category": "mod"
+    },
+    {
+      "source": "整合包",
+      "target": "Modpack",
+      "category": "mod"
+    },
+    {
+      "source": "CurseForge",
+      "target": "CurseForge",
+      "category": "mod-platform",
+      "protected": true
+    },
+    {
+      "source": "Modrinth",
+      "target": "Modrinth",
+      "category": "mod-platform",
+      "protected": true
+    },
+    {
+      "source": "MC百科",
+      "target": "MC百科",
+      "aliases": [
+        "mcmod.cn"
+      ],
+      "category": "mod-platform",
+      "protected": true
+    },
+    {
+      "source": "HMCL启动器",
+      "target": "HMCL Launcher",
+      "category": "launcher"
+    },
+    {
+      "source": "PCL2启动器",
+      "target": "PCL2 Launcher",
+      "category": "launcher"
+    },
+    {
+      "source": "MultiMC启动器",
+      "target": "MultiMC Launcher",
+      "category": "launcher"
+    },
+    {
+      "source": "Prism启动器",
+      "target": "Prism Launcher",
+      "category": "launcher"
+    },
+    {
+      "source": "官方启动器",
+      "target": "Minecraft Launcher",
+      "category": "launcher"
+    },
+    {
+      "source": "依赖库",
+      "target": "Library",
+      "category": "mod"
+    },
+    {
+      "source": "API",
+      "target": "API",
+      "category": "mod"
+    },
+    {
+      "source": "前置模组",
+      "target": "Dependency",
+      "category": "mod"
+    },
+    {
+      "source": "配置文件",
+      "target": "Config",
+      "category": "mod"
+    },
+    {
+      "source": "客户端",
+      "target": "Client",
+      "category": "mod"
+    },
+    {
+      "source": "服务端",
+      "target": "Server",
+      "category": "mod"
+    },
+    {
+      "source": "单机",
+      "target": "Singleplayer",
+      "category": "game-mode"
+    },
+    {
+      "source": "联机",
+      "target": "Multiplayer",
+      "category": "game-mode"
+    },
+    {
+      "source": "服务器",
+      "target": "Server",
+      "category": "community"
+    },
+    {
+      "source": "局域网",
+      "target": "LAN",
+      "aliases": [
+        "局域网联机"
+      ],
+      "category": "community"
+    },
+    {
+      "source": "正版",
+      "target": "Premium",
+      "category": "community"
+    },
+    {
+      "source": "盗版",
+      "target": "Pirated",
+      "aliases": [
+        "离线模式"
+      ],
+      "category": "community"
+    },
+    {
+      "source": "皮肤",
+      "target": "Skin",
+      "category": "community"
+    },
+    {
+      "source": "披风",
+      "target": "Cape",
+      "category": "community"
+    },
+    {
+      "source": "红石科技",
+      "target": "Redstone Technology",
+      "category": "mechanic"
+    },
+    {
+      "source": "红石比较器",
+      "target": "Redstone Comparator",
+      "category": "block"
+    },
+    {
+      "source": "红石中继器",
+      "target": "Redstone Repeater",
+      "category": "block"
+    },
+    {
+      "source": "活塞",
+      "target": "Piston",
+      "category": "block"
+    },
+    {
+      "source": "粘性活塞",
+      "target": "Sticky Piston",
+      "category": "block"
+    },
+    {
+      "source": "观察者",
+      "target": "Observer",
+      "category": "block"
+    },
+    {
+      "source": "音符盒",
+      "target": "Note Block",
+      "category": "block"
+    },
+    {
+      "source": "避雷针",
+      "target": "Lightning Rod",
+      "category": "block"
+    },
+    {
+      "source": "刷怪笼",
+      "target": "Spawner",
+      "category": "block"
+    },
+    {
+      "source": "命令方块",
+      "target": "Command Block",
+      "category": "block"
+    },
+    {
+      "source": "结构方块",
+      "target": "Structure Block",
+      "category": "block"
+    },
+    {
+      "source": "屏障",
+      "target": "Barrier",
+      "category": "block"
+    },
+    {
+      "source": "光源方块",
+      "target": "Light Block",
+      "category": "block"
+    },
+    {
+      "source": "蜜脾",
+      "target": "Honeycomb",
+      "category": "item"
+    },
+    {
+      "source": "蜜脾块",
+      "target": "Honeycomb Block",
+      "category": "block"
+    },
+    {
+      "source": "蜂巢",
+      "target": "Bee Nest",
+      "category": "block"
+    },
+    {
+      "source": "蜂箱",
+      "target": "Beehive",
+      "category": "block"
+    },
+    {
+      "source": "紫水晶簇",
+      "target": "Amethyst Cluster",
+      "category": "block"
+    },
+    {
+      "source": "紫晶芽",
+      "target": "Amethyst Bud",
+      "category": "block"
+    },
+    {
+      "source": "方解石",
+      "target": "Calcite",
+      "category": "block"
+    },
+    {
+      "source": "滴水石块",
+      "target": "Dripstone Block",
+      "category": "block"
+    },
+    {
+      "source": "滴水石锥",
+      "target": "Pointed Dripstone",
+      "category": "block"
+    },
+    {
+      "source": "缠根泥土",
+      "target": "Rooted Dirt",
+      "category": "block"
+    },
+    {
+      "source": "苔藓块",
+      "target": "Moss Block",
+      "category": "block"
+    },
+    {
+      "source": "覆地苔藓",
+      "target": "Moss Carpet",
+      "category": "block"
+    },
+    {
+      "source": "杜鹃花丛",
+      "target": "Azalea",
+      "category": "block"
+    },
+    {
+      "source": "盛开的杜鹃花丛",
+      "target": "Flowering Azalea",
+      "category": "block"
+    },
+    {
+      "source": "杜鹃树叶",
+      "target": "Azalea Leaves",
+      "category": "block"
+    },
+    {
+      "source": "盛开的杜鹃树叶",
+      "target": "Flowering Azalea Leaves",
+      "category": "block"
+    },
+    {
+      "source": "红树林原木",
+      "target": "Mangrove Log",
+      "category": "block"
+    },
+    {
+      "source": "红树林木板",
+      "target": "Mangrove Planks",
+      "category": "block"
+    },
+    {
+      "source": "红树林树叶",
+      "target": "Mangrove Leaves",
+      "category": "block"
+    },
+    {
+      "source": "红树林胎生苗",
+      "target": "Mangrove Propagule",
+      "category": "item"
+    },
+    {
+      "source": "樱花原木",
+      "target": "Cherry Log",
+      "category": "block"
+    },
+    {
+      "source": "樱花木板",
+      "target": "Cherry Planks",
+      "category": "block"
+    },
+    {
+      "source": "樱花树叶",
+      "target": "Cherry Leaves",
+      "category": "block"
+    },
+    {
+      "source": "竹板",
+      "target": "Bamboo Planks",
+      "category": "block"
+    },
+    {
+      "source": "竹块",
+      "target": "Block of Bamboo",
+      "category": "block"
+    },
+    {
+      "source": "去皮竹块",
+      "target": "Stripped Bamboo Block",
+      "category": "block"
+    },
+    {
+      "source": "竹马赛克",
+      "target": "Bamboo Mosaic",
+      "category": "block"
+    },
+    {
+      "source": "试炼密室的钥匙",
+      "target": "Trial Key",
+      "category": "item"
+    },
+    {
+      "source": "不祥试炼钥匙",
+      "target": "Ominous Trial Key",
+      "category": "item"
+    },
+    {
+      "source": "重锤",
+      "target": "Mace",
+      "category": "item"
+    },
+    {
+      "source": "犰狳鳞甲",
+      "target": "Armadillo Scute",
+      "category": "item"
+    },
+    {
+      "source": "嗅探兽蛋",
+      "target": "Sniffer Egg",
+      "category": "block"
+    },
+    {
+      "source": "火把花种子",
+      "target": "Torchflower Seeds",
+      "category": "item"
+    },
+    {
+      "source": "火把花",
+      "target": "Torchflower",
+      "category": "block"
+    },
+    {
+      "source": "瓶子草荚果",
+      "target": "Pitcher Pod",
+      "category": "item"
+    },
+    {
+      "source": "瓶子草",
+      "target": "Pitcher Plant",
+      "category": "block"
+    },
+    {
+      "source": "远古城市",
+      "target": "Ancient City",
+      "category": "structure"
+    },
+    {
+      "source": "试炼大厅",
+      "target": "Trial Chamber",
+      "category": "structure"
+    },
+    {
+      "source": "不祥试炼",
+      "target": "Ominous Trial",
+      "category": "mechanic"
+    },
+    {
+      "source": "状态效果",
+      "target": "Status Effect",
+      "category": "mechanic"
+    },
+    {
+      "source": "速度",
+      "target": "Speed",
+      "category": "effect"
+    },
+    {
+      "source": "缓慢",
+      "target": "Slowness",
+      "category": "effect"
+    },
+    {
+      "source": "急迫",
+      "target": "Haste",
+      "category": "effect"
+    },
+    {
+      "source": "挖掘疲劳",
+      "target": "Mining Fatigue",
+      "category": "effect"
+    },
+    {
+      "source": "力量",
+      "target": "Strength",
+      "category": "effect"
+    },
+    {
+      "source": "瞬间治疗",
+      "target": "Instant Health",
+      "category": "effect"
+    },
+    {
+      "source": "瞬间伤害",
+      "target": "Instant Damage",
+      "category": "effect"
+    },
+    {
+      "source": "跳跃提升",
+      "target": "Jump Boost",
+      "category": "effect"
+    },
+    {
+      "source": "反胃",
+      "target": "Nausea",
+      "category": "effect"
+    },
+    {
+      "source": "生命恢复",
+      "target": "Regeneration",
+      "category": "effect"
+    },
+    {
+      "source": "抗性提升",
+      "target": "Resistance",
+      "category": "effect"
+    },
+    {
+      "source": "抗火",
+      "target": "Fire Resistance",
+      "category": "effect"
+    },
+    {
+      "source": "水下呼吸",
+      "target": "Water Breathing",
+      "category": "effect"
+    },
+    {
+      "source": "隐身",
+      "target": "Invisibility",
+      "category": "effect"
+    },
+    {
+      "source": "失明",
+      "target": "Blindness",
+      "category": "effect"
+    },
+    {
+      "source": "夜视",
+      "target": "Night Vision",
+      "category": "effect"
+    },
+    {
+      "source": "饥饿",
+      "target": "Hunger",
+      "category": "effect"
+    },
+    {
+      "source": "衰弱",
+      "target": "Weakness",
+      "category": "effect"
+    },
+    {
+      "source": "中毒",
+      "target": "Poison",
+      "category": "effect"
+    },
+    {
+      "source": "凋零",
+      "target": "Wither",
+      "category": "effect"
+    },
+    {
+      "source": "生命提升",
+      "target": "Health Boost",
+      "category": "effect"
+    },
+    {
+      "source": "伤害吸收",
+      "target": "Absorption",
+      "category": "effect"
+    },
+    {
+      "source": "饱和",
+      "target": "Saturation",
+      "category": "effect"
+    },
+    {
+      "source": "发光",
+      "target": "Glowing",
+      "category": "effect"
+    },
+    {
+      "source": "悬浮",
+      "target": "Levitation",
+      "category": "effect"
+    },
+    {
+      "source": "幸运",
+      "target": "Luck",
+      "category": "effect"
+    },
+    {
+      "source": "霉运",
+      "target": "Bad Luck",
+      "category": "effect"
+    },
+    {
+      "source": "缓降",
+      "target": "Slow Falling",
+      "category": "effect"
+    },
+    {
+      "source": "潮涌能量",
+      "target": "Conduit Power",
+      "category": "effect"
+    },
+    {
+      "source": "海豚的恩惠",
+      "target": "Dolphin's Grace",
+      "category": "effect"
+    },
+    {
+      "source": "不祥之兆",
+      "target": "Bad Omen",
+      "category": "effect"
+    },
+    {
+      "source": "不祥之兆 (村庄英雄)",
+      "target": "Hero of the Village",
+      "category": "effect"
+    },
+    {
+      "source": "黑暗",
+      "target": "Darkness",
+      "category": "effect"
+    },
+    {
+      "source": "容器",
+      "target": "Container",
+      "category": "block"
+    },
+    {
+      "source": "箱子",
+      "target": "Chest",
+      "category": "block"
+    },
+    {
+      "source": "陷阱箱",
+      "target": "Trapped Chest",
+      "category": "block"
+    },
+    {
+      "source": "末影箱",
+      "target": "Ender Chest",
+      "category": "block"
+    },
+    {
+      "source": "潜影盒",
+      "target": "Shulker Box",
+      "category": "block"
+    },
+    {
+      "source": "桶",
+      "target": "Barrel",
+      "category": "block"
+    },
+    {
+      "source": "烟熏炉",
+      "target": "Smoker",
+      "category": "block"
+    },
+    {
+      "source": "高炉",
+      "target": "Blast Furnace",
+      "category": "block"
+    },
+    {
+      "source": "制图台",
+      "target": "Cartography Table",
+      "category": "block"
+    },
+    {
+      "source": "制箭台",
+      "target": "Fletching Table",
+      "category": "block"
+    },
+    {
+      "source": "锻造台",
+      "target": "Smithing Table",
+      "category": "block"
+    },
+    {
+      "source": "切石机",
+      "target": "Stonecutter",
+      "category": "block"
+    },
+    {
+      "source": "讲台",
+      "target": "Lectern",
+      "category": "block"
+    },
+    {
+      "source": "砂轮",
+      "target": "Grindstone",
+      "category": "block"
+    },
+    {
+      "source": "织布机",
+      "target": "Loom",
+      "category": "block"
+    },
+    {
+      "source": "堆肥桶",
+      "target": "Composter",
+      "category": "block"
+    },
+    {
+      "source": "木桶",
+      "target": "Barrel",
+      "category": "block"
+    },
+    {
+      "source": "钟",
+      "target": "Bell",
+      "category": "block"
+    },
+    {
+      "source": "灯",
+      "target": "Lantern",
+      "category": "block"
+    },
+    {
+      "source": "灵魂灯笼",
+      "target": "Soul Lantern",
+      "category": "block"
+    },
+    {
+      "source": "火把",
+      "target": "Torch",
+      "category": "block"
+    },
+    {
+      "source": "灵魂火把",
+      "target": "Soul Torch",
+      "category": "block"
+    },
+    {
+      "source": "红石火把",
+      "target": "Redstone Torch",
+      "category": "block"
+    },
+    {
+      "source": "按钮",
+      "target": "Button",
+      "category": "block"
+    },
+    {
+      "source": "压力板",
+      "target": "Pressure Plate",
+      "category": "block"
+    },
+    {
+      "source": "测重压力板",
+      "target": "Weighted Pressure Plate",
+      "category": "block"
+    },
+    {
+      "source": "拉杆",
+      "target": "Lever",
+      "category": "block"
+    },
+    {
+      "source": "门",
+      "target": "Door",
+      "category": "block"
+    },
+    {
+      "source": "活板门",
+      "target": "Trapdoor",
+      "category": "block"
+    },
+    {
+      "source": "栅栏门",
+      "target": "Fence Gate",
+      "category": "block"
+    },
+    {
+      "source": "栅栏",
+      "target": "Fence",
+      "category": "block"
+    },
+    {
+      "source": "墙",
+      "target": "Wall",
+      "category": "block"
+    },
+    {
+      "source": "台阶",
+      "target": "Slab",
+      "category": "block"
+    },
+    {
+      "source": "楼梯",
+      "target": "Stairs",
+      "category": "block"
+    },
+    {
+      "source": "告示牌",
+      "target": "Sign",
+      "category": "block"
+    },
+    {
+      "source": "悬挂式告示牌",
+      "target": "Hanging Sign",
+      "category": "block"
+    },
+    {
+      "source": "床",
+      "target": "Bed",
+      "category": "block"
+    },
+    {
+      "source": "旗帜",
+      "target": "Banner",
+      "category": "block"
+    },
+    {
+      "source": "地毯",
+      "target": "Carpet",
+      "category": "block"
+    },
+    {
+      "source": "画",
+      "target": "Painting",
+      "category": "entity"
+    },
+    {
+      "source": "物品展示框",
+      "target": "Item Frame",
+      "category": "entity"
+    },
+    {
+      "source": "荧光物品展示框",
+      "target": "Glow Item Frame",
+      "category": "entity"
+    },
+    {
+      "source": "盔甲架",
+      "target": "Armor Stand",
+      "category": "entity"
+    },
+    {
+      "source": "船",
+      "target": "Boat",
+      "category": "entity"
+    },
+    {
+      "source": "运输船",
+      "target": "Chest Boat",
+      "category": "entity"
+    },
+    {
+      "source": "矿车",
+      "target": "Minecart",
+      "category": "entity"
+    },
+    {
+      "source": "运输矿车",
+      "target": "Minecart with Chest",
+      "category": "entity"
+    },
+    {
+      "source": "动力矿车",
+      "target": "Minecart with Furnace",
+      "category": "entity"
+    },
+    {
+      "source": "TNT矿车",
+      "target": "Minecart with TNT",
+      "category": "entity"
+    },
+    {
+      "source": "漏斗矿车",
+      "target": "Minecart with Hopper",
+      "category": "entity"
+    },
+    {
+      "source": "命令方块矿车",
+      "target": "Minecart with Command Block",
+      "category": "entity"
+    },
+    {
+      "source": "生物群系",
+      "target": "Biome",
+      "category": "mechanic"
+    },
+    {
+      "source": "森林",
+      "target": "Forest",
+      "category": "biome"
+    },
+    {
+      "source": "黑森林",
+      "target": "Dark Forest",
+      "category": "biome"
+    },
+    {
+      "source": "针叶林",
+      "target": "Taiga",
+      "category": "biome"
+    },
+    {
+      "source": "原始针叶林",
+      "target": "Old Growth Taiga",
+      "category": "biome"
+    },
+    {
+      "source": "白桦林",
+      "target": "Birch Forest",
+      "category": "biome"
+    },
+    {
+      "source": "原始白桦林",
+      "target": "Old Growth Birch Forest",
+      "category": "biome"
+    },
+    {
+      "source": "丛林",
+      "target": "Jungle",
+      "category": "biome"
+    },
+    {
+      "source": "竹林",
+      "target": "Bamboo Jungle",
+      "category": "biome"
+    },
+    {
+      "source": "沙漠",
+      "target": "Desert",
+      "category": "biome"
+    },
+    {
+      "source": "热带草原",
+      "target": "Savanna",
+      "category": "biome"
+    },
+    {
+      "source": "恶地",
+      "target": "Badlands",
+      "category": "biome"
+    },
+    {
+      "source": "沼泽",
+      "target": "Swamp",
+      "category": "biome"
+    },
+    {
+      "source": "红树林沼泽",
+      "target": "Mangrove Swamp",
+      "category": "biome"
+    },
+    {
+      "source": "雪原",
+      "target": "Snowy Plains",
+      "category": "biome"
+    },
+    {
+      "source": "雪山",
+      "target": "Snowy Slopes",
+      "category": "biome"
+    },
+    {
+      "source": "冰刺之地",
+      "target": "Ice Spikes",
+      "category": "biome"
+    },
+    {
+      "source": "冻洋",
+      "target": "Frozen Ocean",
+      "category": "biome"
+    },
+    {
+      "source": "深海",
+      "target": "Deep Ocean",
+      "category": "biome"
+    },
+    {
+      "source": "蘑菇岛",
+      "target": "Mushroom Fields",
+      "category": "biome"
+    },
+    {
+      "source": "下界荒地",
+      "target": "Nether Wastes",
+      "category": "biome"
+    },
+    {
+      "source": "绯红森林",
+      "target": "Crimson Forest",
+      "category": "biome"
+    },
+    {
+      "source": "诡异森林",
+      "target": "Warped Forest",
+      "category": "biome"
+    },
+    {
+      "source": "灵魂沙峡谷",
+      "target": "Soul Sand Valley",
+      "category": "biome"
+    },
+    {
+      "source": "玄武岩三角洲",
+      "target": "Basalt Deltas",
+      "category": "biome"
+    },
+    {
+      "source": "末地高地",
+      "target": "End Highlands",
+      "category": "biome"
+    },
+    {
+      "source": "末地荒地",
+      "target": "End Barrens",
+      "category": "biome"
+    },
+    {
+      "source": "末地矮林",
+      "target": "End Midlands",
+      "category": "biome"
+    },
+    {
+      "source": "末地岛屿",
+      "target": "End Islands",
+      "category": "biome"
+    }
+  ]
+}

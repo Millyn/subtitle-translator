@@ -191,8 +191,80 @@ func TestSelect(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if m.ID != "whisper-tiny" {
+	if m.ID != "fire-red-asr2-ctc-int8" {
 		t.Fatal(m.ID)
+	}
+}
+
+func TestCatalogIsCompleteAndHasNoWhisper(t *testing.T) {
+	if len(Catalog) != 4 {
+		t.Fatalf("catalog has %d models, want 4", len(Catalog))
+	}
+	want := map[string]struct {
+		kind  string
+		bytes int64
+	}{
+		"paraformer-zh":          {kind: "paraformer"},
+		"sensevoice-int8":        {kind: "sensevoice"},
+		"fire-red-asr2-ctc-int8": {kind: "fire-red-asr-ctc", bytes: 520516278},
+		"funasr-nano-int8":       {kind: "funasr-nano", bytes: 841730611},
+	}
+	for _, m := range Catalog {
+		expect, ok := want[m.ID]
+		if !ok {
+			t.Fatalf("unexpected model %q", m.ID)
+		}
+		if strings.Contains(strings.ToLower(m.ID+m.Kind+m.Name), "whisper") {
+			t.Fatalf("Whisper leaked into catalog: %+v", m)
+		}
+		if m.Kind != expect.kind || m.Name == "" || m.Language == "" || m.URL == "" || m.Description == "" || m.Recommended == "" || m.SizeMB <= 0 || len(m.RequiredFiles) == 0 {
+			t.Fatalf("incomplete model metadata: %+v", m)
+		}
+		if expect.bytes != 0 && m.ArchiveBytes != expect.bytes {
+			t.Fatalf("%s archive bytes=%d, want %d", m.ID, m.ArchiveBytes, expect.bytes)
+		}
+	}
+}
+
+func TestDownloadRejectsChangedOfficialAssetSize(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Length", "3")
+		if r.Method != http.MethodHead {
+			_, _ = w.Write([]byte("abc"))
+		}
+	}))
+	defer ts.Close()
+	m := Meta{ID: "changed", Name: "changed", URL: ts.URL, ArchiveBytes: 4}
+	err := DownloadWithOptions(context.Background(), m, t.TempDir(), DownloadOptions{Client: ts.Client()})
+	if err == nil || !strings.Contains(err.Error(), "预期 4") {
+		t.Fatalf("size mismatch error=%v", err)
+	}
+}
+
+func TestFunASRNanoRequiredFilesAreStrict(t *testing.T) {
+	m, ok := Find("funasr-nano-int8")
+	if !ok {
+		t.Fatal("FunASR Nano missing")
+	}
+	d := t.TempDir()
+	root := filepath.Join(d, m.ID)
+	for _, name := range m.RequiredFiles {
+		path := filepath.Join(root, name)
+		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte("x"), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := ValidateInstalled(m, d); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(filepath.Join(root, "Qwen3-0.6B", "vocab.json")); err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateInstalled(m, d); err == nil {
+		t.Fatal("missing tokenizer vocabulary accepted")
 	}
 }
 

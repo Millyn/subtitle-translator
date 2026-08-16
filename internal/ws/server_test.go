@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"io"
@@ -77,7 +78,7 @@ func TestPageAndConfigEndpoints(t *testing.T) {
 	s := NewWithPage("", []byte("<html>subtitle editor</html>"), PageConfig{Mode: "bilingual", HideAfterMS: 12000})
 	h := httptest.NewServer(s.Handler())
 	defer h.Close()
-	for _, path := range []string{"/subtitle", "/editor"} {
+	for _, path := range []string{"/subtitle", "/editor", "/control", "/debug"} {
 		resp, err := http.Get(h.URL + path)
 		if err != nil {
 			t.Fatal(err)
@@ -96,6 +97,110 @@ func TestPageAndConfigEndpoints(t *testing.T) {
 	var cfg PageConfig
 	if err = json.NewDecoder(resp.Body).Decode(&cfg); err != nil || cfg.Mode != "bilingual" || cfg.HideAfterMS != 12000 {
 		t.Fatalf("cfg=%+v err=%v", cfg, err)
+	}
+}
+
+func TestControlAPIAndValidation(t *testing.T) {
+	s := New("")
+	h := httptest.NewServer(s.Handler())
+	defer h.Close()
+	state := ControlState{Profile: "minecraft", CorrectionMode: "conservative", ChineseSource: "compare", ContextSize: 5, CustomPrompt: "creeper", Terms: []Term{{Source: "苦力怕", Target: "Creeper"}}}
+	body, _ := json.Marshal(state)
+	req, _ := http.NewRequest(http.MethodPut, h.URL+"/api/control", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	var got ControlState
+	if err := json.NewDecoder(resp.Body).Decode(&got); err != nil || resp.StatusCode != http.StatusOK || got.Profile != "minecraft" || len(got.Terms) != 1 || got.UpdatedAt == 0 {
+		t.Fatalf("status=%d state=%+v err=%v", resp.StatusCode, got, err)
+	}
+
+	bad := []byte(`{"profile":"unknown","correctionMode":"raw","contextSize":0,"terms":[]}`)
+	req, _ = http.NewRequest(http.MethodPut, h.URL+"/api/control", bytes.NewReader(bad))
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusBadRequest {
+		t.Fatalf("bad status=%d", resp.StatusCode)
+	}
+}
+
+func TestControlCallbackReceivesNilTermsOnProfileSwitch(t *testing.T) {
+	s := New("")
+	called := false
+	s.SetControlCallbacks(ControlCallbacks{Apply: func(_ context.Context, state ControlState) (ControlState, error) {
+		called = true
+		if state.Terms != nil {
+			t.Fatalf("profile switch terms=%#v, want nil", state.Terms)
+		}
+		state.Terms = []Term{{Source: "弯道", Target: "corner"}}
+		return state, nil
+	}})
+	h := httptest.NewServer(s.Handler())
+	defer h.Close()
+	body := []byte(`{"profile":"iracing","customPrompt":"","correctionMode":"conservative","chineseSource":"corrected","contextSize":3,"terms":null}`)
+	req, _ := http.NewRequest(http.MethodPut, h.URL+"/api/control", bytes.NewReader(body))
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	var got ControlState
+	_ = json.NewDecoder(resp.Body).Decode(&got)
+	if !called || resp.StatusCode != http.StatusOK || len(got.Terms) != 1 {
+		t.Fatalf("called=%v status=%d got=%+v", called, resp.StatusCode, got)
+	}
+}
+
+func TestLocalAccessPolicy(t *testing.T) {
+	s := NewWithPage("", []byte("page"), PageConfig{})
+	s.SetLocalAccessPolicy(func(*http.Request) bool { return false })
+	for _, path := range []string{"/control", "/debug", "/api/control", "/debug-ws"} {
+		req := httptest.NewRequest(http.MethodGet, path, nil)
+		w := httptest.NewRecorder()
+		s.Handler().ServeHTTP(w, req)
+		if w.Code != http.StatusForbidden {
+			t.Fatalf("%s status=%d", path, w.Code)
+		}
+	}
+	// OBS remains remotely accessible.
+	req := httptest.NewRequest(http.MethodGet, "/subtitle", nil)
+	w := httptest.NewRecorder()
+	s.Handler().ServeHTTP(w, req)
+	if w.Code != http.StatusOK {
+		t.Fatalf("subtitle status=%d", w.Code)
+	}
+}
+
+func TestBroadcastDebug(t *testing.T) {
+	s := New("")
+	h := httptest.NewServer(s.Handler())
+	defer h.Close()
+	url := "ws" + strings.TrimPrefix(h.URL, "http") + "/debug-ws"
+	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	deadline := time.Now().Add(time.Second)
+	for s.ClientCount() != 1 && time.Now().Before(deadline) {
+		time.Sleep(time.Millisecond)
+	}
+	if err := s.BroadcastDebug(DebugEvent{Raw: "泥豪", Corrected: "你好", English: "Hello", Profile: "general", Latencies: map[string]float64{"total": 321}, Tokens: 12, CacheHit: true}); err != nil {
+		t.Fatal(err)
+	}
+	_, payload, err := conn.ReadMessage()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var msg Message
+	if err := json.Unmarshal(payload, &msg); err != nil || msg.Type != "debug" || msg.Debug == nil || msg.Debug.Corrected != "你好" || msg.Debug.TS == 0 {
+		t.Fatalf("msg=%+v err=%v", msg, err)
 	}
 }
 

@@ -1,47 +1,102 @@
 # 实时语音翻译字幕系统
 
-Windows 游戏主机上的低资源后台服务：真实麦克风 → 实时 VAD → sherpa-onnx 本地 ASR → DeepSeek 中译英 → WebSocket → OBS。
+Windows 游戏主机上的实时字幕服务：真实麦克风 → VAD 断句 → sherpa-onnx 本地中英 ASR → DeepSeek 保守纠错与翻译 → HTTP/WebSocket → OBS。
 
 ## 快速开始
 
-1. 打开项目根目录的 `config.json`，填写 `deepseek.api_key`。
-2. 双击或在 PowerShell 运行 `subtitle-translator.exe`。
-3. 启动时选择真实麦克风和 ASR 模型。未安装的模型及 sherpa-onnx 运行库会先验证官方链接，再自动下载。
-4. 程序启动后会打印“OBS 字幕 URL”和“字幕预览编辑器”URL。B 电脑的 OBS 添加“浏览器”源，直接粘贴形如 `http://192.168.10.189:8765/subtitle` 的地址，无需复制本地 HTML。
-5. 在普通浏览器打开形如 `http://A电脑IP:8765/editor` 的编辑器，可实时模拟和调整模式、保留时间、字号、位置、宽度、颜色、背景与字体，然后复制生成的 OBS URL。
+1. 在 `config.json` 的 `deepseek.api_key` 中填写密钥。
+2. 运行 `subtitle-translator.exe`，选择真实麦克风和 ASR 模型。
+3. 未安装的模型会先验证官方链接，再断点下载并校验文件。
+4. 将程序打印的局域网 `OBS 字幕 URL` 粘贴到电脑 B 的 OBS“浏览器来源”。
+5. 本机打开程序打印的 `/control`，可以在不重启程序和 OBS 的情况下切换游戏、Prompt、纠错、上下文和术语。
 
-6. Windows 防火墙允许 TCP 8765。按 Ctrl+C 可安全退出。
+程序提供以下页面：
 
-## 配置
+- `/subtitle`：OBS 透明字幕。
+- `/editor`：字号、位置、颜色、保留时间等视觉设置和模拟预览。
+- `/control`：游戏 Profile、AI 纠错、自定义 Prompt 和术语表，仅电脑 A 本机可访问。
+- `/debug`：原始 ASR、纠正中文、英文、上下文、术语、耗时、Token、缓存和错误，仅 DEBUG 模式使用且仅本机可访问。
 
-实际配置是 `config.json`；`config.example.json` 是可恢复的模板。真实密钥文件已加入 `.gitignore`。环境变量 `DEEPSEEK_API_KEY` 只在 JSON 未填写时作为后备。
+## 中国场景 ASR 模型
 
-- `audio.device_index`: `-1` 表示启动时选择；也可填写固定编号。
-- `asr.model_id`: 空值表示启动时选择；可选 `paraformer-zh`、`sensevoice-int8`、`whisper-tiny`、`whisper-base`、`whisper-small`。
-- `asr.num_threads`: 默认 2，最大允许 4。
-- `listen`: 默认 `:8765`。
-- `debug`: 设为 `true` 后输出断句大小/时长、中文识别结果、英文翻译结果、各阶段耗时、队列错误以及每 10 秒的采集与客户端统计。
-- `subtitle.mode`: `bilingual` 为中英双语（中文小、英文大），`english` 为纯英文。
-- `subtitle.hide_after_ms`: 字幕保留时间；设为 `0` 表示一直保留到下一条字幕。
-- `subtitle.english_font_size` / `chinese_font_size`: 分别配置英文字号和中文字号。
-- `subtitle.position_x_percent` / `position_y_percent`: 画布中的水平和垂直位置。
-- `subtitle.max_width_percent`、颜色、背景和字体均可在 JSON 或网页编辑器中配置。
-- `model_dir` / `runtime_dir`: 相对于配置文件所在目录解析。
+项目不再提供 Whisper。可选模型：
+
+- `paraformer-zh`：速度最快、资源占用低，通用中文和少量英文。
+- `sensevoice-int8`：默认均衡选择，使用自动语言检测，适合中文夹英文。
+- `fire-red-asr2-ctc-int8`：中文/英文和多种中文方言，高准确率档，约 497 MiB。
+- `funasr-nano-int8`：中文/英文/日文及多种口音，实验性高精度档，约 803 MiB，资源占用最高。
+
+移除模型目录中的 Whisper 入口不会删除用户以前下载的文件。
+
+## 纠错、翻译和游戏术语
+
+DeepSeek 每个断句只请求一次，同时返回：
+
+- 原始 ASR 中文（由程序保存，不接受 AI 改写）
+- 保守纠正后的中文
+- 英文翻译
+- 是否发生纠正
+- 命中的术语
+- API 尝试次数和 Token 使用
+
+默认携带最近两条纠正后的中文作为上下文。自定义 Prompt 是直播背景和翻译风格；程序固定规则会阻止语音转录内容覆盖系统指令，并要求无法确认时保留原文。
+
+内置术语位于 `glossaries/`：
+
+- iRacing：55 条起始术语
+- Minecraft：52 条起始术语
+- Project Zomboid：60 条起始术语
+
+控制页支持即时切换 `auto/general/iracing/minecraft/project_zomboid/disabled`，以及术语添加、删除、JSON/CSV 导入、JSON 导出和恢复内置版本。修改保存在 `translation-settings.json`，不重写包含 API Key 的 `config.json`。
+
+## 配置要点
+
+- `audio.device_index`：`-1` 启动时选择真实麦克风。
+- `audio.silence_ms`：默认 700ms，较完整地保留中英混合句子。
+- `audio.pre_roll_ms`：默认 250ms，降低句首被切掉的概率。
+- `asr.model_id`：空值启动时选择，也可填写上面的模型 ID。
+- `asr.num_threads`：默认 2，最大 4。
+- `translation.active_profile`：默认 `auto`。
+- `translation.correction_mode`：`conservative` 或 `off`。
+- `translation.context_sentences`：`0～5`，默认 2。
+- `translation.custom_prompt`：用户直播背景和翻译风格。
+- `subtitle.chinese_source`：`corrected`、`raw` 或 `compare`。
+- `debug`：启用终端详细日志和网页实时调试事件。
+- `debug_options.log_file`：非空时额外写入本地日志文件，密钥不会记录。
+- `listen`：默认 `:8765`。
+
+字幕字号、位置、最大宽度、颜色、背景、字体和保留时间继续通过 `subtitle` 配置或 `/editor` 调整。
 
 ## 检查与诊断
 
 ```powershell
-# 枚举 Windows 当前真实输入设备
+# 枚举真实 Windows 输入设备
 .\subtitle-translator.exe --list-devices
 
-# 真正打开编号 0 的麦克风采集 3 秒，不使用离线音频代替
+# 真正打开编号 0 的麦克风采集 3 秒
 .\subtitle-translator.exe --device=0 --mic-test=3s
 
-# 验证模型、官方运行库和配置
-.\subtitle-translator.exe --device=0 --model=paraformer-zh --check
+# 使用真实麦克风录制 15 秒，同一批语音依次交给全部已安装模型
+.\subtitle-translator.exe --device=0 --asr-benchmark=15s
+
+# 验证设备、指定模型、运行库和配置
+.\subtitle-translator.exe --device=0 --model=sensevoice-int8 --check
+
+# 本次运行启用完整 DEBUG
+.\subtitle-translator.exe --debug
 ```
 
-命令行的 `--device`、`--model` 只覆盖本次运行，不修改 JSON。
+`--device`、`--model` 和 `--debug` 只覆盖本次运行，不修改 JSON。
+
+## 实现说明
+
+- 麦克风：WASAPI/miniaudio，16kHz、单声道、S16、30ms 块。
+- 实时回调：预分配缓冲、非阻塞入队、零动态分配。
+- VAD：Google WebRTC VAD，失败时回退自适应能量检测。
+- ASR：官方 sherpa-onnx v1.13.4 Windows x64 常驻服务，模型只加载一次。
+- 下载：HEAD/Range 探测、断点续传、重试、长度检查、可选 SHA-256 和安全原子解压。
+- 流水线：有界队列、单 ASR worker、单翻译 worker、panic 隔离、错误降级和丢弃统计。
+- 安全：OBS 页面允许局域网访问；控制页、调试页和调试 WebSocket 默认仅回环地址可访问。
 
 ## 构建与测试
 
@@ -52,14 +107,4 @@ go test -race ./...
 go build -trimpath -ldflags "-s -w" -o subtitle-translator.exe ./cmd/translator
 ```
 
-## 实现说明
-
-- 音频：WASAPI/miniaudio 真实采集端点，16kHz、单声道、S16、30ms 块。
-- 回调：预分配固定缓冲，仅复制、非阻塞入队及原子计数，不做 I/O 或推理。
-- VAD：后台 Google WebRTC VAD（模式 2），初始化失败时回退到自适应能量与过零检测；150ms 预录、500ms 静音、最短 300ms、最长 10 秒。
-- ASR：官方 sherpa-onnx v1.13.4 Windows x64 常驻服务，模型只加载一次；模型参数自动适配，推理互斥且默认 2 线程。
-- 下载：HEAD/Range 双重探测、断点续传、重试、速度显示、可选 SHA-256、模型文件清单检查以及原子安全解压。
-- 流水线：有界队列、单 ASR worker、单翻译 worker、panic 隔离及丢弃统计，避免积压影响游戏。
-- HTTP/OBS：服务端直接托管透明字幕页和实时编辑器；默认保留 12 秒、2 秒自动重连，支持双语/纯英文和 URL 临时覆盖配置。
-
-测试与实机结果见 `TEST_REPORT.md`。
+验证记录见 `TEST_REPORT.md`。
