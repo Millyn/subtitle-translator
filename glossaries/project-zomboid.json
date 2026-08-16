@@ -2018,11 +2018,6 @@
       "category": "item"
     },
     {
-      "source": "垃圾袋",
-      "target": "trash bag",
-      "category": "item"
-    },
-    {
       "source": "雨衣",
       "target": "raincoat",
       "category": "clothing"
@@ -2373,11 +2368,6 @@
       "category": "material"
     },
     {
-      "source": "海绵",
-      "target": "sponge",
-      "category": "material"
-    },
-    {
       "source": "丝线",
       "target": "thread",
       "category": "material"
@@ -2723,11 +2713,6 @@
       "category": "furniture"
     },
     {
-      "source": "手表",
-      "target": "wristwatch",
-      "category": "furniture"
-    },
-    {
       "source": "温度计",
       "target": "thermometer",
       "category": "tool"
@@ -2790,11 +2775,6 @@
     {
       "source": "杀菌剂",
       "target": "fungicide",
-      "category": "farming"
-    },
-    {
-      "source": "除草剂",
-      "target": "herbicide",
       "category": "farming"
     },
     {
@@ -3043,11 +3023,6 @@
       "category": "sports"
     },
     {
-      "source": "渔网",
-      "target": "fishing net",
-      "category": "sports"
-    },
-    {
       "source": "露营装备",
       "target": "camping gear",
       "category": "item"
@@ -3285,11 +3260,6 @@
     {
       "source": "砖石",
       "target": "masonry",
-      "category": "material"
-    },
-    {
-      "source": "石膏",
-      "target": "gypsum",
       "category": "material"
     },
     {
@@ -3608,11 +3578,6 @@
       "category": "vehicle"
     },
     {
-      "source": "轿车",
-      "target": "car",
-      "category": "vehicle"
-    },
-    {
       "source": "货车",
       "target": "truck",
       "category": "vehicle"
@@ -3620,11 +3585,6 @@
     {
       "source": "SUV",
       "target": "SUV",
-      "category": "vehicle"
-    },
-    {
-      "source": "皮卡",
-      "target": "pickup truck",
       "category": "vehicle"
     },
     {
@@ -3743,11 +3703,6 @@
       "category": "vehicle-part"
     },
     {
-      "source": "刹车片",
-      "target": "brake pad",
-      "category": "vehicle-part"
-    },
-    {
       "source": "轮毂",
       "target": "wheel rim",
       "category": "vehicle-part"
@@ -3848,16 +3803,6 @@
       "category": "vehicle-part"
     },
     {
-      "source": "排气管",
-      "target": "exhaust",
-      "category": "vehicle-part"
-    },
-    {
-      "source": "消音器",
-      "target": "muffler",
-      "category": "vehicle-part"
-    },
-    {
       "source": "催化转化器",
       "target": "catalytic converter",
       "category": "vehicle-part"
@@ -3938,11 +3883,6 @@
       "category": "vehicle-part"
     },
     {
-      "source": "收音机",
-      "target": "car radio",
-      "category": "vehicle-part"
-    },
-    {
       "source": "CD播放器",
       "target": "CD player",
       "category": "vehicle-part"
@@ -4000,11 +3940,6 @@
     {
       "source": "变速箱油",
       "target": "transmission fluid",
-      "category": "vehicle-part"
-    },
-    {
-      "source": "冷却液",
-      "target": "coolant",
       "category": "vehicle-part"
     },
     {

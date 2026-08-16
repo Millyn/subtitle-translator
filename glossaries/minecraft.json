@@ -2172,16 +2172,6 @@
       "category": "block"
     },
     {
-      "source": "末影箱",
-      "target": "Ender Chest",
-      "category": "block"
-    },
-    {
-      "source": "潜影盒",
-      "target": "Shulker Box",
-      "category": "block"
-    },
-    {
       "source": "桶",
       "target": "Barrel",
       "category": "block"
@@ -2342,34 +2332,9 @@
       "category": "block"
     },
     {
-      "source": "旗帜",
-      "target": "Banner",
-      "category": "block"
-    },
-    {
       "source": "地毯",
       "target": "Carpet",
       "category": "block"
-    },
-    {
-      "source": "画",
-      "target": "Painting",
-      "category": "entity"
-    },
-    {
-      "source": "物品展示框",
-      "target": "Item Frame",
-      "category": "entity"
-    },
-    {
-      "source": "荧光物品展示框",
-      "target": "Glow Item Frame",
-      "category": "entity"
-    },
-    {
-      "source": "盔甲架",
-      "target": "Armor Stand",
-      "category": "entity"
     },
     {
       "source": "船",
