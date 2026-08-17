@@ -59,6 +59,8 @@ type RichResult struct {
 	WasCorrected     bool     `json:"was_corrected"`
 	MatchedTerms     []string `json:"matched_terms"`
 	Attempts         int      `json:"-"`
+	RequestBody      string   `json:"-"`
+	ResponseBody     string   `json:"-"`
 }
 
 type Usage struct {
@@ -146,6 +148,21 @@ func (c *Client) TranslateRich(ctx context.Context, input RichRequest) (RichResu
 	return c.doRich(ctx, b, input.Source)
 }
 
+// maskAPIKey replaces the real API key in the request body with a masked form
+// showing only the first 4 and last 4 characters (e.g. sk-xxxx....xxxx).
+func maskAPIKey(body, key string) string {
+	if key == "" {
+		return body
+	}
+	masked := key
+	if len(key) > 8 {
+		masked = key[:4] + "...." + key[len(key)-4:]
+	} else {
+		masked = "****"
+	}
+	return strings.ReplaceAll(body, key, masked)
+}
+
 func (c *Client) doRich(ctx context.Context, b []byte, source string) (RichResult, error) {
 	if len(b) == 0 {
 		return RichResult{}, nil
@@ -219,6 +236,8 @@ func (c *Client) doRich(ctx context.Context, b []byte, source string) (RichResul
 			continue
 		}
 		result.Attempts = attempt + 1
+		result.RequestBody = maskAPIKey(string(b), c.Key)
+		result.ResponseBody = string(data)
 		c.usageMu.Lock()
 		c.usage = out.Usage
 		c.usageMu.Unlock()

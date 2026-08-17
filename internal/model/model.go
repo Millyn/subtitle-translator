@@ -34,6 +34,9 @@ var Catalog = []Meta{
 	{ID: "sensevoice-int8", Name: "SenseVoice Small INT8", Kind: "sensevoice", Language: "auto (zh/en/ja/ko/yue)", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2", Recommended: "推荐-多语言", Description: "自动识别中英日韩粤语，启用标点和逆文本规范化", SizeMB: 240, RequiredFiles: []string{"model.int8.onnx", "tokens.txt"}},
 	{ID: "fire-red-asr2-ctc-int8", Name: "FireRedASR2 CTC zh_en INT8", Kind: "fire-red-asr-ctc", Language: "zh/en + 20多种中文方言", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-fire-red-asr2-ctc-zh_en-int8-2026-02-25.tar.bz2", Recommended: "推荐-中文方言", Description: "CTC 中文/英语模型，覆盖粤语、四川话、上海话、闽南话等方言；CPU 推理快但模型较大", SizeMB: 497, ArchiveBytes: 520516278, RequiredFiles: []string{"model.int8.onnx", "tokens.txt"}},
 	{ID: "funasr-nano-int8", Name: "FunASR Nano INT8", Kind: "funasr-nano", Language: "zh/en/ja + 中文方言", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-funasr-nano-int8-2025-12-30.tar.bz2", Recommended: "高准确率-高资源", Description: "LLM 辅助多语言识别，支持 ITN；模型约 803 MiB，内存与计算需求明显高于 Paraformer", SizeMB: 803, ArchiveBytes: 841730611, RequiredFiles: []string{"encoder_adaptor.int8.onnx", "embedding.int8.onnx", "llm.int8.onnx", "Qwen3-0.6B/merges.txt", "Qwen3-0.6B/tokenizer.json", "Qwen3-0.6B/vocab.json"}},
+	{ID: "cohere-transcribe-14-lang-int8", Name: "Cohere Transcribe 14语种 INT8", Kind: "cohere-transcribe", Language: "zh/en/ja/ko/fr/de/es/pt/it/ar/nl/pl/el/vi", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-cohere-transcribe-14-lang-int8-2026-04-01.tar.bz2", Recommended: "推荐-多语种", Description: "Cohere 14 语言离线模型，支持标点和 ITN；需指定语言参数；模型约 2.6 GiB", SizeMB: 2670, RequiredFiles: []string{"encoder.int8.onnx", "decoder.int8.onnx", "tokens.txt"}},
+	{ID: "qwen3-asr-0.6B-int8", Name: "Qwen3-ASR 0.6B INT8", Kind: "qwen3-asr", Language: "zh/en/ja/ko + 30种语言 + 25种中文方言", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-qwen3-asr-0.6B-int8-2026-03-25.tar.bz2", Recommended: "推荐-超多语言", Description: "Qwen3 0.6B ASR 模型，覆盖 30+ 语种及 25 种中文方言，支持热词和歌词/说唱识别", SizeMB: 940, RequiredFiles: []string{"conv_frontend.onnx", "encoder.int8.onnx", "decoder.int8.onnx", "tokenizer/merges.txt", "tokenizer/tokenizer_config.json", "tokenizer/vocab.json"}},
+	{ID: "nemo-parakeet-tdt-v3-int8", Name: "NeMo Parakeet TDT v3 INT8 (25欧洲语言)", Kind: "nemo-transducer", Language: "en/fr/de/es/pt/it/ru/zh 等25种欧洲语言", URL: "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8.tar.bz2", Recommended: "推荐-欧洲语言", Description: "NVIDIA Parakeet 0.6B 多语言模型，支持 25 种欧洲语言的标点大小写识别", SizeMB: 640, RequiredFiles: []string{"encoder.int8.onnx", "decoder.int8.onnx", "joiner.int8.onnx", "tokens.txt"}},
 }
 
 type ModelInfo struct{ Name, Path, Type, Language string }
@@ -63,6 +66,21 @@ func ValidateInstalled(m Meta, dir string) error {
 }
 
 func Installed(m Meta, dir string) bool { return ValidateInstalled(m, dir) == nil }
+
+// Delete removes a downloaded model directory and its cached archive.
+func Delete(m Meta, dir string) error {
+	root := filepath.Join(dir, m.ID)
+	if err := os.RemoveAll(root); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("删除模型目录失败: %w", err)
+	}
+	archive := filepath.Join(dir, m.ID+".tar.bz2")
+	if err := os.Remove(archive); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("删除模型缓存失败: %w", err)
+	}
+	part := filepath.Join(dir, m.ID+".tar.bz2.part")
+	_ = os.Remove(part) // best-effort
+	return nil
+}
 
 // Select provides a dependency-light startup interaction that also works in
 // Windows PowerShell. Download is deliberately separate so callers can retry.

@@ -15,7 +15,7 @@ func testStore(t *testing.T) *glossary.Store {
 	if err := os.WriteFile(filepath.Join(d, "iracing.json"), b, 0600); err != nil {
 		t.Fatal(err)
 	}
-	s, err := glossary.LoadDir(d)
+	s, err := glossary.LoadDir(d, true)
 	if err != nil {
 		t.Fatal(err)
 	}

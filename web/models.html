@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>模型管理</title><style>
+:root{--panel:#121923;--line:#304050;--accent:#51a8ff;--font:"Segoe UI","Microsoft YaHei",sans-serif}
+*{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;font-family:var(--font);color:#e9f0f7;background:#09111a}
+.shell{max-width:960px;margin:auto;padding:24px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+h1{margin:0;font-size:24px}.pill{padding:6px 10px;border-radius:99px;background:#243443;color:#b9d7ee;font-size:13px}.pill.ok{background:#173e30;color:#8ff0be}.pill.bad{background:#4c2228;color:#ffc3c8}.pill.warn{background:#3e3520;color:#ffd98f}
+.card{padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:16px}
+.model-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.model-name{font-size:17px;font-weight:700}.model-meta{color:#8fa1b2;font-size:13px;margin-top:4px}
+.badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;margin-right:6px}
+.badge.lang{background:#1e3346;color:#7dc4f0}.badge.rec{background:#1a3328;color:#6fe0a0}.badge.kind{background:#2a2540;color:#b8a0f0}
+.desc{color:#aebdca;font-size:13px;margin-top:8px;line-height:1.5}
+.actions{display:flex;gap:8px;margin-top:12px;align-items:center}
+button{padding:8px 16px;border:1px solid #425466;border-radius:7px;color:#eef;background:#1d2a37;font:inherit;cursor:pointer;transition:background .15s}
+button:hover{background:#2d618d}button:disabled{opacity:.5;cursor:not-allowed}
+button.danger{background:#572b32;border-color:#6a3340}button.danger:hover{background:#6e3540}
+button.primary{background:#1e4a6e;border-color:#2a6a9e}button.primary:hover{background:#2a6a9e}
+.progress-wrap{flex:1;min-width:200px}
+.progress-bar{height:8px;background:#1a2530;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#2a7ae2,#51a8ff);border-radius:4px;transition:width .2s;width:0}
+.progress-text{font-size:12px;color:#8fa1b2;margin-top:3px}
+.installed-tag{color:#6fe0a0;font-size:12px;font-weight:600}.not-installed{color:#8fa1b2;font-size:12px}
+.nav{margin-bottom:20px}.nav a{color:var(--accent);text-decoration:none;margin-right:16px;font-size:14px}.nav a:hover{text-decoration:underline}
+.error-msg{color:#ffc3c8;font-size:13px;margin-top:6px}
+</style></head><body>
+<div class="shell">
+<div class="nav"><a href="/">← 返回字幕</a><a href="/control">控制台</a></div>
+<div class="top"><h1>ASR 模型管理</h1><span id="status" class="pill">正在加载…</span></div>
+<div id="models"></div>
+</div>
+<script>(()=>{'use strict';
+const $=s=>document.querySelector(s),models=$('#models'),status=$('#status');
+function s(el,text,kind=''){el.textContent=text;el.className='pill '+kind}
+
+async function load(){
+  try{
+    const r=await fetch('/api/models',{cache:'no-store'});
+    if(!r.ok)throw Error('HTTP '+r.status);
+    const list=await r.json();
+    render(list);
+    const installed=list.filter(m=>m.installed).length;
+    s(status,`${list.length} 个模型，${installed} 个已安装`,'ok');
+  }catch(e){s(status,'加载失败: '+e.message,'bad')}
+}
+
+function render(list){
+  models.textContent='';
+  list.forEach(m=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`<div class="model-head"><div><div class="model-name">${esc(m.name)}</div><div class="model-meta"><span class="badge kind">${esc(m.kind)}</span><span class="badge lang">${esc(m.language)}</span>${m.recommended?'<span class="badge rec">'+esc(m.recommended)+'</span>':''}<span style="margin-left:4px">约 ${m.sizeMB} MB</span></div></div><div>${m.installed?'<span class="installed-tag">✓ 已安装</span>':'<span class="not-installed">未安装</span>'}</div></div><div class="desc">${esc(m.description)}</div><div class="actions" data-id="${esc(m.id)}"></div><div class="progress-wrap" style="display:none"><div class="progress-bar"><div class="progress-fill"></div></div><div class="progress-text"></div></div><div class="error-msg" style="display:none"></div>`;
+    models.append(card);
+    const actions=card.querySelector('.actions');
+    if(m.installed){
+      const btn=document.createElement('button');
+      btn.className='danger';btn.textContent='删除模型';
+      btn.onclick=()=>deleteModel(m.id,card);
+      actions.append(btn);
+    }else{
+      const btn=document.createElement('button');
+      btn.className='primary';btn.textContent='下载模型';
+      btn.onclick=()=>downloadModel(m.id,card);
+      actions.append(btn);
+    }
+  });
+}
+
+async function downloadModel(id,card){
+  const btn=card.querySelector('.actions button');
+  const pw=card.querySelector('.progress-wrap');
+  const fill=card.querySelector('.progress-fill');
+  const pt=card.querySelector('.progress-text');
+  const errEl=card.querySelector('.error-msg');
+  btn.disabled=true;btn.textContent='下载中…';pw.style.display='block';errEl.style.display='none';
+  try{
+    const resp=await fetch('/api/models/download?id='+encodeURIComponent(id),{method:'POST'});
+    if(!resp.ok){const b=await resp.json();throw Error(b.error||'HTTP '+resp.status)}
+    const reader=resp.body.getReader();
+    const decoder=new TextDecoder();
+    let buf='';
+    while(true){
+      const{done,value}=await reader.read();
+      if(done)break;
+      buf+=decoder.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop()||'';
+      for(const line of lines){
+        if(!line.startsWith('data: '))continue;
+        try{
+          const data=JSON.parse(line.slice(6));
+          if(data.downloaded!=null&&data.total>0){
+            const pct=data.downloaded*100/data.total;
+            fill.style.width=pct.toFixed(1)+'%';
+            const speed=data.bytesPerSecond?(data.bytesPerSecond/1024/1024).toFixed(1)+' MB/s':'—';
+            pt.textContent=`${fmtSize(data.downloaded)} / ${fmtSize(data.total)} (${pct.toFixed(1)}%) · ${speed}`;
+          }
+          if(data.status==='already_installed'){pt.textContent='模型已安装';fill.style.width='100%';load();return}
+          if(data.error){throw Error(data.error)}
+          if(data.status==='done'||data.id){fill.style.width='100%';pt.textContent='下载完成！';setTimeout(load,500);return}
+          if(data.status==='cancelled'){pt.textContent='下载已取消';btn.disabled=false;btn.textContent='下载模型';return}
+        }catch(e){throw e}
+      }
+    }
+    fill.style.width='100%';pt.textContent='下载完成！';setTimeout(load,500);
+  }catch(e){
+    errEl.textContent='下载失败: '+e.message;errEl.style.display='block';
+    btn.disabled=false;btn.textContent='重试下载';pw.style.display='none';
+  }
+}
+
+async function deleteModel(id,card){
+  if(!confirm('确定删除此模型？已下载的文件将被清除。'))return;
+  const btn=card.querySelector('.actions button');
+  btn.disabled=true;btn.textContent='删除中…';
+  try{
+    const r=await fetch('/api/models/delete?id='+encodeURIComponent(id),{method:'POST'});
+    const b=await r.json();
+    if(!r.ok)throw Error(b.error||r.statusText);
+    load();
+  }catch(e){
+    btn.disabled=false;btn.textContent='删除模型';
+    const errEl=card.querySelector('.error-msg');
+    errEl.textContent='删除失败: '+e.message;errEl.style.display='block';
+  }
+}
+
+function fmtSize(bytes){
+  if(bytes<1024)return bytes+' B';
+  if(bytes<1048576)return(bytes/1024).toFixed(1)+' KB';
+  if(bytes<1073741824)return(bytes/1048576).toFixed(1)+' MB';
+  return(bytes/1073741824).toFixed(2)+' GB';
+}
+function esc(v){const d=document.createElement('div');d.textContent=String(v);return d.innerHTML}
+load();
+})();</script></body></html>

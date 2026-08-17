@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"subtitle-translator/internal/model"
 )
 
 const writeTimeout = time.Second
@@ -50,6 +51,8 @@ type DebugEvent struct {
 	Retries       int                `json:"retries,omitempty"`
 	Error         string             `json:"error,omitempty"`
 	TS            float64            `json:"ts,omitempty"`
+	RequestBody   string             `json:"requestBody,omitempty"`
+	ResponseBody  string             `json:"responseBody,omitempty"`
 }
 
 type Term struct {
@@ -98,14 +101,19 @@ type client struct {
 }
 
 type Server struct {
-	mu        sync.RWMutex
-	clients   map[*client]struct{}
-	srv       *http.Server
-	page      []byte
-	config    PageConfig
-	control   ControlState
-	callbacks ControlCallbacks
-	access    AccessPolicy
+	mu           sync.RWMutex
+	clients      map[*client]struct{}
+	srv          *http.Server
+	page         []byte
+	modelsPage   []byte
+	dashboardPage []byte
+	editorPage   []byte
+	debugPage    []byte
+	modelDir     string
+	config       PageConfig
+	control      ControlState
+	callbacks    ControlCallbacks
+	access       AccessPolicy
 }
 
 func New(addr string) *Server {
@@ -122,6 +130,41 @@ func NewWithPage(addr string, page []byte, cfg PageConfig) *Server {
 	return s
 }
 
+// SetModelsPage sets the HTML page served for the model management UI.
+func (s *Server) SetModelsPage(p []byte) {
+	s.mu.Lock()
+	s.modelsPage = append([]byte(nil), p...)
+	s.mu.Unlock()
+}
+
+// SetDashboardPage sets the HTML page served for the unified dashboard.
+func (s *Server) SetDashboardPage(p []byte) {
+	s.mu.Lock()
+	s.dashboardPage = append([]byte(nil), p...)
+	s.mu.Unlock()
+}
+
+// SetEditorPage sets the HTML page served for the subtitle style editor.
+func (s *Server) SetEditorPage(p []byte) {
+	s.mu.Lock()
+	s.editorPage = append([]byte(nil), p...)
+	s.mu.Unlock()
+}
+
+// SetDebugPage sets the HTML page served for the debug panel.
+func (s *Server) SetDebugPage(p []byte) {
+	s.mu.Lock()
+	s.debugPage = append([]byte(nil), p...)
+	s.mu.Unlock()
+}
+
+// SetModelDir sets the filesystem path where models are stored.
+func (s *Server) SetModelDir(dir string) {
+	s.mu.Lock()
+	s.modelDir = dir
+	s.mu.Unlock()
+}
+
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) { s.handle(w, r, false) })
@@ -132,17 +175,78 @@ func (s *Server) Handler() http.Handler {
 		s.handle(w, r, true)
 	})
 	mux.HandleFunc("/api/control", s.handleControl)
+	mux.HandleFunc("/api/models", s.handleModels)
+	mux.HandleFunc("/api/models/download", s.handleModelDownload)
+	mux.HandleFunc("/api/models/delete", s.handleModelDelete)
 	mux.HandleFunc("/config", s.handleConfig)
 	mux.HandleFunc("/", s.handlePage)
 	return mux
 }
 
 func (s *Server) handlePage(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" && r.URL.Path != "/subtitle" && r.URL.Path != "/editor" && r.URL.Path != "/control" && r.URL.Path != "/debug" {
+	if r.URL.Path == "/models" {
+		s.mu.RLock()
+		p := s.modelsPage
+		s.mu.RUnlock()
+		if len(p) == 0 {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		_, _ = w.Write(p)
+		return
+	}
+	if r.URL.Path == "/dashboard" {
+		if !s.allowLocal(w, r) {
+			return
+		}
+		s.mu.RLock()
+		p := s.dashboardPage
+		s.mu.RUnlock()
+		if len(p) == 0 {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		_, _ = w.Write(p)
+		return
+	}
+	if r.URL.Path == "/editor" {
+		s.mu.RLock()
+		p := s.editorPage
+		s.mu.RUnlock()
+		if len(p) == 0 {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		_, _ = w.Write(p)
+		return
+	}
+	if r.URL.Path == "/debug" {
+		if !s.allowLocal(w, r) {
+			return
+		}
+		s.mu.RLock()
+		p := s.debugPage
+		s.mu.RUnlock()
+		if len(p) == 0 {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		_, _ = w.Write(p)
+		return
+	}
+	if r.URL.Path != "/" && r.URL.Path != "/subtitle" && r.URL.Path != "/control" {
 		http.NotFound(w, r)
 		return
 	}
-	if (r.URL.Path == "/control" || r.URL.Path == "/debug") && !s.allowLocal(w, r) {
+	if r.URL.Path == "/control" && !s.allowLocal(w, r) {
 		return
 	}
 	if len(s.page) == 0 {
@@ -339,6 +443,136 @@ func validateControlState(state ControlState) error {
 func cloneControlState(state ControlState) ControlState {
 	state.Terms = append([]Term(nil), state.Terms...)
 	return state
+}
+
+// ---------- Model management API ----------
+
+type modelEntry struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Kind        string `json:"kind"`
+	Language    string `json:"language"`
+	Description string `json:"description"`
+	Recommended string `json:"recommended"`
+	SizeMB      int    `json:"sizeMB"`
+	Installed   bool   `json:"installed"`
+}
+
+func (s *Server) handleModels(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", "GET")
+		writeAPIError(w, http.StatusMethodNotAllowed, errors.New("method not allowed"))
+		return
+	}
+	s.mu.RLock()
+	dir := s.modelDir
+	s.mu.RUnlock()
+	entries := make([]modelEntry, 0, len(model.Catalog))
+	for _, m := range model.Catalog {
+		entries = append(entries, modelEntry{
+			ID: m.ID, Name: m.Name, Kind: m.Kind, Language: m.Language,
+			Description: m.Description, Recommended: m.Recommended, SizeMB: m.SizeMB,
+			Installed: model.Installed(m, dir),
+		})
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	_ = json.NewEncoder(w).Encode(entries)
+}
+
+func (s *Server) handleModelDownload(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.Header().Set("Allow", "POST")
+		writeAPIError(w, http.StatusMethodNotAllowed, errors.New("method not allowed"))
+		return
+	}
+	if !s.allowLocal(w, r) {
+		return
+	}
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		writeAPIError(w, http.StatusBadRequest, errors.New("missing id parameter"))
+		return
+	}
+	m, ok := model.Find(id)
+	if !ok {
+		writeAPIError(w, http.StatusNotFound, fmt.Errorf("model %q not found", id))
+		return
+	}
+	s.mu.RLock()
+	dir := s.modelDir
+	s.mu.RUnlock()
+	if dir == "" {
+		writeAPIError(w, http.StatusInternalServerError, errors.New("model directory not configured"))
+		return
+	}
+	if model.Installed(m, dir) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		_ = json.NewEncoder(w).Encode(map[string]any{"status": "already_installed", "id": id})
+		return
+	}
+	// SSE response for download progress.
+	w.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	w.Header().Set("X-Accel-Buffering", "no")
+	flusher, canFlush := w.(http.Flusher)
+	send := func(event string, data any) {
+		payload, _ := json.Marshal(data)
+		fmt.Fprintf(w, "event: %s\ndata: %s\n\n", event, payload)
+		if canFlush {
+			flusher.Flush()
+		}
+	}
+	ctx := r.Context()
+	err := model.DownloadWithOptions(ctx, m, dir, model.DownloadOptions{
+		Retries: 2,
+		Progress: func(p model.Progress) {
+			send("progress", map[string]any{
+				"downloaded":     p.Downloaded,
+				"total":          p.Total,
+				"bytesPerSecond": p.BytesPerSecond,
+			})
+		},
+	})
+	if err != nil {
+		if ctx.Err() != nil {
+			send("cancelled", map[string]string{"id": id})
+		} else {
+			send("error", map[string]string{"id": id, "error": err.Error()})
+		}
+		return
+	}
+	send("done", map[string]string{"id": id})
+}
+
+func (s *Server) handleModelDelete(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost && r.Method != http.MethodDelete {
+		w.Header().Set("Allow", "POST, DELETE")
+		writeAPIError(w, http.StatusMethodNotAllowed, errors.New("method not allowed"))
+		return
+	}
+	if !s.allowLocal(w, r) {
+		return
+	}
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		writeAPIError(w, http.StatusBadRequest, errors.New("missing id parameter"))
+		return
+	}
+	m, ok := model.Find(id)
+	if !ok {
+		writeAPIError(w, http.StatusNotFound, fmt.Errorf("model %q not found", id))
+		return
+	}
+	s.mu.RLock()
+	dir := s.modelDir
+	s.mu.RUnlock()
+	if err := model.Delete(m, dir); err != nil {
+		writeAPIError(w, http.StatusInternalServerError, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	_ = json.NewEncoder(w).Encode(map[string]string{"id": id, "status": "deleted"})
 }
 
 func writeAPIError(w http.ResponseWriter, status int, err error) {

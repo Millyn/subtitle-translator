@@ -10,6 +10,18 @@ import (
 	"strings"
 )
 
+// DuplicateProfileError is returned when two glossary JSON files share the same
+// profile name and auto-deduplication is disabled.
+type DuplicateProfileError struct {
+	Name    string
+	First   string
+	Second  string
+}
+
+func (e *DuplicateProfileError) Error() string {
+	return fmt.Sprintf("duplicate glossary profile %q: first=%s second=%s", e.Name, e.First, e.Second)
+}
+
 type Entry struct {
 	Source    string   `json:"source"`
 	Target    string   `json:"target"`
@@ -26,7 +38,7 @@ type Profile struct {
 
 type Store struct{ profiles map[string]Profile }
 
-func LoadDir(dir string) (*Store, error) {
+func LoadDir(dir string, autoDeduplicate bool) (*Store, error) {
 	matches, err := filepath.Glob(filepath.Join(dir, "*.json"))
 	if err != nil {
 		return nil, err
@@ -35,6 +47,8 @@ func LoadDir(dir string) (*Store, error) {
 		return nil, fmt.Errorf("no glossary JSON files in %s", dir)
 	}
 	s := &Store{profiles: make(map[string]Profile)}
+	// Track which file each profile came from for error messages.
+	profileSource := make(map[string]string)
 	for _, path := range matches {
 		b, readErr := os.ReadFile(path)
 		if readErr != nil {
@@ -47,7 +61,16 @@ func LoadDir(dir string) (*Store, error) {
 		if err := validate(p); err != nil {
 			return nil, fmt.Errorf("glossary %s: %w", path, err)
 		}
-		s.profiles[strings.ToLower(p.Name)] = clone(p)
+		key := strings.ToLower(p.Name)
+		if prev, exists := profileSource[key]; exists {
+			if !autoDeduplicate {
+				return nil, &DuplicateProfileError{Name: p.Name, First: prev, Second: path}
+			}
+			// autoDeduplicate is true: keep the first profile, skip the duplicate.
+			continue
+		}
+		profileSource[key] = path
+		s.profiles[key] = clone(p)
 	}
 	return s, nil
 }

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>管理面板</title><style>
+:root{--panel:#121923;--line:#304050;--accent:#51a8ff;--font:"Segoe UI","Microsoft YaHei",sans-serif}
+*{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;font-family:var(--font);color:#e9f0f7;background:#09111a}
+.shell{max-width:720px;margin:auto;padding:24px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}
+h1{margin:0;font-size:24px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{display:flex;flex-direction:column;justify-content:space-between;padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--panel);transition:border-color .2s,transform .1s}
+.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card-title{font-size:17px;font-weight:700;margin:0 0 6px}
+.card-desc{color:#8fa1b2;font-size:13px;line-height:1.5;margin:0 0 14px;flex:1}
+.card-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.card-badge.public{background:#1a3328;color:#6fe0a0}
+.card-badge.local{background:#3e3520;color:#ffd98f}
+.card-link{display:inline-block;color:var(--accent);text-decoration:none;font-size:14px;font-weight:600;margin-top:4px}
+.card-link:hover{text-decoration:underline}
+.footer{margin-top:28px;text-align:center;color:#556675;font-size:12px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+</style></head><body>
+<div class="shell">
+<div class="top"><h1>Subtitle Translator 管理面板</h1></div>
+<div class="grid">
+<div class="card">
+  <div>
+    <div class="card-title">字幕预览</div>
+    <p class="card-desc">实时翻译字幕显示页面，可作为 OBS 浏览器源使用。</p>
+    <span class="card-badge public">公开</span>
+  </div>
+  <a class="card-link" href="/subtitle">打开 →</a>
+</div>
+<div class="card">
+  <div>
+    <div class="card-title">字幕编辑器</div>
+    <p class="card-desc">预览和编辑字幕样式、位置、大小等参数。</p>
+    <span class="card-badge public">公开</span>
+  </div>
+  <a class="card-link" href="/editor">打开 →</a>
+</div>
+<div class="card">
+  <div>
+    <div class="card-title">术语与翻译控制</div>
+    <p class="card-desc">管理翻译 Profile、AI 纠错模式、术语表和自定义 Prompt。</p>
+    <span class="card-badge local">仅本机</span>
+  </div>
+  <a class="card-link" href="/control">打开 →</a>
+</div>
+<div class="card">
+  <div>
+    <div class="card-title">实时 DEBUG 面板</div>
+    <p class="card-desc">查看 ASR 识别、翻译延迟、Token 用量等实时调试数据。</p>
+    <span class="card-badge local">仅本机</span>
+  </div>
+  <a class="card-link" href="/debug">打开 →</a>
+</div>
+<div class="card">
+  <div>
+    <div class="card-title">ASR 模型管理</div>
+    <p class="card-desc">下载、删除和管理语音识别模型。</p>
+    <span class="card-badge local">仅本机</span>
+  </div>
+  <a class="card-link" href="/models">打开 →</a>
+</div>
+</div>
+<div class="footer">Subtitle Translator · 管理入口</div>
+</div>
+</body></html>

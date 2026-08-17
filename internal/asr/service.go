@@ -285,6 +285,58 @@ func (s *Service) args(wav string) ([]string, error) {
 			}
 		}
 		return append([]string{"--funasr-nano-encoder-adaptor=" + encoder, "--funasr-nano-embedding=" + embedding, "--funasr-nano-llm=" + llm, "--funasr-nano-tokenizer=" + tokenizer, "--funasr-nano-itn=1"}, append(common, wav)...), nil
+	case "cohere-transcribe":
+		tokens, e := require("tokens.txt")
+		if e != nil {
+			return nil, e
+		}
+		enc, e := require("encoder.int8.onnx")
+		if e != nil {
+			return nil, e
+		}
+		dec, e := require("decoder.int8.onnx")
+		if e != nil {
+			return nil, e
+		}
+		return append([]string{"--tokens=" + tokens, "--cohere-transcribe-encoder=" + enc, "--cohere-transcribe-decoder=" + dec}, append(common, wav)...), nil
+	case "qwen3-asr":
+		convFrontend, e := require("conv_frontend.onnx")
+		if e != nil {
+			return nil, e
+		}
+		enc, e := require("encoder.int8.onnx")
+		if e != nil {
+			return nil, e
+		}
+		dec, e := require("decoder.int8.onnx")
+		if e != nil {
+			return nil, e
+		}
+		tokenizerDir := filepath.Join(s.Dir, "tokenizer")
+		for _, name := range []string{"merges.txt", "tokenizer_config.json", "vocab.json"} {
+			if _, e = require(filepath.Join("tokenizer", name)); e != nil {
+				return nil, e
+			}
+		}
+		return append([]string{"--qwen3-asr-conv-frontend=" + convFrontend, "--qwen3-asr-encoder=" + enc, "--qwen3-asr-decoder=" + dec, "--qwen3-asr-tokenizer=" + tokenizerDir}, append(common, wav)...), nil
+	case "nemo-transducer":
+		tokens, e := require("tokens.txt")
+		if e != nil {
+			return nil, e
+		}
+		enc, e := require("encoder.int8.onnx")
+		if e != nil {
+			return nil, e
+		}
+		dec, e := require("decoder.int8.onnx")
+		if e != nil {
+			return nil, e
+		}
+		joiner, e := require("joiner.int8.onnx")
+		if e != nil {
+			return nil, e
+		}
+		return append([]string{"--tokens=" + tokens, "--encoder=" + enc, "--decoder=" + dec, "--joiner=" + joiner, "--model-type=nemo_transducer"}, append(common, wav)...), nil
 	default:
 		return nil, fmt.Errorf("不支持模型类型 %q", s.Kind)
 	}

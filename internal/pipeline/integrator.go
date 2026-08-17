@@ -46,6 +46,8 @@ type DebugEvent struct {
 	TotalTokens     int
 	Attempts        int
 	Error           string
+	RequestBody     string
+	ResponseBody    string
 }
 
 type Stats struct {
@@ -172,7 +174,7 @@ func (p *Integrator) Run(ctx context.Context, input <-chan []byte) error {
 				if err != nil {
 					p.report(err)
 					p.broadcastDetail(raw, raw, "")
-					p.emitDebug(DebugEvent{SegmentID: job.id, Timestamp: time.Now(), DurationMS: job.durationMS, SegmentReason: job.reason, ASRModel: p.ASRModel, Raw: raw, Corrected: raw, Profile: request.ActiveProfile, Context: request.RecentContext, ASRMS: job.asrMS, TranslateMS: translateElapsed.Milliseconds(), TotalMS: time.Since(job.started).Milliseconds(), Attempts: result.Attempts, Error: err.Error()})
+					p.emitDebug(DebugEvent{SegmentID: job.id, Timestamp: time.Now(), DurationMS: job.durationMS, SegmentReason: job.reason, ASRModel: p.ASRModel, Raw: raw, Corrected: raw, Profile: request.ActiveProfile, Context: request.RecentContext, ASRMS: job.asrMS, TranslateMS: translateElapsed.Milliseconds(), TotalMS: time.Since(job.started).Milliseconds(), Attempts: result.Attempts, Error: err.Error(), RequestBody: result.RequestBody, ResponseBody: result.ResponseBody})
 					continue
 				}
 				if english == "" {
@@ -198,7 +200,7 @@ func (p *Integrator) Run(ctx context.Context, input <-chan []byte) error {
 				if corrected != raw {
 					diff = raw + " → " + corrected
 				}
-				p.emitDebug(DebugEvent{SegmentID: job.id, Timestamp: time.Now(), DurationMS: job.durationMS, SegmentReason: job.reason, ASRModel: p.ASRModel, Raw: raw, Corrected: corrected, English: english, Diff: diff, Profile: request.ActiveProfile, MatchedTerms: result.MatchedTerms, Context: request.RecentContext, ASRMS: job.asrMS, TranslateMS: translateElapsed.Milliseconds(), TotalMS: p.latency.Load(), PromptTokens: usage.PromptTokens, CacheHitTokens: usage.CacheHitTokens, CacheMissTokens: usage.CacheMissTokens, OutputTokens: usage.OutputTokens, TotalTokens: usage.TotalTokens, Attempts: result.Attempts})
+				p.emitDebug(DebugEvent{SegmentID: job.id, Timestamp: time.Now(), DurationMS: job.durationMS, SegmentReason: job.reason, ASRModel: p.ASRModel, Raw: raw, Corrected: corrected, English: english, Diff: diff, Profile: request.ActiveProfile, MatchedTerms: result.MatchedTerms, Context: request.RecentContext, ASRMS: job.asrMS, TranslateMS: translateElapsed.Milliseconds(), TotalMS: p.latency.Load(), PromptTokens: usage.PromptTokens, CacheHitTokens: usage.CacheHitTokens, CacheMissTokens: usage.CacheMissTokens, OutputTokens: usage.OutputTokens, TotalTokens: usage.TotalTokens, Attempts: result.Attempts, RequestBody: result.RequestBody, ResponseBody: result.ResponseBody})
 				p.debugf("translation complete: id=%d corrected=%q english=%q elapsed=%v total=%dms profile=%s terms=%v tokens=%d cache_hit=%d attempts=%d", job.id, corrected, english, translateElapsed, p.latency.Load(), request.ActiveProfile, result.MatchedTerms, usage.TotalTokens, usage.CacheHitTokens, result.Attempts)
 			}
 		}

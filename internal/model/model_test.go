@@ -197,17 +197,20 @@ func TestSelect(t *testing.T) {
 }
 
 func TestCatalogIsCompleteAndHasNoWhisper(t *testing.T) {
-	if len(Catalog) != 4 {
-		t.Fatalf("catalog has %d models, want 4", len(Catalog))
+	if len(Catalog) != 7 {
+		t.Fatalf("catalog has %d models, want 7", len(Catalog))
 	}
 	want := map[string]struct {
 		kind  string
 		bytes int64
 	}{
-		"paraformer-zh":          {kind: "paraformer"},
-		"sensevoice-int8":        {kind: "sensevoice"},
-		"fire-red-asr2-ctc-int8": {kind: "fire-red-asr-ctc", bytes: 520516278},
-		"funasr-nano-int8":       {kind: "funasr-nano", bytes: 841730611},
+		"paraformer-zh":                    {kind: "paraformer"},
+		"sensevoice-int8":                  {kind: "sensevoice"},
+		"fire-red-asr2-ctc-int8":           {kind: "fire-red-asr-ctc", bytes: 520516278},
+		"funasr-nano-int8":                 {kind: "funasr-nano", bytes: 841730611},
+		"cohere-transcribe-14-lang-int8":   {kind: "cohere-transcribe"},
+		"qwen3-asr-0.6B-int8":             {kind: "qwen3-asr"},
+		"nemo-parakeet-tdt-v3-int8":        {kind: "nemo-transducer"},
 	}
 	for _, m := range Catalog {
 		expect, ok := want[m.ID]
@@ -281,6 +284,33 @@ func TestExtractAtomicAndTraversal(t *testing.T) {
 	bad := makeArchive(t, map[string]string{"root/../../escaped": "bad"})
 	if err := extractTar(tar.NewReader(bytes.NewReader(bad)), filepath.Join(d, "bad")); err == nil {
 		t.Fatal("wanted traversal error")
+	}
+}
+
+func TestDeleteModel(t *testing.T) {
+	d := t.TempDir()
+	m := Catalog[0]
+	root := filepath.Join(d, m.ID)
+	if err := os.MkdirAll(root, 0755); err != nil {
+		t.Fatal(err)
+	}
+	for _, n := range m.RequiredFiles {
+		if err := os.WriteFile(filepath.Join(root, n), []byte("x"), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !Installed(m, d) {
+		t.Fatal("expected installed before delete")
+	}
+	if err := Delete(m, d); err != nil {
+		t.Fatal(err)
+	}
+	if Installed(m, d) {
+		t.Fatal("expected not installed after delete")
+	}
+	// Deleting again should not error.
+	if err := Delete(m, d); err != nil {
+		t.Fatal(err)
 	}
 }
 

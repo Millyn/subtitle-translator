@@ -95,10 +95,34 @@ func run() error {
 	if *modelOverride != "" {
 		modelID = *modelOverride
 	}
-	selectedDevice, err := chooseDevice(devices, deviceIndex)
-	if err != nil {
-		return err
+
+	// 设备选择：优先使用命令行参数，其次使用上次记忆，最后手动选择
+	var selectedDevice device.Info
+	if deviceIndex >= 0 {
+		// 命令行或配置指定了设备
+		selectedDevice, err = chooseDevice(devices, deviceIndex)
+		if err != nil {
+			return err
+		}
+	} else if cfg.LastDeviceIndex >= 0 && *deviceOverride == -2 {
+		// 尝试使用上次记忆的设备
+		fmt.Printf("尝试使用上次的麦克风（编号 %d）……\n", cfg.LastDeviceIndex)
+		selectedDevice, err = chooseDevice(devices, cfg.LastDeviceIndex)
+		if err != nil {
+			fmt.Printf("上次的麦克风不可用，请手动选择：\n")
+			selectedDevice, err = chooseDevice(devices, -1)
+			if err != nil {
+				return err
+			}
+		}
+	} else {
+		// 手动选择
+		selectedDevice, err = chooseDevice(devices, -1)
+		if err != nil {
+			return err
+		}
 	}
+
 	if *micTest > 0 {
 		return testMicrophone(audioContext, selectedDevice, *micTest)
 	}
@@ -111,9 +135,39 @@ func run() error {
 		}
 		return benchmarkASR(ctx, audioContext, selectedDevice, *asrBenchmark, executable, cfg)
 	}
-	selectedModel, err := chooseModel(modelID, cfg.ModelDir)
-	if err != nil {
-		return err
+
+	// 模型选择：优先使用命令行参数，其次使用上次记忆，最后手动选择
+	var selectedModel model.Meta
+	if modelID != "" {
+		// 命令行或配置指定了模型
+		selectedModel, err = chooseModel(modelID, cfg.ModelDir)
+		if err != nil {
+			return err
+		}
+	} else if cfg.LastModelID != "" && *modelOverride == "" {
+		// 尝试使用上次记忆的模型
+		fmt.Printf("尝试使用上次的模型（%q）……\n", cfg.LastModelID)
+		selectedModel, err = chooseModel(cfg.LastModelID, cfg.ModelDir)
+		if err != nil {
+			fmt.Printf("上次的模型不可用，请手动选择：\n")
+			selectedModel, err = chooseModel("", cfg.ModelDir)
+			if err != nil {
+				return err
+			}
+		}
+	} else {
+		// 手动选择
+		selectedModel, err = chooseModel("", cfg.ModelDir)
+		if err != nil {
+			return err
+		}
+	}
+
+	// 保存本次选择的设备和模型，供下次启动使用
+	cfg.LastDeviceIndex = selectedDevice.Index
+	cfg.LastModelID = selectedModel.ID
+	if saveErr := cfg.Save(*configPath); saveErr != nil {
+		log.Printf("无法保存设备/模型选择到配置文件：%v", saveErr)
 	}
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -149,7 +203,7 @@ func run() error {
 		log.Printf("[DEBUG] ASR 常驻服务加载完成：耗时=%v，模型=%s，线程=%d", time.Since(asrStarted), selectedModel.ID, cfg.ASR.NumThreads)
 	}
 	translator := translate.NewWithConfig(translate.Config{APIKey: cfg.DeepSeek.APIKey, Endpoint: cfg.DeepSeek.Endpoint, Model: cfg.DeepSeek.Model, Timeout: cfg.TranslationTimeout(), Retries: cfg.DeepSeek.Retries})
-	glossaryStore, err := glossary.LoadDir(cfg.Translation.GlossaryDir)
+	glossaryStore, err := glossary.LoadDir(cfg.Translation.GlossaryDir, cfg.AutoDeduplicateGlossary())
 	if err != nil {
 		return fmt.Errorf("load game glossaries: %w", err)
 	}
@@ -159,6 +213,11 @@ func run() error {
 	}
 	pageCfg := wsserver.PageConfig{Mode: cfg.Subtitle.Mode, HideAfterMS: cfg.Subtitle.HideAfterMS, EnglishFontSize: cfg.Subtitle.EnglishFontSize, ChineseFontSize: cfg.Subtitle.ChineseFontSize, PositionX: cfg.Subtitle.PositionX, PositionY: cfg.Subtitle.PositionY, MaxWidth: cfg.Subtitle.MaxWidth, EnglishColor: cfg.Subtitle.EnglishColor, ChineseColor: cfg.Subtitle.ChineseColor, StrokeColor: cfg.Subtitle.StrokeColor, Background: cfg.Subtitle.Background, FontFamily: cfg.Subtitle.FontFamily, ChineseSource: cfg.Subtitle.ChineseSource}
 	server := wsserver.NewWithPage(cfg.Listen, webpage.SubtitleHTML, pageCfg)
+	server.SetModelsPage(webpage.ModelsHTML)
+	server.SetDashboardPage(webpage.DashboardHTML)
+	server.SetEditorPage(webpage.EditorHTML)
+	server.SetDebugPage(webpage.DebugHTML)
+	server.SetModelDir(cfg.ModelDir)
 	server.SetControlCallbacks(controlCallbacks(live, server))
 	server.SetChineseSource(live.Current().ChineseSource)
 	serverErrors := make(chan error, 1)
@@ -191,7 +250,7 @@ func run() error {
 	}
 	if cfg.Debug {
 		flow.DebugSink = func(event pipeline.DebugEvent) {
-			_ = server.BroadcastDebug(wsserver.DebugEvent{SegmentID: event.SegmentID, DurationMS: event.DurationMS, SegmentReason: event.SegmentReason, ASRModel: event.ASRModel, Raw: event.Raw, Corrected: event.Corrected, English: event.English, Diff: event.Diff, Profile: event.Profile, Terms: event.MatchedTerms, Context: event.Context, Latencies: map[string]float64{"asr": float64(event.ASRMS), "translate": float64(event.TranslateMS), "total": float64(event.TotalMS)}, Tokens: event.TotalTokens, TokenUsage: map[string]int{"prompt": event.PromptTokens, "cache_hit": event.CacheHitTokens, "cache_miss": event.CacheMissTokens, "output": event.OutputTokens, "total": event.TotalTokens}, CacheHit: event.CacheHitTokens > 0, Retries: max(event.Attempts-1, 0), Error: event.Error, TS: float64(event.Timestamp.UnixMilli()) / 1000})
+			_ = server.BroadcastDebug(wsserver.DebugEvent{SegmentID: event.SegmentID, DurationMS: event.DurationMS, SegmentReason: event.SegmentReason, ASRModel: event.ASRModel, Raw: event.Raw, Corrected: event.Corrected, English: event.English, Diff: event.Diff, Profile: event.Profile, Terms: event.MatchedTerms, Context: event.Context, Latencies: map[string]float64{"asr": float64(event.ASRMS), "translate": float64(event.TranslateMS), "total": float64(event.TotalMS)}, Tokens: event.TotalTokens, TokenUsage: map[string]int{"prompt": event.PromptTokens, "cache_hit": event.CacheHitTokens, "cache_miss": event.CacheMissTokens, "output": event.OutputTokens, "total": event.TotalTokens}, CacheHit: event.CacheHitTokens > 0, Retries: max(event.Attempts-1, 0), Error: event.Error, RequestBody: event.RequestBody, ResponseBody: event.ResponseBody, TS: float64(event.Timestamp.UnixMilli()) / 1000})
 		}
 	}
 	flowDone := make(chan error, 1)
@@ -201,7 +260,8 @@ func run() error {
 		fmt.Printf("OBS 字幕 URL：%s/subtitle\n字幕预览编辑器：%s/editor\n", base, base)
 	}
 	localBase := serviceURLs(cfg.Listen)[0]
-	fmt.Printf("翻译与术语控制（仅本机）：%s/control\n实时 DEBUG 面板（仅本机）：%s/debug\n", localBase, localBase)
+	fmt.Printf("翻译与术语控制（仅本机）：%s/control\n实时 DEBUG 面板（仅本机）：%s/debug\n模型管理（仅本机）：%s/models\n", localBase, localBase, localBase)
+	fmt.Printf("管理面板（仅本机）：%s/dashboard\n", localBase)
 	if cfg.Debug {
 		go debugMonitor(ctx, collector, flow, server)
 	}

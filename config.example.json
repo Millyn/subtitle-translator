@@ -32,7 +32,8 @@
     "context_sentences": 2,
     "custom_prompt": "This is a Twitch gaming livestream. Use natural, concise English familiar to gaming communities. The streamer often discusses sim racing, especially iRacing, but do not force unrelated content into a racing context. The active game profile and glossary take priority.",
     "glossary_dir": "glossaries",
-    "settings_file": "translation-settings.json"
+    "settings_file": "translation-settings.json",
+    "auto_deduplicate_glossary": true
   },
   "subtitle": {
     "mode": "bilingual",
@@ -48,5 +49,7 @@
     "background": "rgba(0,0,0,0.48)",
     "font_family": "Segoe UI, Microsoft YaHei, sans-serif",
     "chinese_source": "corrected"
-  }
+  },
+  "last_device_index": -1,
+  "last_model_id": ""
 }

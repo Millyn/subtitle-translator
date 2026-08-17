@@ -76,17 +76,25 @@ func TestBroadcastMessageDefaultsAndClientRemoval(t *testing.T) {
 
 func TestPageAndConfigEndpoints(t *testing.T) {
 	s := NewWithPage("", []byte("<html>subtitle editor</html>"), PageConfig{Mode: "bilingual", HideAfterMS: 12000})
+	s.SetEditorPage([]byte("<html>editor page</html>"))
+	s.SetDebugPage([]byte("<html>debug page</html>"))
 	h := httptest.NewServer(s.Handler())
 	defer h.Close()
-	for _, path := range []string{"/subtitle", "/editor", "/control", "/debug"} {
+	tests := map[string]string{
+		"/subtitle": "subtitle editor",
+		"/editor":   "editor page",
+		"/control":  "subtitle editor",
+		"/debug":    "debug page",
+	}
+	for path, expected := range tests {
 		resp, err := http.Get(h.URL + path)
 		if err != nil {
 			t.Fatal(err)
 		}
 		body, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
-		if resp.StatusCode != 200 || !strings.Contains(string(body), "subtitle editor") {
-			t.Fatalf("%s: %d %s", path, resp.StatusCode, body)
+		if resp.StatusCode != 200 || !strings.Contains(string(body), expected) {
+			t.Fatalf("%s: %d %s (expected %q)", path, resp.StatusCode, body, expected)
 		}
 	}
 	resp, err := http.Get(h.URL + "/config")

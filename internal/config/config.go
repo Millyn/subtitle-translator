@@ -11,17 +11,19 @@ import (
 )
 
 type Config struct {
-	ModelDir    string            `json:"model_dir"`
-	RuntimeDir  string            `json:"runtime_dir"`
-	Listen      string            `json:"listen"`
-	GOMAXPROCS  int               `json:"gomaxprocs"`
-	Debug       bool              `json:"debug"`
-	DebugUI     DebugConfig       `json:"debug_options"`
-	Audio       AudioConfig       `json:"audio"`
-	ASR         ASRConfig         `json:"asr"`
-	DeepSeek    DeepSeekConfig    `json:"deepseek"`
-	Translation TranslationConfig `json:"translation"`
-	Subtitle    SubtitleConfig    `json:"subtitle"`
+	ModelDir        string            `json:"model_dir"`
+	RuntimeDir      string            `json:"runtime_dir"`
+	Listen          string            `json:"listen"`
+	GOMAXPROCS      int               `json:"gomaxprocs"`
+	Debug           bool              `json:"debug"`
+	DebugUI         DebugConfig       `json:"debug_options"`
+	Audio           AudioConfig       `json:"audio"`
+	ASR             ASRConfig         `json:"asr"`
+	DeepSeek        DeepSeekConfig    `json:"deepseek"`
+	Translation     TranslationConfig `json:"translation"`
+	Subtitle        SubtitleConfig    `json:"subtitle"`
+	LastDeviceIndex int               `json:"last_device_index"`
+	LastModelID     string            `json:"last_model_id"`
 }
 
 type AudioConfig struct {
@@ -49,12 +51,13 @@ type DeepSeekConfig struct {
 // Runtime changes are persisted separately from config.json so the API key is
 // never rewritten by the HTTP control page.
 type TranslationConfig struct {
-	ActiveProfile    string `json:"active_profile"`
-	CorrectionMode   string `json:"correction_mode"`
-	ContextSentences int    `json:"context_sentences"`
-	CustomPrompt     string `json:"custom_prompt"`
-	GlossaryDir      string `json:"glossary_dir"`
-	SettingsFile     string `json:"settings_file"`
+	ActiveProfile           string `json:"active_profile"`
+	CorrectionMode          string `json:"correction_mode"`
+	ContextSentences        int    `json:"context_sentences"`
+	CustomPrompt            string `json:"custom_prompt"`
+	GlossaryDir             string `json:"glossary_dir"`
+	SettingsFile            string `json:"settings_file"`
+	AutoDeduplicateGlossary *bool  `json:"auto_deduplicate_glossary,omitempty"`
 }
 
 type DebugConfig struct {
@@ -84,7 +87,7 @@ func Defaults() Config {
 		Audio:       AudioConfig{DeviceIndex: -1, SilenceMS: 700, MinSpeechMS: 300, MaxSpeechSecond: 10, PreRollMS: 250},
 		ASR:         ASRConfig{ModelID: "", NumThreads: 2},
 		DeepSeek:    DeepSeekConfig{Endpoint: "https://api.deepseek.com/chat/completions", Model: "deepseek-chat", TimeoutMS: 5000, Retries: 2},
-		Translation: TranslationConfig{ActiveProfile: "auto", CorrectionMode: "conservative", ContextSentences: 2, CustomPrompt: "This is a Twitch gaming livestream. Use natural, concise English familiar to gaming communities. The streamer often discusses sim racing, especially iRacing, but do not force unrelated content into a racing context. The active game profile and glossary take priority.", GlossaryDir: "glossaries", SettingsFile: "translation-settings.json"},
+		Translation: TranslationConfig{ActiveProfile: "auto", CorrectionMode: "conservative", ContextSentences: 2, CustomPrompt: "This is a Twitch gaming livestream. Use natural, concise English familiar to gaming communities. The streamer often discusses sim racing, especially iRacing, but do not force unrelated content into a racing context. The active game profile and glossary take priority.", GlossaryDir: "glossaries", SettingsFile: "translation-settings.json", AutoDeduplicateGlossary: boolPtr(true)},
 		DebugUI:     DebugConfig{HistoryLimit: 100},
 		Subtitle:    SubtitleConfig{Mode: "bilingual", HideAfterMS: 12000, EnglishFontSize: 56, ChineseFontSize: 30, PositionX: 50, PositionY: 88, MaxWidth: 90, EnglishColor: "#ffffff", ChineseColor: "#f0f0f0", StrokeColor: "#000000", Background: "rgba(0,0,0,0.48)", FontFamily: "Segoe UI, Microsoft YaHei, sans-serif", ChineseSource: "corrected"},
 	}
@@ -138,6 +141,10 @@ func Load(path string) (Config, error) {
 	}
 	if c.Translation.SettingsFile == "" {
 		c.Translation.SettingsFile = translationDefaults.SettingsFile
+	}
+	if c.Translation.AutoDeduplicateGlossary == nil {
+		t := true
+		c.Translation.AutoDeduplicateGlossary = &t
 	}
 	if c.DebugUI.HistoryLimit < 10 || c.DebugUI.HistoryLimit > 1000 {
 		c.DebugUI.HistoryLimit = Defaults().DebugUI.HistoryLimit
@@ -204,6 +211,17 @@ func Load(path string) (Config, error) {
 	return c, nil
 }
 
+func (c Config) Save(path string) error {
+	data, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		return fmt.Errorf("序列化配置: %w", err)
+	}
+	if err := os.WriteFile(path, append(data, '\n'), 0644); err != nil {
+		return fmt.Errorf("写入配置 %s: %w", path, err)
+	}
+	return nil
+}
+
 func (c Config) Validate(requireKey bool) error {
 	if requireKey && (strings.TrimSpace(c.DeepSeek.APIKey) == "" || strings.Contains(c.DeepSeek.APIKey, "请在")) {
 		return errors.New("请在 config.json 的 deepseek.api_key 中填写密钥")
@@ -230,3 +248,14 @@ func (c Config) Validate(requireKey bool) error {
 func (c Config) TranslationTimeout() time.Duration {
 	return time.Duration(c.DeepSeek.TimeoutMS) * time.Millisecond
 }
+
+// AutoDeduplicateGlossary returns true when glossary deduplication is enabled.
+// The default is true (nil pointer means "use default").
+func (c Config) AutoDeduplicateGlossary() bool {
+	if c.Translation.AutoDeduplicateGlossary == nil {
+		return true
+	}
+	return *c.Translation.AutoDeduplicateGlossary
+}
+
+func boolPtr(b bool) *bool { return &b }

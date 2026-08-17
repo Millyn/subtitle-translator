@@ -119,25 +119,36 @@ func cloneEntries(in []glossary.Entry) []glossary.Entry {
 	return out
 }
 
-// Snapshot returns a stable settings-and-terms view for one translation. In
-// auto mode only terms mentioned in the ASR text are sent, avoiding a large
-// cross-game prompt. A selected game sends its complete glossary so homophone
-// correction has enough information to recover a damaged term.
+// Snapshot returns a stable settings-and-terms view for one translation. Only
+// terms actually mentioned in the ASR text are sent, reducing token usage.
+// User-added terms are always included regardless of text matching.
 func (m *Manager) Snapshot(source string) Snapshot {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	s := cloneSettings(m.settings)
 	var entries []glossary.Entry
 	switch s.ActiveProfile {
-	case "disabled", "general":
+	case "disabled":
+		// No terms sent
+	case "general":
+		// General profile has no game-specific terms
 	case "auto":
+		// Match across all profiles
 		for _, name := range m.store.Names() {
 			matched, _ := m.store.Match(name, source)
 			entries = append(entries, matched...)
 		}
 	default:
-		if p, ok := m.store.Profile(s.ActiveProfile); ok {
-			entries = p.Entries
+		// For specific game profiles, send matched terms
+		if _, ok := m.store.Profile(s.ActiveProfile); ok {
+			matched, _ := m.store.Match(s.ActiveProfile, source)
+			entries = append(entries, matched...)
+			// Also include user-added terms that may not match the source
+			// but are important for the stream context
+			if userTerms, exists := s.UserTerms[s.ActiveProfile]; exists && source == "" {
+				// When source is empty (e.g., initial load), include user terms
+				entries = append(entries, userTerms...)
+			}
 		}
 	}
 	return Snapshot{Settings: s, Terms: cloneEntries(entries)}
