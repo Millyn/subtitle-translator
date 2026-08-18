@@ -42,7 +42,16 @@ h1{margin:0;font-size:20px;color:var(--accent)}
 <div class="container">
 <div class="header">
 <h1>实时调试面板</h1>
+<div style="display:flex;align-items:center;gap:12px">
+<label class="toggle-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#b9d7ee">
+  <span id="debugLabel">DEBUG: 关</span>
+  <input type="checkbox" id="debugToggle" style="display:none">
+  <span id="toggleTrack" style="width:40px;height:22px;border-radius:11px;background:#2a2540;position:relative;transition:background .2s">
+    <span id="toggleThumb" style="width:18px;height:18px;border-radius:50%;background:#556675;position:absolute;top:2px;left:2px;transition:transform .2s,background .2s"></span>
+  </span>
+</label>
 <span id="status" class="status">正在连接…</span>
+</div>
 </div>
 <div class="metrics">
 <div class="metric"><span>事件数</span><b id="mEvents">0</b></div>
@@ -64,6 +73,42 @@ h1{margin:0;font-size:20px;color:var(--accent)}
 </div>
 </div>
 <script>
+const toggle=document.getElementById('debugToggle');
+const label=document.getElementById('debugLabel');
+const track=document.getElementById('toggleTrack');
+const thumb=document.getElementById('toggleThumb');
+
+async function loadDebugState(){
+try{
+const r=await fetch('/api/debug');
+const data=await r.json();
+updateToggleUI(data.enabled);
+}catch{}
+}
+
+function updateToggleUI(enabled){
+toggle.checked=enabled;
+label.textContent='DEBUG: '+(enabled?'开':'关');
+track.style.background=enabled?'#1e4a6e':'#2a2540';
+thumb.style.background=enabled?'#51a8ff':'#556675';
+thumb.style.transform=enabled?'translateX(18px)':'none';
+}
+
+toggle.addEventListener('change',async()=>{
+const enabled=toggle.checked;
+try{
+const r=await fetch('/api/debug',{
+method:'PUT',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({enabled})
+});
+const data=await r.json();
+updateToggleUI(data.enabled);
+}catch{toggle.checked=!enabled}
+});
+
+loadDebugState();
+
 const events=[];
 let activeIndex=-1;
 let count=0,totalLatency=0,latencyCount=0,tokens=0,hits=0,retries=0,errors=0;

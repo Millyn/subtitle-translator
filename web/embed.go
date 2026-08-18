@@ -16,3 +16,6 @@ var EditorHTML []byte
 
 //go:embed debug.html
 var DebugHTML []byte
+
+//go:embed prompt.html
+var PromptHTML []byte

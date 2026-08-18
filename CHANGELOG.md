@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.5.0 (2026-08-18)
+
+### Bug Fixes
+
+- **API Timeout**: Default timeout increased from 5s to 60s, with separated connection/TLS/response timeouts and exponential backoff retry
+
+### New Features
+
+- **Debug Toggle**: Dynamic enable/disable debug mode from `/debug` page without restart
+- **Prompt Management**: New `/prompt` page for viewing and editing system prompt and background prompt
+- **Current Model Indicator**: `/models` page now highlights the currently active ASR model
+- **Remote Model Discovery**: `/models` page can fetch latest models from sherpa-onnx GitHub releases
+
+### Improvements
+
+- **Token Optimization**: System prompt restructured for better prompt caching, reducing token consumption
+- **Exponential Backoff**: API retry uses exponential backoff (500ms→1s→2s→4s) instead of linear delay
+
 ## 0.4.0 (2026-08-17)
 
 ### Improvements

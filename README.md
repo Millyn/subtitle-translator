@@ -15,7 +15,9 @@ Windows 游戏主机上的实时字幕服务：真实麦克风 → VAD 断句 �
 - `/subtitle`：OBS 透明字幕。
 - `/editor`：字号、位置、颜色、保留时间等视觉设置和模拟预览。
 - `/control`：游戏 Profile、AI 纠错、自定义 Prompt 和术语表，仅电脑 A 本机可访问。
-- `/debug`：原始 ASR、纠正中文、英文、上下文、术语、耗时、Token、缓存和错误，仅 DEBUG 模式使用且仅本机可访问。
+- `/debug`：原始 ASR、纠正中文、英文、上下文、术语、耗时、Token、缓存和错误，可动态开关，仅本机可访问。
+- `/prompt`：System Prompt 和背景提示管理，仅电脑 A 本机可访问。
+- `/models`：ASR 模型管理，显示当前使用模型，支持从 GitHub 动态获取远程模型列表。
 
 ## 中国场景 ASR 模型
 
@@ -56,12 +58,13 @@ DeepSeek 每个断句只请求一次，同时返回：
 - `audio.pre_roll_ms`：默认 250ms，降低句首被切掉的概率。
 - `asr.model_id`：空值启动时选择，也可填写上面的模型 ID。
 - `asr.num_threads`：默认 2，最大 4。
+- `deepseek.timeout_ms`：API 请求超时，默认 60000ms（60 秒），建议保持默认值。
 - `translation.active_profile`：默认 `auto`。
 - `translation.correction_mode`：`conservative` 或 `off`。
 - `translation.context_sentences`：`0～5`，默认 2。
-- `translation.custom_prompt`：用户直播背景和翻译风格。
+- `translation.custom_prompt`：用户直播背景和翻译风格，也可通过 `/prompt` 页面编辑。
 - `subtitle.chinese_source`：`corrected`、`raw` 或 `compare`。
-- `debug`：启用终端详细日志和网页实时调试事件。
+- `debug`：启用终端详细日志和网页实时调试事件，运行时可通过 `/debug` 页面动态开关。
 - `debug_options.log_file`：非空时额外写入本地日志文件，密钥不会记录。
 - `listen`：默认 `:8765`。
 

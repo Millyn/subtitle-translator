@@ -78,6 +78,45 @@ func DownloadWithOptions(ctx context.Context, m Meta, dir string, opt DownloadOp
 	return os.Rename(part, filepath.Join(dir, m.ID+".tar.bz2"))
 }
 
+// DownloadRemote downloads a model from a remote URL without requiring
+// RequiredFiles validation. Used for models not in the local Catalog.
+func DownloadRemote(ctx context.Context, id, url, dir string, opt DownloadOptions) error {
+	if opt.Client == nil {
+		opt.Client = &http.Client{Timeout: 0}
+	}
+	if opt.Retries < 0 {
+		opt.Retries = 0
+	}
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
+	info, err := ValidateURLInfo(ctx, opt.Client, url)
+	if err != nil {
+		return fmt.Errorf("下载链接无效: %w", err)
+	}
+	part := filepath.Join(dir, id+".tar.bz2.part")
+	for attempt := 0; ; attempt++ {
+		err = downloadAttempt(ctx, opt.Client, url, part, info, opt.Progress)
+		if err == nil || attempt >= opt.Retries || ctx.Err() != nil {
+			break
+		}
+		t := time.NewTimer(time.Duration(attempt+1) * 500 * time.Millisecond)
+		select {
+		case <-ctx.Done():
+			t.Stop()
+			return ctx.Err()
+		case <-t.C:
+		}
+	}
+	if err != nil {
+		return fmt.Errorf("下载模型失败: %w", err)
+	}
+	if err = extractAtomic(part, filepath.Join(dir, id)); err != nil {
+		return err
+	}
+	return os.Rename(part, filepath.Join(dir, id+".tar.bz2"))
+}
+
 func downloadAttempt(ctx context.Context, c *http.Client, url, part string, info URLInfo, progress func(Progress)) error {
 	var start int64
 	if st, err := os.Stat(part); err == nil && info.RangeSupported {

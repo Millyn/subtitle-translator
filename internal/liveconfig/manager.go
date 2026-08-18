@@ -20,6 +20,7 @@ type Settings struct {
 	ChineseSource    string                      `json:"chinese_source"`
 	ContextSentences int                         `json:"context_sentences"`
 	CustomPrompt     string                      `json:"custom_prompt"`
+	SystemPrompt     string                      `json:"system_prompt,omitempty"`
 	UserTerms        map[string][]glossary.Entry `json:"user_terms,omitempty"`
 }
 
@@ -57,6 +58,9 @@ func New(path string, initial Settings, store *glossary.Store) (*Manager, error)
 		// configured default in that case.
 		if saved.CustomPrompt == "" {
 			saved.CustomPrompt = initial.CustomPrompt
+		}
+		if saved.SystemPrompt == "" {
+			saved.SystemPrompt = initial.SystemPrompt
 		}
 		m.settings = saved
 	} else if !errors.Is(err, os.ErrNotExist) {

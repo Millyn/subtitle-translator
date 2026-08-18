@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prompt 管理</title><style>
+:root{--panel:#121923;--line:#304050;--accent:#51a8ff;--font:"Segoe UI","Microsoft YaHei",sans-serif}
+*{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;font-family:var(--font);color:#e9f0f7;background:#09111a}
+.shell{max-width:960px;margin:auto;padding:24px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+h1{margin:0;font-size:24px}.pill{padding:6px 10px;border-radius:99px;background:#243443;color:#b9d7ee;font-size:13px}.pill.ok{background:#173e30;color:#8ff0be}.pill.bad{background:#4c2228;color:#ffc3c8}
+.section{margin-bottom:24px}
+.section-title{font-size:16px;font-weight:600;margin-bottom:12px;color:var(--accent)}
+textarea{width:100%;min-height:120px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#0d1520;color:#e9f0f7;font-family:ui-monospace,Consolas,monospace;font-size:13px;line-height:1.6;resize:vertical}
+textarea:focus{outline:none;border-color:var(--accent)}
+.btn-row{display:flex;gap:8px;margin-top:12px}
+button{padding:8px 16px;border:1px solid #425466;border-radius:7px;color:#eef;background:#1d2a37;font:inherit;cursor:pointer;transition:background .15s}
+button:hover{background:#2d618d}button:disabled{opacity:.5;cursor:not-allowed}
+button.primary{background:#1e4a6e;border-color:#2a6a9e}button.primary:hover{background:#2a6a9e}
+button.danger{background:#572b32;border-color:#6a3340}button.danger:hover{background:#6e3540}
+.info{color:#8fa1b2;font-size:13px;margin-top:8px}
+.nav{margin-bottom:20px}.nav a{color:var(--accent);text-decoration:none;margin-right:16px;font-size:14px}.nav a:hover{text-decoration:underline}
+</style></head><body>
+<div class="shell">
+<div class="nav"><a href="/">← 返回字幕</a><a href="/control">控制台</a><a href="/dashboard">管理面板</a></div>
+<div class="top"><h1>Prompt 管理</h1><span id="status" class="pill">正在加载…</span></div>
+
+<div class="section">
+<div class="section-title">System Prompt</div>
+<textarea id="systemPrompt" placeholder="输入系统提示..."></textarea>
+<div class="info">AI 的核心指令，定义翻译行为和规则。修改后立即生效。</div>
+<div class="btn-row">
+<button id="saveSystem" class="primary" onclick="saveSystem()">保存 System Prompt</button>
+<button id="resetSystem" class="danger" onclick="resetSystem()">恢复默认</button>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">Background Prompt</div>
+<textarea id="backgroundPrompt" placeholder="输入直播背景和翻译风格..."></textarea>
+<div class="info">描述直播背景、游戏类型和期望的翻译风格。修改后立即生效。</div>
+<div class="btn-row">
+<button id="saveBackground" class="primary" onclick="saveBackground()">保存 Background Prompt</button>
+<button id="resetBackground" class="danger" onclick="resetBackground()">恢复默认</button>
+</div>
+</div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const status=$('#status'),systemPrompt=$('#systemPrompt'),backgroundPrompt=$('#backgroundPrompt');
+let defaultSystemPrompt='',defaultBackgroundPrompt='';
+function s(el,text,kind=''){el.textContent=text;el.className='pill '+kind}
+
+async function load(){
+try{
+const r=await fetch('/api/prompt',{cache:'no-store'});
+if(!r.ok)throw Error('HTTP '+r.status);
+const data=await r.json();
+systemPrompt.value=data.systemPrompt||'';
+backgroundPrompt.value=data.backgroundPrompt||'';
+defaultSystemPrompt=data.defaultSystemPrompt||'';
+defaultBackgroundPrompt=data.defaultBackgroundPrompt||'';
+s(status,'已加载','ok');
+}catch(e){s(status,'加载失败: '+e.message,'bad')}
+}
+
+async function saveSystem(){
+const btn=$('#saveSystem');
+btn.disabled=true;btn.textContent='保存中…';
+try{
+const r=await fetch('/api/prompt',{
+method:'PUT',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({systemPrompt:systemPrompt.value})
+});
+if(!r.ok){const b=await r.json();throw Error(b.error||'HTTP '+r.status)}
+s(status,'System Prompt 已保存','ok');
+}catch(e){s(status,'保存失败: '+e.message,'bad')}
+finally{btn.disabled=false;btn.textContent='保存 System Prompt'}
+}
+
+async function saveBackground(){
+const btn=$('#saveBackground');
+btn.disabled=true;btn.textContent='保存中…';
+try{
+const r=await fetch('/api/prompt',{
+method:'PUT',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({backgroundPrompt:backgroundPrompt.value})
+});
+if(!r.ok){const b=await r.json();throw Error(b.error||'HTTP '+r.status)}
+s(status,'Background Prompt 已保存','ok');
+}catch(e){s(status,'保存失败: '+e.message,'bad')}
+finally{btn.disabled=false;btn.textContent='保存 Background Prompt'}
+}
+
+function resetSystem(){
+if(!confirm('确定恢复默认 System Prompt？'))return;
+systemPrompt.value=defaultSystemPrompt;
+saveSystem();
+}
+
+function resetBackground(){
+if(!confirm('确定恢复默认 Background Prompt？'))return;
+backgroundPrompt.value=defaultBackgroundPrompt;
+saveBackground();
+}
+
+load();
+</script>
+</body></html>

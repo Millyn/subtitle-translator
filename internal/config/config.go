@@ -86,7 +86,7 @@ func Defaults() Config {
 		ModelDir: "models", RuntimeDir: "runtime", Listen: ":8765", GOMAXPROCS: 3,
 		Audio:       AudioConfig{DeviceIndex: -1, SilenceMS: 700, MinSpeechMS: 300, MaxSpeechSecond: 10, PreRollMS: 250},
 		ASR:         ASRConfig{ModelID: "", NumThreads: 2},
-		DeepSeek:    DeepSeekConfig{Endpoint: "https://api.deepseek.com/chat/completions", Model: "deepseek-chat", TimeoutMS: 5000, Retries: 2},
+		DeepSeek:    DeepSeekConfig{Endpoint: "https://api.deepseek.com/chat/completions", Model: "deepseek-chat", TimeoutMS: 60000, Retries: 2},
 		Translation: TranslationConfig{ActiveProfile: "auto", CorrectionMode: "conservative", ContextSentences: 2, CustomPrompt: "This is a Twitch gaming livestream. Use natural, concise English familiar to gaming communities. The streamer often discusses sim racing, especially iRacing, but do not force unrelated content into a racing context. The active game profile and glossary take priority.", GlossaryDir: "glossaries", SettingsFile: "translation-settings.json", AutoDeduplicateGlossary: boolPtr(true)},
 		DebugUI:     DebugConfig{HistoryLimit: 100},
 		Subtitle:    SubtitleConfig{Mode: "bilingual", HideAfterMS: 12000, EnglishFontSize: 56, ChineseFontSize: 30, PositionX: 50, PositionY: 88, MaxWidth: 90, EnglishColor: "#ffffff", ChineseColor: "#f0f0f0", StrokeColor: "#000000", Background: "rgba(0,0,0,0.48)", FontFamily: "Segoe UI, Microsoft YaHei, sans-serif", ChineseSource: "corrected"},
@@ -121,7 +121,7 @@ func Load(path string) (Config, error) {
 		c.ASR.NumThreads = 2
 	}
 	if c.DeepSeek.TimeoutMS < 1 {
-		c.DeepSeek.TimeoutMS = 5000
+		c.DeepSeek.TimeoutMS = 60000
 	}
 	translationDefaults := Defaults().Translation
 	if c.Translation.ActiveProfile == "" {

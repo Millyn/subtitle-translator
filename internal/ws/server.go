@@ -8,13 +8,17 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gorilla/websocket"
 	"subtitle-translator/internal/model"
+	"subtitle-translator/internal/translate"
 )
 
 const writeTimeout = time.Second
@@ -63,6 +67,7 @@ type Term struct {
 type ControlState struct {
 	Profile        string  `json:"profile"`
 	CustomPrompt   string  `json:"customPrompt"`
+	SystemPrompt   string  `json:"systemPrompt,omitempty"`
 	CorrectionMode string  `json:"correctionMode"`
 	ChineseSource  string  `json:"chineseSource"`
 	ContextSize    int     `json:"contextSize"`
@@ -101,19 +106,22 @@ type client struct {
 }
 
 type Server struct {
-	mu           sync.RWMutex
-	clients      map[*client]struct{}
-	srv          *http.Server
-	page         []byte
-	modelsPage   []byte
-	dashboardPage []byte
-	editorPage   []byte
-	debugPage    []byte
-	modelDir     string
-	config       PageConfig
-	control      ControlState
-	callbacks    ControlCallbacks
-	access       AccessPolicy
+	mu             sync.RWMutex
+	clients        map[*client]struct{}
+	srv            *http.Server
+	page           []byte
+	modelsPage     []byte
+	dashboardPage  []byte
+	editorPage     []byte
+	debugPage      []byte
+	promptPage     []byte
+	modelDir       string
+	currentModelID string
+	debugEnabled   atomic.Bool
+	config         PageConfig
+	control        ControlState
+	callbacks      ControlCallbacks
+	access         AccessPolicy
 }
 
 func New(addr string) *Server {
@@ -158,11 +166,35 @@ func (s *Server) SetDebugPage(p []byte) {
 	s.mu.Unlock()
 }
 
+// SetPromptPage sets the HTML page served for the prompt management UI.
+func (s *Server) SetPromptPage(p []byte) {
+	s.mu.Lock()
+	s.promptPage = append([]byte(nil), p...)
+	s.mu.Unlock()
+}
+
 // SetModelDir sets the filesystem path where models are stored.
 func (s *Server) SetModelDir(dir string) {
 	s.mu.Lock()
 	s.modelDir = dir
 	s.mu.Unlock()
+}
+
+// SetCurrentModel sets the ID of the currently active ASR model.
+func (s *Server) SetCurrentModel(id string) {
+	s.mu.Lock()
+	s.currentModelID = id
+	s.mu.Unlock()
+}
+
+// SetDebugEnabled sets the debug mode state.
+func (s *Server) SetDebugEnabled(enabled bool) {
+	s.debugEnabled.Store(enabled)
+}
+
+// IsDebugEnabled returns the current debug mode state.
+func (s *Server) IsDebugEnabled() bool {
+	return s.debugEnabled.Load()
 }
 
 func (s *Server) Handler() http.Handler {
@@ -178,6 +210,9 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/api/models", s.handleModels)
 	mux.HandleFunc("/api/models/download", s.handleModelDownload)
 	mux.HandleFunc("/api/models/delete", s.handleModelDelete)
+	mux.HandleFunc("/api/models/remote", s.handleRemoteModels)
+	mux.HandleFunc("/api/debug", s.handleDebugToggle)
+	mux.HandleFunc("/api/prompt", s.handlePrompt)
 	mux.HandleFunc("/config", s.handleConfig)
 	mux.HandleFunc("/", s.handlePage)
 	return mux
@@ -232,6 +267,22 @@ func (s *Server) handlePage(w http.ResponseWriter, r *http.Request) {
 		}
 		s.mu.RLock()
 		p := s.debugPage
+		s.mu.RUnlock()
+		if len(p) == 0 {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-store")
+		_, _ = w.Write(p)
+		return
+	}
+	if r.URL.Path == "/prompt" {
+		if !s.allowLocal(w, r) {
+			return
+		}
+		s.mu.RLock()
+		p := s.promptPage
 		s.mu.RUnlock()
 		if len(p) == 0 {
 			http.NotFound(w, r)
@@ -456,6 +507,7 @@ type modelEntry struct {
 	Recommended string `json:"recommended"`
 	SizeMB      int    `json:"sizeMB"`
 	Installed   bool   `json:"installed"`
+	IsCurrent   bool   `json:"isCurrent"`
 }
 
 func (s *Server) handleModels(w http.ResponseWriter, r *http.Request) {
@@ -466,6 +518,7 @@ func (s *Server) handleModels(w http.ResponseWriter, r *http.Request) {
 	}
 	s.mu.RLock()
 	dir := s.modelDir
+	currentID := s.currentModelID
 	s.mu.RUnlock()
 	entries := make([]modelEntry, 0, len(model.Catalog))
 	for _, m := range model.Catalog {
@@ -473,6 +526,7 @@ func (s *Server) handleModels(w http.ResponseWriter, r *http.Request) {
 			ID: m.ID, Name: m.Name, Kind: m.Kind, Language: m.Language,
 			Description: m.Description, Recommended: m.Recommended, SizeMB: m.SizeMB,
 			Installed: model.Installed(m, dir),
+			IsCurrent: m.ID == currentID,
 		})
 	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -494,9 +548,12 @@ func (s *Server) handleModelDownload(w http.ResponseWriter, r *http.Request) {
 		writeAPIError(w, http.StatusBadRequest, errors.New("missing id parameter"))
 		return
 	}
+	// Check if model is in local Catalog
 	m, ok := model.Find(id)
-	if !ok {
-		writeAPIError(w, http.StatusNotFound, fmt.Errorf("model %q not found", id))
+	// If not in Catalog, check if it's a remote model with URL parameter
+	remoteURL := r.URL.Query().Get("url")
+	if !ok && remoteURL == "" {
+		writeAPIError(w, http.StatusNotFound, fmt.Errorf("model %q not found in catalog and no url provided", id))
 		return
 	}
 	s.mu.RLock()
@@ -506,10 +563,20 @@ func (s *Server) handleModelDownload(w http.ResponseWriter, r *http.Request) {
 		writeAPIError(w, http.StatusInternalServerError, errors.New("model directory not configured"))
 		return
 	}
-	if model.Installed(m, dir) {
+	// Check if already installed
+	if ok && model.Installed(m, dir) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		_ = json.NewEncoder(w).Encode(map[string]any{"status": "already_installed", "id": id})
 		return
+	}
+	// For remote models, check if directory exists
+	if !ok {
+		modelDir := filepath.Join(dir, id)
+		if st, err := os.Stat(modelDir); err == nil && st.IsDir() {
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			_ = json.NewEncoder(w).Encode(map[string]any{"status": "already_installed", "id": id})
+			return
+		}
 	}
 	// SSE response for download progress.
 	w.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
@@ -524,16 +591,32 @@ func (s *Server) handleModelDownload(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	ctx := r.Context()
-	err := model.DownloadWithOptions(ctx, m, dir, model.DownloadOptions{
-		Retries: 2,
-		Progress: func(p model.Progress) {
-			send("progress", map[string]any{
-				"downloaded":     p.Downloaded,
-				"total":          p.Total,
-				"bytesPerSecond": p.BytesPerSecond,
-			})
-		},
-	})
+	var err error
+	if ok {
+		// Download from local Catalog
+		err = model.DownloadWithOptions(ctx, m, dir, model.DownloadOptions{
+			Retries: 2,
+			Progress: func(p model.Progress) {
+				send("progress", map[string]any{
+					"downloaded":     p.Downloaded,
+					"total":          p.Total,
+					"bytesPerSecond": p.BytesPerSecond,
+				})
+			},
+		})
+	} else {
+		// Download remote model
+		err = model.DownloadRemote(ctx, id, remoteURL, dir, model.DownloadOptions{
+			Retries: 2,
+			Progress: func(p model.Progress) {
+				send("progress", map[string]any{
+					"downloaded":     p.Downloaded,
+					"total":          p.Total,
+					"bytesPerSecond": p.BytesPerSecond,
+				})
+			},
+		})
+	}
 	if err != nil {
 		if ctx.Err() != nil {
 			send("cancelled", map[string]string{"id": id})
@@ -694,4 +777,162 @@ func (s *Server) ClientCount() int {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return len(s.clients)
+}
+
+func (s *Server) handleDebugToggle(w http.ResponseWriter, r *http.Request) {
+	if !s.allowLocal(w, r) {
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	switch r.Method {
+	case http.MethodGet:
+		_ = json.NewEncoder(w).Encode(map[string]bool{"enabled": s.debugEnabled.Load()})
+	case http.MethodPut:
+		var req struct {
+			Enabled bool `json:"enabled"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeAPIError(w, http.StatusBadRequest, err)
+			return
+		}
+		s.debugEnabled.Store(req.Enabled)
+		_ = json.NewEncoder(w).Encode(map[string]bool{"enabled": req.Enabled})
+	default:
+		w.Header().Set("Allow", "GET, PUT")
+		writeAPIError(w, http.StatusMethodNotAllowed, errors.New("method not allowed"))
+	}
+}
+
+func (s *Server) handlePrompt(w http.ResponseWriter, r *http.Request) {
+	if !s.allowLocal(w, r) {
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	switch r.Method {
+	case http.MethodGet:
+		s.mu.RLock()
+		state := s.control
+		s.mu.RUnlock()
+		// Use saved system prompt if available, otherwise use default
+		systemPrompt := state.SystemPrompt
+		if systemPrompt == "" {
+			systemPrompt = translate.BaseSystemPrompt()
+		}
+		resp := struct {
+			SystemPrompt     string `json:"systemPrompt"`
+			BackgroundPrompt string `json:"backgroundPrompt"`
+			DefaultSystemPrompt  string `json:"defaultSystemPrompt"`
+			DefaultBackgroundPrompt string `json:"defaultBackgroundPrompt"`
+		}{
+			SystemPrompt:              systemPrompt,
+			BackgroundPrompt:          state.CustomPrompt,
+			DefaultSystemPrompt:       translate.BaseSystemPrompt(),
+			DefaultBackgroundPrompt:   translate.DefaultCustomPrompt,
+		}
+		_ = json.NewEncoder(w).Encode(resp)
+	case http.MethodPut:
+		var req struct {
+			SystemPrompt     string `json:"systemPrompt"`
+			BackgroundPrompt string `json:"backgroundPrompt"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeAPIError(w, http.StatusBadRequest, err)
+			return
+		}
+		if len(req.SystemPrompt) > 16000 {
+			writeAPIError(w, http.StatusBadRequest, errors.New("system prompt too long"))
+			return
+		}
+		if len(req.BackgroundPrompt) > 8000 {
+			writeAPIError(w, http.StatusBadRequest, errors.New("background prompt too long"))
+			return
+		}
+		s.mu.Lock()
+		if req.SystemPrompt != "" {
+			s.control.SystemPrompt = req.SystemPrompt
+		}
+		if req.BackgroundPrompt != "" {
+			s.control.CustomPrompt = req.BackgroundPrompt
+		}
+		s.mu.Unlock()
+		s.mu.RLock()
+		callbacks := s.callbacks
+		s.mu.RUnlock()
+		if callbacks.Apply != nil {
+			state := cloneControlState(s.control)
+			updated, err := callbacks.Apply(r.Context(), state)
+			if err != nil {
+				writeAPIError(w, http.StatusConflict, err)
+				return
+			}
+			s.mu.Lock()
+			s.control = updated
+			s.mu.Unlock()
+		}
+		_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	default:
+		w.Header().Set("Allow", "GET, PUT")
+		writeAPIError(w, http.StatusMethodNotAllowed, errors.New("method not allowed"))
+	}
+}
+
+func (s *Server) handleRemoteModels(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", "GET")
+		writeAPIError(w, http.StatusMethodNotAllowed, errors.New("method not allowed"))
+		return
+	}
+	if !s.allowLocal(w, r) {
+		return
+	}
+	ctx := r.Context()
+	remoteModels, err := model.FetchRemoteModels(ctx)
+	if err != nil {
+		writeAPIError(w, http.StatusBadGateway, fmt.Errorf("获取远程模型列表失败: %w", err))
+		return
+	}
+
+	s.mu.RLock()
+	dir := s.modelDir
+	s.mu.RUnlock()
+
+	type remoteEntry struct {
+		model.RemoteMeta
+		Installed bool   `json:"installed"`
+		InCatalog bool   `json:"inCatalog"`
+		CatalogID string `json:"catalogId,omitempty"`
+	}
+
+	// Build URL -> Catalog ID mapping for matching
+	catalogByURL := make(map[string]string)
+	for _, m := range model.Catalog {
+		catalogByURL[m.URL] = m.ID
+	}
+
+	entries := make([]remoteEntry, 0, len(remoteModels))
+	for _, rm := range remoteModels {
+		catalogID := catalogByURL[rm.DownloadURL]
+		inCatalog := catalogID != ""
+		// Use catalog ID for installation check if available
+		checkID := rm.ID
+		if inCatalog {
+			checkID = catalogID
+		}
+		m := model.Meta{ID: checkID, URL: rm.DownloadURL, RequiredFiles: []string{}}
+		entry := remoteEntry{
+			RemoteMeta: rm,
+			Installed:  model.Installed(m, dir),
+			InCatalog:  inCatalog,
+		}
+		if inCatalog {
+			entry.CatalogID = catalogID
+		}
+		entries = append(entries, entry)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-cache")
+	_ = json.NewEncoder(w).Encode(entries)
 }

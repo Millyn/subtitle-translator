@@ -1,4 +1,4 @@
-# 当前版本 0.4
+# 当前版本 0.5
 
 # 0.3 版本更新目的
 
@@ -15,3 +15,26 @@
 1. [opt] 优化向 API 发送的 Prompt 内容，根据检查，现在发送的 Prompt 只要选择了本地的glossaries内容，会发送非常庞大的内容，占用了大量的 TOKEN 资源，这块要着重优化！减少 TOKEN 消耗，但不能影响实际翻译效果，也不要影响性能。
 
 完成时间：2026-08-17
+
+# 0.5 版本更新目的
+
+1. [bug] 实际运行软件时会有一些错误日志
+```
+(Client.Timeout or context cancellation while reading body)
+2026/08/18 13:17:10 context deadline exceeded (Client.Timeout or context cancellation while reading body)
+2026/08/18 13:17:25 context deadline exceeded (Client.Timeout or context cancellation while reading body)
+2026/08/18 13:17:41 context deadline exceeded (Client.Timeout or context cancellation while reading body)
+2026/08/18 13:18:09 context deadline exceeded (Client.Timeout or context cancellation while reading body)
+2026/08/18 13:18:24 context deadline exceeded (Client.Timeout or context cancellation while reading body)
+2026/08/18 13:18:40 context deadline exceeded (Client.Timeout or context cancellation while reading body)
+2026/08/18 13:18:55 context deadline exceeded (Client.Timeout or context cancellation while reading body)
+2026/08/18 13:19:10 context deadline exceeded (Client.Timeout or context cancellation while reading body)
+2026/08/18 13:19:26 context deadline exceeded (Client.Timeout or context cancellation while reading body)
+```
+2. [OPT] 优化向 AI API 发送的 TOKEN 数量，看是让 AI 形成一个长期思考的惯性还是怎么样，这里可以给我一个方案，我们再决定开发。
+3. [OPT] DEBUG 模式在 /debug 页面应该增加动态开启或关闭的功能，方便用户快速启用调试和关闭调试
+4. [OPT] 默认给 AI API 发送的 PROMPT 应可以修改，创建一个新的 WEB 路由页面来管理这些内容。
+5. [OPT] /models 路由页面并未显示正在使用的模型。
+6. [OPT] /models 路由页面需要增加更多的模型下载功能，希望通过浏览器能力在网上寻找到一个 API 接口来获取更多最新的 ASR 模型，我们不是要扩展到对应数量，而是扩展成动态拉取的能力
+
+完成时间：2026-08-18

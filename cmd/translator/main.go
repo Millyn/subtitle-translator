@@ -217,7 +217,9 @@ func run() error {
 	server.SetDashboardPage(webpage.DashboardHTML)
 	server.SetEditorPage(webpage.EditorHTML)
 	server.SetDebugPage(webpage.DebugHTML)
+	server.SetPromptPage(webpage.PromptHTML)
 	server.SetModelDir(cfg.ModelDir)
+	server.SetCurrentModel(selectedModel.ID)
 	server.SetControlCallbacks(controlCallbacks(live, server))
 	server.SetChineseSource(live.Current().ChineseSource)
 	serverErrors := make(chan error, 1)
@@ -234,7 +236,8 @@ func run() error {
 	}
 	defer collector.Stop()
 
-	flow := &pipeline.Integrator{ASR: recognizer, Translator: translator, Output: server, Logger: log.Default(), Debug: cfg.Debug, ASRModel: selectedModel.ID, MaxSegmentSecond: cfg.Audio.MaxSpeechSecond}
+	server.SetDebugEnabled(cfg.Debug)
+	flow := &pipeline.Integrator{ASR: recognizer, Translator: translator, Output: server, Logger: log.Default(), DebugFunc: server.IsDebugEnabled, ASRModel: selectedModel.ID, MaxSegmentSecond: cfg.Audio.MaxSpeechSecond}
 	flow.BuildRichRequest = func(source string, history []string) translate.RichRequest {
 		snapshot := live.Snapshot(source)
 		contextCount := snapshot.ContextSentences
@@ -246,12 +249,10 @@ func run() error {
 		for _, term := range snapshot.Terms {
 			terms = append(terms, translate.GlossaryTerm{Source: term.Source, Target: term.Target, Aliases: append([]string(nil), term.Aliases...), Category: term.Category, Protected: term.Protected})
 		}
-		return translate.RichRequest{Source: source, RecentContext: recent, ActiveProfile: snapshot.ActiveProfile, CorrectionMode: snapshot.CorrectionMode, BackgroundPrompt: snapshot.CustomPrompt, Glossary: terms}
+		return translate.RichRequest{Source: source, RecentContext: recent, ActiveProfile: snapshot.ActiveProfile, CorrectionMode: snapshot.CorrectionMode, BackgroundPrompt: snapshot.CustomPrompt, SystemPrompt: snapshot.SystemPrompt, Glossary: terms}
 	}
-	if cfg.Debug {
-		flow.DebugSink = func(event pipeline.DebugEvent) {
-			_ = server.BroadcastDebug(wsserver.DebugEvent{SegmentID: event.SegmentID, DurationMS: event.DurationMS, SegmentReason: event.SegmentReason, ASRModel: event.ASRModel, Raw: event.Raw, Corrected: event.Corrected, English: event.English, Diff: event.Diff, Profile: event.Profile, Terms: event.MatchedTerms, Context: event.Context, Latencies: map[string]float64{"asr": float64(event.ASRMS), "translate": float64(event.TranslateMS), "total": float64(event.TotalMS)}, Tokens: event.TotalTokens, TokenUsage: map[string]int{"prompt": event.PromptTokens, "cache_hit": event.CacheHitTokens, "cache_miss": event.CacheMissTokens, "output": event.OutputTokens, "total": event.TotalTokens}, CacheHit: event.CacheHitTokens > 0, Retries: max(event.Attempts-1, 0), Error: event.Error, RequestBody: event.RequestBody, ResponseBody: event.ResponseBody, TS: float64(event.Timestamp.UnixMilli()) / 1000})
-		}
+	flow.DebugSink = func(event pipeline.DebugEvent) {
+		_ = server.BroadcastDebug(wsserver.DebugEvent{SegmentID: event.SegmentID, DurationMS: event.DurationMS, SegmentReason: event.SegmentReason, ASRModel: event.ASRModel, Raw: event.Raw, Corrected: event.Corrected, English: event.English, Diff: event.Diff, Profile: event.Profile, Terms: event.MatchedTerms, Context: event.Context, Latencies: map[string]float64{"asr": float64(event.ASRMS), "translate": float64(event.TranslateMS), "total": float64(event.TotalMS)}, Tokens: event.TotalTokens, TokenUsage: map[string]int{"prompt": event.PromptTokens, "cache_hit": event.CacheHitTokens, "cache_miss": event.CacheMissTokens, "output": event.OutputTokens, "total": event.TotalTokens}, CacheHit: event.CacheHitTokens > 0, Retries: max(event.Attempts-1, 0), Error: event.Error, RequestBody: event.RequestBody, ResponseBody: event.ResponseBody, TS: float64(event.Timestamp.UnixMilli()) / 1000})
 	}
 	flowDone := make(chan error, 1)
 	go func() { flowDone <- flow.Run(ctx, collector.Segments()) }()

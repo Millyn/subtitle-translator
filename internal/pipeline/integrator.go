@@ -69,7 +69,7 @@ type Integrator struct {
 	Translator       Translator
 	Output           Broadcaster
 	Logger           *log.Logger
-	Debug            bool
+	DebugFunc        func() bool
 	ASRModel         string
 	MaxSegmentSecond int
 	// BuildRichRequest is evaluated immediately before each API call, so
@@ -255,7 +255,8 @@ func (p *Integrator) report(err error) {
 	}
 }
 func (p *Integrator) debugf(format string, args ...any) {
-	if p.Debug && p.Logger != nil {
+	enabled := p.DebugFunc != nil && p.DebugFunc()
+	if enabled && p.Logger != nil {
 		p.Logger.Printf("[DEBUG] "+format, args...)
 	}
 }
@@ -269,7 +270,7 @@ func (p *Integrator) broadcastDetail(raw, corrected, english string) {
 	}
 }
 func (p *Integrator) emitDebug(event DebugEvent) {
-	if p.DebugSink != nil {
+	if p.DebugSink != nil && (p.DebugFunc == nil || p.DebugFunc()) {
 		p.DebugSink(event)
 	}
 }
